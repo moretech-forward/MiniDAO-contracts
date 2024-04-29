@@ -7,8 +7,8 @@
 
 ## Docs
 
-- [Docs]()
-- [Audit]()
+- [Docs](https://github.com/moretech-forward/miniDAO/blob/main/contracts/Docs.md)
+- [Audit](https://github.com/moretech-forward/miniDAO/blob/main/contracts/audit/Audit.md)
 
 ## Usage
 
