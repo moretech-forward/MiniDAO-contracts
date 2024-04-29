@@ -19,12 +19,10 @@ describe("SuperDAO", function () {
       1,
       "Token",
       "TKN",
-      [owner, acc1, acc2, acc3, acc4],
-      ["100000000", "100000000", "100000000", "100000000", "100000000"],
       "DAO",
+      "100000000",
       5, // _votingDelay
       20, // _votingPeriod
-      0, // _proposalThreshold
       4 // _quorumValue
     );
 

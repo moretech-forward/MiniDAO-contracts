@@ -22,10 +22,14 @@ describe("MiniDAO", function () {
       timeLock.target,
       "Token",
       "TKN",
-      // Token distribution
-      [owner, acc1, acc2, acc3, acc4],
-      ["100000000", "100000000", "100000000", "100000000", "100000000"]
+      owner,
+      "100000000"
     );
+
+    await token.connect(owner).transfer(acc1, "1000");
+    await token.connect(owner).transfer(acc2, "1000");
+    await token.connect(owner).transfer(acc3, "1000");
+    await token.connect(owner).transfer(acc4, "1000");
 
     const MiniDAO = await hre.ethers.getContractFactory("MiniDAO");
     const miniDAO = await MiniDAO.deploy(
@@ -34,7 +38,6 @@ describe("MiniDAO", function () {
       "miniDAO",
       5, // _votingDelay
       20, // _votingPeriod
-      0, // _proposalThreshold
       4 // _quorumValue
     );
 

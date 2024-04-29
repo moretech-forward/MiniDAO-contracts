@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Compatible with OpenZeppelin Contracts ^5.0.0
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.23;
 
 import "@openzeppelin/contracts/governance/Governor.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
@@ -9,8 +9,6 @@ import "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
 
-// 1 day voting delay
-// 1 week voting period
 contract MiniDAO is
     Governor,
     GovernorSettings,
@@ -25,12 +23,10 @@ contract MiniDAO is
         string memory _name,
         uint48 _votingDelay,
         uint32 _votingPeriod,
-        uint256 _proposalThreshold,
         uint256 _quorumValue
     )
-        payable
         Governor(_name)
-        GovernorSettings(_votingDelay, _votingPeriod, _proposalThreshold)
+        GovernorSettings(_votingDelay, _votingPeriod, 0)
         GovernorVotes(_token)
         GovernorVotesQuorumFraction(_quorumValue)
         GovernorTimelockControl(_timelock)

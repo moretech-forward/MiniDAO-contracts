@@ -12,10 +12,10 @@ contract TokenDAO is ERC20, Owned, ERC20Permit, ERC20Votes {
         address _timelock,
         string memory _name,
         string memory _symbol,
-        address[] memory to,
-        uint256[] memory amount
+        address to,
+        uint256 amount
     ) ERC20(_name, _symbol) Owned(_timelock) ERC20Permit(_name) {
-        _mintBatch(to, amount);
+        _mint(to, amount);
     }
 
     function mint(address to, uint256 amount) public onlyOwner {

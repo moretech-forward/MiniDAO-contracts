@@ -16,12 +16,10 @@ contract SuperDAO {
         uint256 _minDelay,
         string memory _nameToken,
         string memory _symbolToken,
-        address[] memory to,
-        uint256[] memory amount,
         string memory _nameDAO,
+        uint256 mintAmount,
         uint48 _votingDelay,
         uint32 _votingPeriod,
-        uint256 _proposalThreshold,
         uint256 _quorumValue
     ) payable {
         address[] memory _proposers = new address[](1);
@@ -40,8 +38,8 @@ contract SuperDAO {
             address(_timeLock),
             _nameToken,
             _symbolToken,
-            to,
-            amount
+            msg.sender,
+            mintAmount
         );
 
         MiniDAO _governor = new MiniDAO(
@@ -50,7 +48,6 @@ contract SuperDAO {
             _nameDAO,
             _votingDelay,
             _votingPeriod,
-            _proposalThreshold,
             _quorumValue
         );
 
@@ -61,5 +58,7 @@ contract SuperDAO {
 
         timeLock = _timeLock;
         governor = _governor;
+
+        treasury = new Treasury(address(_timeLock));
     }
 }
