@@ -1,6 +1,4 @@
-
 // File: contracts/DAO/miniDAO/utils/ERC1155TokenReceiver.sol
-
 
 pragma solidity ^0.8.23;
 
@@ -29,7 +27,6 @@ abstract contract ERC1155TokenReceiver {
 
 // File: contracts/DAO/miniDAO/utils/ERC721TokenReceiver.sol
 
-
 pragma solidity ^0.8.23;
 
 /// @notice A generic interface for a contract which properly accepts ERC721 tokens.
@@ -47,7 +44,6 @@ abstract contract ERC721TokenReceiver {
 }
 
 // File: @openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (token/ERC20/extensions/IERC20Permit.sol)
 
@@ -141,7 +137,6 @@ interface IERC20Permit {
 
 // File: @openzeppelin/contracts/interfaces/draft-IERC6093.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (interfaces/draft-IERC6093.sol)
 pragma solidity ^0.8.20;
 
@@ -156,7 +151,11 @@ interface IERC20Errors {
      * @param balance Current balance for the interacting account.
      * @param needed Minimum amount required to perform a transfer.
      */
-    error ERC20InsufficientBalance(address sender, uint256 balance, uint256 needed);
+    error ERC20InsufficientBalance(
+        address sender,
+        uint256 balance,
+        uint256 needed
+    );
 
     /**
      * @dev Indicates a failure with the token `sender`. Used in transfers.
@@ -176,7 +175,11 @@ interface IERC20Errors {
      * @param allowance Amount of tokens a `spender` is allowed to operate with.
      * @param needed Minimum amount required to perform a transfer.
      */
-    error ERC20InsufficientAllowance(address spender, uint256 allowance, uint256 needed);
+    error ERC20InsufficientAllowance(
+        address spender,
+        uint256 allowance,
+        uint256 needed
+    );
 
     /**
      * @dev Indicates a failure with the `approver` of a token to be approved. Used in approvals.
@@ -261,7 +264,12 @@ interface IERC1155Errors {
      * @param needed Minimum amount required to perform a transfer.
      * @param tokenId Identifier number of a token.
      */
-    error ERC1155InsufficientBalance(address sender, uint256 balance, uint256 needed, uint256 tokenId);
+    error ERC1155InsufficientBalance(
+        address sender,
+        uint256 balance,
+        uint256 needed,
+        uint256 tokenId
+    );
 
     /**
      * @dev Indicates a failure with the token `sender`. Used in transfers.
@@ -305,7 +313,6 @@ interface IERC1155Errors {
 
 // File: @openzeppelin/contracts/token/ERC20/IERC20.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (token/ERC20/IERC20.sol)
 
 pragma solidity ^0.8.20;
@@ -326,7 +333,11 @@ interface IERC20 {
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
      * a call to {approve}. `value` is the new allowance.
      */
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
 
     /**
      * @dev Returns the value of tokens in existence.
@@ -354,7 +365,10 @@ interface IERC20 {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(address owner, address spender) external view returns (uint256);
+    function allowance(
+        address owner,
+        address spender
+    ) external view returns (uint256);
 
     /**
      * @dev Sets a `value` amount of tokens as the allowance of `spender` over the
@@ -382,16 +396,18 @@ interface IERC20 {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(address from, address to, uint256 value) external returns (bool);
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    ) external returns (bool);
 }
 
 // File: @openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (token/ERC20/extensions/IERC20Metadata.sol)
 
 pragma solidity ^0.8.20;
-
 
 /**
  * @dev Interface for the optional metadata functions from the ERC20 standard.
@@ -415,7 +431,6 @@ interface IERC20Metadata is IERC20 {
 
 // File: contracts/DAO/miniDAO/utils/Owned.sol
 
-
 pragma solidity >=0.8.0;
 
 abstract contract Owned {
@@ -433,12 +448,7 @@ abstract contract Owned {
 
 // File: contracts/DAO/miniDAO/Treasury.sol
 
-
 pragma solidity ^0.8.23;
-
-
-
-
 
 contract Treasury is Owned, ERC721TokenReceiver, ERC1155TokenReceiver {
     constructor(address _timelock) payable Owned(_timelock) {}
@@ -466,7 +476,6 @@ contract Treasury is Owned, ERC721TokenReceiver, ERC1155TokenReceiver {
 
 // File: @openzeppelin/contracts/access/IAccessControl.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (access/IAccessControl.sol)
 
 pragma solidity ^0.8.20;
@@ -493,7 +502,11 @@ interface IAccessControl {
      * `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite
      * {RoleAdminChanged} not being emitted signaling this.
      */
-    event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole);
+    event RoleAdminChanged(
+        bytes32 indexed role,
+        bytes32 indexed previousAdminRole,
+        bytes32 indexed newAdminRole
+    );
 
     /**
      * @dev Emitted when `account` is granted `role`.
@@ -501,7 +514,11 @@ interface IAccessControl {
      * `sender` is the account that originated the contract call, an admin role
      * bearer except when using {AccessControl-_setupRole}.
      */
-    event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender);
+    event RoleGranted(
+        bytes32 indexed role,
+        address indexed account,
+        address indexed sender
+    );
 
     /**
      * @dev Emitted when `account` is revoked `role`.
@@ -510,12 +527,19 @@ interface IAccessControl {
      *   - if using `revokeRole`, it is the admin role bearer
      *   - if using `renounceRole`, it is the role bearer (i.e. `account`)
      */
-    event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender);
+    event RoleRevoked(
+        bytes32 indexed role,
+        address indexed account,
+        address indexed sender
+    );
 
     /**
      * @dev Returns `true` if `account` has been granted `role`.
      */
-    function hasRole(bytes32 role, address account) external view returns (bool);
+    function hasRole(
+        bytes32 role,
+        address account
+    ) external view returns (bool);
 
     /**
      * @dev Returns the admin role that controls `role`. See {grantRole} and
@@ -567,7 +591,6 @@ interface IAccessControl {
 
 // File: @openzeppelin/contracts/governance/utils/IVotes.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (governance/utils/IVotes.sol)
 pragma solidity ^0.8.20;
 
@@ -583,12 +606,20 @@ interface IVotes {
     /**
      * @dev Emitted when an account changes their delegate.
      */
-    event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate);
+    event DelegateChanged(
+        address indexed delegator,
+        address indexed fromDelegate,
+        address indexed toDelegate
+    );
 
     /**
      * @dev Emitted when a token transfer or delegate change results in changes to a delegate's number of voting units.
      */
-    event DelegateVotesChanged(address indexed delegate, uint256 previousVotes, uint256 newVotes);
+    event DelegateVotesChanged(
+        address indexed delegate,
+        uint256 previousVotes,
+        uint256 newVotes
+    );
 
     /**
      * @dev Returns the current amount of votes that `account` has.
@@ -599,7 +630,10 @@ interface IVotes {
      * @dev Returns the amount of votes that `account` had at a specific moment in the past. If the `clock()` is
      * configured to use block numbers, this will return the value at the end of the corresponding block.
      */
-    function getPastVotes(address account, uint256 timepoint) external view returns (uint256);
+    function getPastVotes(
+        address account,
+        uint256 timepoint
+    ) external view returns (uint256);
 
     /**
      * @dev Returns the total supply of votes available at a specific moment in the past. If the `clock()` is
@@ -609,7 +643,9 @@ interface IVotes {
      * Votes that have not been delegated are still part of total supply, even though they would not participate in a
      * vote.
      */
-    function getPastTotalSupply(uint256 timepoint) external view returns (uint256);
+    function getPastTotalSupply(
+        uint256 timepoint
+    ) external view returns (uint256);
 
     /**
      * @dev Returns the delegate that `account` has chosen.
@@ -624,11 +660,17 @@ interface IVotes {
     /**
      * @dev Delegates votes from signer to `delegatee`.
      */
-    function delegateBySig(address delegatee, uint256 nonce, uint256 expiry, uint8 v, bytes32 r, bytes32 s) external;
+    function delegateBySig(
+        address delegatee,
+        uint256 nonce,
+        uint256 expiry,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
 }
 
 // File: @openzeppelin/contracts/interfaces/IERC6372.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC6372.sol)
 
@@ -649,17 +691,13 @@ interface IERC6372 {
 
 // File: @openzeppelin/contracts/interfaces/IERC5805.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC5805.sol)
 
 pragma solidity ^0.8.20;
 
-
-
 interface IERC5805 is IERC6372, IVotes {}
 
 // File: @openzeppelin/contracts/utils/Nonces.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/Nonces.sol)
 pragma solidity ^0.8.20;
@@ -709,7 +747,6 @@ abstract contract Nonces {
 
 // File: @openzeppelin/contracts/utils/Context.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)
 
 pragma solidity ^0.8.20;
@@ -740,14 +777,9 @@ abstract contract Context {
 
 // File: @openzeppelin/contracts/token/ERC20/ERC20.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (token/ERC20/ERC20.sol)
 
 pragma solidity ^0.8.20;
-
-
-
-
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -775,7 +807,8 @@ pragma solidity ^0.8.20;
 abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
     mapping(address account => uint256) private _balances;
 
-    mapping(address account => mapping(address spender => uint256)) private _allowances;
+    mapping(address account => mapping(address spender => uint256))
+        private _allowances;
 
     uint256 private _totalSupply;
 
@@ -856,7 +889,10 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
     /**
      * @dev See {IERC20-allowance}.
      */
-    function allowance(address owner, address spender) public view virtual returns (uint256) {
+    function allowance(
+        address owner,
+        address spender
+    ) public view virtual returns (uint256) {
         return _allowances[owner][spender];
     }
 
@@ -870,7 +906,10 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
      *
      * - `spender` cannot be the zero address.
      */
-    function approve(address spender, uint256 value) public virtual returns (bool) {
+    function approve(
+        address spender,
+        uint256 value
+    ) public virtual returns (bool) {
         address owner = _msgSender();
         _approve(owner, spender, value);
         return true;
@@ -892,7 +931,11 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
      * - the caller must have allowance for ``from``'s tokens of at least
      * `value`.
      */
-    function transferFrom(address from, address to, uint256 value) public virtual returns (bool) {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    ) public virtual returns (bool) {
         address spender = _msgSender();
         _spendAllowance(from, spender, value);
         _transfer(from, to, value);
@@ -1022,7 +1065,12 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
      *
      * Requirements are the same as {_approve}.
      */
-    function _approve(address owner, address spender, uint256 value, bool emitEvent) internal virtual {
+    function _approve(
+        address owner,
+        address spender,
+        uint256 value,
+        bool emitEvent
+    ) internal virtual {
         if (owner == address(0)) {
             revert ERC20InvalidApprover(address(0));
         }
@@ -1043,11 +1091,19 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
      *
      * Does not emit an {Approval} event.
      */
-    function _spendAllowance(address owner, address spender, uint256 value) internal virtual {
+    function _spendAllowance(
+        address owner,
+        address spender,
+        uint256 value
+    ) internal virtual {
         uint256 currentAllowance = allowance(owner, spender);
         if (currentAllowance != type(uint256).max) {
             if (currentAllowance < value) {
-                revert ERC20InsufficientAllowance(spender, currentAllowance, value);
+                revert ERC20InsufficientAllowance(
+                    spender,
+                    currentAllowance,
+                    value
+                );
             }
             unchecked {
                 _approve(owner, spender, currentAllowance - value, false);
@@ -1057,7 +1113,6 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
 }
 
 // File: @openzeppelin/contracts/utils/Address.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/Address.sol)
 
@@ -1127,7 +1182,10 @@ library Address {
      * - `target` must be a contract.
      * - calling `target` with `data` must not revert.
      */
-    function functionCall(address target, bytes memory data) internal returns (bytes memory) {
+    function functionCall(
+        address target,
+        bytes memory data
+    ) internal returns (bytes memory) {
         return functionCallWithValue(target, data, 0);
     }
 
@@ -1140,11 +1198,17 @@ library Address {
      * - the calling contract must have an ETH balance of at least `value`.
      * - the called Solidity function must be `payable`.
      */
-    function functionCallWithValue(address target, bytes memory data, uint256 value) internal returns (bytes memory) {
+    function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value
+    ) internal returns (bytes memory) {
         if (address(this).balance < value) {
             revert AddressInsufficientBalance(address(this));
         }
-        (bool success, bytes memory returndata) = target.call{value: value}(data);
+        (bool success, bytes memory returndata) = target.call{value: value}(
+            data
+        );
         return verifyCallResultFromTarget(target, success, returndata);
     }
 
@@ -1152,7 +1216,10 @@ library Address {
      * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
      * but performing a static call.
      */
-    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
+    function functionStaticCall(
+        address target,
+        bytes memory data
+    ) internal view returns (bytes memory) {
         (bool success, bytes memory returndata) = target.staticcall(data);
         return verifyCallResultFromTarget(target, success, returndata);
     }
@@ -1161,7 +1228,10 @@ library Address {
      * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
      * but performing a delegate call.
      */
-    function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
+    function functionDelegateCall(
+        address target,
+        bytes memory data
+    ) internal returns (bytes memory) {
         (bool success, bytes memory returndata) = target.delegatecall(data);
         return verifyCallResultFromTarget(target, success, returndata);
     }
@@ -1192,7 +1262,10 @@ library Address {
      * @dev Tool to verify that a low level call was successful, and reverts if it wasn't, either by bubbling the
      * revert reason or with a default {FailedInnerCall} error.
      */
-    function verifyCallResult(bool success, bytes memory returndata) internal pure returns (bytes memory) {
+    function verifyCallResult(
+        bool success,
+        bytes memory returndata
+    ) internal pure returns (bytes memory) {
         if (!success) {
             _revert(returndata);
         } else {
@@ -1219,7 +1292,6 @@ library Address {
 }
 
 // File: @openzeppelin/contracts/utils/structs/DoubleEndedQueue.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/structs/DoubleEndedQueue.sol)
 pragma solidity ^0.8.20;
@@ -1286,7 +1358,9 @@ library DoubleEndedQueue {
      *
      * Reverts with {QueueEmpty} if the queue is empty.
      */
-    function popBack(Bytes32Deque storage deque) internal returns (bytes32 value) {
+    function popBack(
+        Bytes32Deque storage deque
+    ) internal returns (bytes32 value) {
         unchecked {
             uint128 backIndex = deque._end;
             if (backIndex == deque._begin) revert QueueEmpty();
@@ -1316,7 +1390,9 @@ library DoubleEndedQueue {
      *
      * Reverts with `QueueEmpty` if the queue is empty.
      */
-    function popFront(Bytes32Deque storage deque) internal returns (bytes32 value) {
+    function popFront(
+        Bytes32Deque storage deque
+    ) internal returns (bytes32 value) {
         unchecked {
             uint128 frontIndex = deque._begin;
             if (frontIndex == deque._end) revert QueueEmpty();
@@ -1331,7 +1407,9 @@ library DoubleEndedQueue {
      *
      * Reverts with `QueueEmpty` if the queue is empty.
      */
-    function front(Bytes32Deque storage deque) internal view returns (bytes32 value) {
+    function front(
+        Bytes32Deque storage deque
+    ) internal view returns (bytes32 value) {
         if (empty(deque)) revert QueueEmpty();
         return deque._data[deque._begin];
     }
@@ -1341,7 +1419,9 @@ library DoubleEndedQueue {
      *
      * Reverts with `QueueEmpty` if the queue is empty.
      */
-    function back(Bytes32Deque storage deque) internal view returns (bytes32 value) {
+    function back(
+        Bytes32Deque storage deque
+    ) internal view returns (bytes32 value) {
         if (empty(deque)) revert QueueEmpty();
         unchecked {
             return deque._data[deque._end - 1];
@@ -1354,7 +1434,10 @@ library DoubleEndedQueue {
      *
      * Reverts with `QueueOutOfBounds` if the index is out of bounds.
      */
-    function at(Bytes32Deque storage deque, uint256 index) internal view returns (bytes32 value) {
+    function at(
+        Bytes32Deque storage deque,
+        uint256 index
+    ) internal view returns (bytes32 value) {
         if (index >= length(deque)) revert QueueOutOfBounds();
         // By construction, length is a uint128, so the check above ensures that index can be safely downcast to uint128
         unchecked {
@@ -1376,7 +1459,9 @@ library DoubleEndedQueue {
     /**
      * @dev Returns the number of items in the queue.
      */
-    function length(Bytes32Deque storage deque) internal view returns (uint256) {
+    function length(
+        Bytes32Deque storage deque
+    ) internal view returns (uint256) {
         unchecked {
             return uint256(deque._end - deque._begin);
         }
@@ -1391,7 +1476,6 @@ library DoubleEndedQueue {
 }
 
 // File: @openzeppelin/contracts/utils/math/SafeCast.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/math/SafeCast.sol)
 // This file was procedurally generated from scripts/generate/templates/SafeCast.js.
@@ -2548,7 +2632,6 @@ library SafeCast {
 
 // File: @openzeppelin/contracts/interfaces/IERC1271.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC1271.sol)
 
 pragma solidity ^0.8.20;
@@ -2563,11 +2646,13 @@ interface IERC1271 {
      * @param hash      Hash of the data to be signed
      * @param signature Signature byte array associated with _data
      */
-    function isValidSignature(bytes32 hash, bytes memory signature) external view returns (bytes4 magicValue);
+    function isValidSignature(
+        bytes32 hash,
+        bytes memory signature
+    ) external view returns (bytes4 magicValue);
 }
 
 // File: @openzeppelin/contracts/utils/cryptography/ECDSA.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/cryptography/ECDSA.sol)
 
@@ -2623,7 +2708,10 @@ library ECDSA {
      * - with https://web3js.readthedocs.io/en/v1.3.4/web3-eth-accounts.html#sign[Web3.js]
      * - with https://docs.ethers.io/v5/api/signer/#Signer-signMessage[ethers]
      */
-    function tryRecover(bytes32 hash, bytes memory signature) internal pure returns (address, RecoverError, bytes32) {
+    function tryRecover(
+        bytes32 hash,
+        bytes memory signature
+    ) internal pure returns (address, RecoverError, bytes32) {
         if (signature.length == 65) {
             bytes32 r;
             bytes32 s;
@@ -2638,7 +2726,11 @@ library ECDSA {
             }
             return tryRecover(hash, v, r, s);
         } else {
-            return (address(0), RecoverError.InvalidSignatureLength, bytes32(signature.length));
+            return (
+                address(0),
+                RecoverError.InvalidSignatureLength,
+                bytes32(signature.length)
+            );
         }
     }
 
@@ -2656,8 +2748,14 @@ library ECDSA {
      * this is by receiving a hash of the original message (which may otherwise
      * be too long), and then calling {MessageHashUtils-toEthSignedMessageHash} on it.
      */
-    function recover(bytes32 hash, bytes memory signature) internal pure returns (address) {
-        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, signature);
+    function recover(
+        bytes32 hash,
+        bytes memory signature
+    ) internal pure returns (address) {
+        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(
+            hash,
+            signature
+        );
         _throwError(error, errorArg);
         return recovered;
     }
@@ -2667,9 +2765,16 @@ library ECDSA {
      *
      * See https://eips.ethereum.org/EIPS/eip-2098[EIP-2098 short signatures]
      */
-    function tryRecover(bytes32 hash, bytes32 r, bytes32 vs) internal pure returns (address, RecoverError, bytes32) {
+    function tryRecover(
+        bytes32 hash,
+        bytes32 r,
+        bytes32 vs
+    ) internal pure returns (address, RecoverError, bytes32) {
         unchecked {
-            bytes32 s = vs & bytes32(0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff);
+            bytes32 s = vs &
+                bytes32(
+                    0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+                );
             // We do not check for an overflow here since the shift operation results in 0 or 1.
             uint8 v = uint8((uint256(vs) >> 255) + 27);
             return tryRecover(hash, v, r, s);
@@ -2679,8 +2784,16 @@ library ECDSA {
     /**
      * @dev Overload of {ECDSA-recover} that receives the `r and `vs` short-signature fields separately.
      */
-    function recover(bytes32 hash, bytes32 r, bytes32 vs) internal pure returns (address) {
-        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, r, vs);
+    function recover(
+        bytes32 hash,
+        bytes32 r,
+        bytes32 vs
+    ) internal pure returns (address) {
+        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(
+            hash,
+            r,
+            vs
+        );
         _throwError(error, errorArg);
         return recovered;
     }
@@ -2704,7 +2817,10 @@ library ECDSA {
         // with 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 - s1 and flip v from 27 to 28 or
         // vice versa. If your library also generates signatures with 0/1 for v instead 27/28, add 27 to v to accept
         // these malleable signatures as well.
-        if (uint256(s) > 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0) {
+        if (
+            uint256(s) >
+            0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
+        ) {
             return (address(0), RecoverError.InvalidSignatureS, s);
         }
 
@@ -2721,8 +2837,18 @@ library ECDSA {
      * @dev Overload of {ECDSA-recover} that receives the `v`,
      * `r` and `s` signature fields separately.
      */
-    function recover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal pure returns (address) {
-        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, v, r, s);
+    function recover(
+        bytes32 hash,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal pure returns (address) {
+        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(
+            hash,
+            v,
+            r,
+            s
+        );
         _throwError(error, errorArg);
         return recovered;
     }
@@ -2745,12 +2871,9 @@ library ECDSA {
 
 // File: @openzeppelin/contracts/utils/cryptography/SignatureChecker.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/cryptography/SignatureChecker.sol)
 
 pragma solidity ^0.8.20;
-
-
 
 /**
  * @dev Signature verification helper that can be used instead of `ECDSA.recover` to seamlessly support both ECDSA
@@ -2765,8 +2888,15 @@ library SignatureChecker {
      * NOTE: Unlike ECDSA signatures, contract signatures are revocable, and the outcome of this function can thus
      * change through time. It could return true at block N and false at block N+1 (or the opposite).
      */
-    function isValidSignatureNow(address signer, bytes32 hash, bytes memory signature) internal view returns (bool) {
-        (address recovered, ECDSA.RecoverError error, ) = ECDSA.tryRecover(hash, signature);
+    function isValidSignatureNow(
+        address signer,
+        bytes32 hash,
+        bytes memory signature
+    ) internal view returns (bool) {
+        (address recovered, ECDSA.RecoverError error, ) = ECDSA.tryRecover(
+            hash,
+            signature
+        );
         return
             (error == ECDSA.RecoverError.NoError && recovered == signer) ||
             isValidERC1271SignatureNow(signer, hash, signature);
@@ -2789,12 +2919,12 @@ library SignatureChecker {
         );
         return (success &&
             result.length >= 32 &&
-            abi.decode(result, (bytes32)) == bytes32(IERC1271.isValidSignature.selector));
+            abi.decode(result, (bytes32)) ==
+            bytes32(IERC1271.isValidSignature.selector));
     }
 }
 
 // File: @openzeppelin/contracts/interfaces/IERC5267.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC5267.sol)
 
@@ -2825,7 +2955,6 @@ interface IERC5267 {
 }
 
 // File: @openzeppelin/contracts/utils/StorageSlot.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/StorageSlot.sol)
 // This file was procedurally generated from scripts/generate/templates/StorageSlot.js.
@@ -2884,7 +3013,9 @@ library StorageSlot {
     /**
      * @dev Returns an `AddressSlot` with member `value` located at `slot`.
      */
-    function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r) {
+    function getAddressSlot(
+        bytes32 slot
+    ) internal pure returns (AddressSlot storage r) {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := slot
@@ -2894,7 +3025,9 @@ library StorageSlot {
     /**
      * @dev Returns an `BooleanSlot` with member `value` located at `slot`.
      */
-    function getBooleanSlot(bytes32 slot) internal pure returns (BooleanSlot storage r) {
+    function getBooleanSlot(
+        bytes32 slot
+    ) internal pure returns (BooleanSlot storage r) {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := slot
@@ -2904,7 +3037,9 @@ library StorageSlot {
     /**
      * @dev Returns an `Bytes32Slot` with member `value` located at `slot`.
      */
-    function getBytes32Slot(bytes32 slot) internal pure returns (Bytes32Slot storage r) {
+    function getBytes32Slot(
+        bytes32 slot
+    ) internal pure returns (Bytes32Slot storage r) {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := slot
@@ -2914,7 +3049,9 @@ library StorageSlot {
     /**
      * @dev Returns an `Uint256Slot` with member `value` located at `slot`.
      */
-    function getUint256Slot(bytes32 slot) internal pure returns (Uint256Slot storage r) {
+    function getUint256Slot(
+        bytes32 slot
+    ) internal pure returns (Uint256Slot storage r) {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := slot
@@ -2924,7 +3061,9 @@ library StorageSlot {
     /**
      * @dev Returns an `StringSlot` with member `value` located at `slot`.
      */
-    function getStringSlot(bytes32 slot) internal pure returns (StringSlot storage r) {
+    function getStringSlot(
+        bytes32 slot
+    ) internal pure returns (StringSlot storage r) {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := slot
@@ -2934,7 +3073,9 @@ library StorageSlot {
     /**
      * @dev Returns an `StringSlot` representation of the string storage pointer `store`.
      */
-    function getStringSlot(string storage store) internal pure returns (StringSlot storage r) {
+    function getStringSlot(
+        string storage store
+    ) internal pure returns (StringSlot storage r) {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := store.slot
@@ -2944,7 +3085,9 @@ library StorageSlot {
     /**
      * @dev Returns an `BytesSlot` with member `value` located at `slot`.
      */
-    function getBytesSlot(bytes32 slot) internal pure returns (BytesSlot storage r) {
+    function getBytesSlot(
+        bytes32 slot
+    ) internal pure returns (BytesSlot storage r) {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := slot
@@ -2954,7 +3097,9 @@ library StorageSlot {
     /**
      * @dev Returns an `BytesSlot` representation of the bytes storage pointer `store`.
      */
-    function getBytesSlot(bytes storage store) internal pure returns (BytesSlot storage r) {
+    function getBytesSlot(
+        bytes storage store
+    ) internal pure returns (BytesSlot storage r) {
         /// @solidity memory-safe-assembly
         assembly {
             r.slot := store.slot
@@ -2964,11 +3109,9 @@ library StorageSlot {
 
 // File: @openzeppelin/contracts/utils/ShortStrings.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/ShortStrings.sol)
 
 pragma solidity ^0.8.20;
-
 
 // | string  | 0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA   |
 // | length  | 0x                                                              BB |
@@ -3004,7 +3147,8 @@ type ShortString is bytes32;
  */
 library ShortStrings {
     // Used as an identifier for strings longer than 31 bytes.
-    bytes32 private constant FALLBACK_SENTINEL = 0x00000000000000000000000000000000000000000000000000000000000000FF;
+    bytes32 private constant FALLBACK_SENTINEL =
+        0x00000000000000000000000000000000000000000000000000000000000000FF;
 
     error StringTooLong(string str);
     error InvalidShortString();
@@ -3014,7 +3158,9 @@ library ShortStrings {
      *
      * This will trigger a `StringTooLong` error is the input string is too long.
      */
-    function toShortString(string memory str) internal pure returns (ShortString) {
+    function toShortString(
+        string memory str
+    ) internal pure returns (ShortString) {
         bytes memory bstr = bytes(str);
         if (bstr.length > 31) {
             revert StringTooLong(str);
@@ -3051,7 +3197,10 @@ library ShortStrings {
     /**
      * @dev Encode a string into a `ShortString`, or write it to storage if it is too long.
      */
-    function toShortStringWithFallback(string memory value, string storage store) internal returns (ShortString) {
+    function toShortStringWithFallback(
+        string memory value,
+        string storage store
+    ) internal returns (ShortString) {
         if (bytes(value).length < 32) {
             return toShortString(value);
         } else {
@@ -3063,7 +3212,10 @@ library ShortStrings {
     /**
      * @dev Decode a string that was encoded to `ShortString` or written to storage using {setWithFallback}.
      */
-    function toStringWithFallback(ShortString value, string storage store) internal pure returns (string memory) {
+    function toStringWithFallback(
+        ShortString value,
+        string storage store
+    ) internal pure returns (string memory) {
         if (ShortString.unwrap(value) != FALLBACK_SENTINEL) {
             return toString(value);
         } else {
@@ -3078,7 +3230,10 @@ library ShortStrings {
      * WARNING: This will return the "byte length" of the string. This may not reflect the actual length in terms of
      * actual characters as the UTF-8 encoding of a single character can span over multiple bytes.
      */
-    function byteLengthWithFallback(ShortString value, string storage store) internal view returns (uint256) {
+    function byteLengthWithFallback(
+        ShortString value,
+        string storage store
+    ) internal view returns (uint256) {
         if (ShortString.unwrap(value) != FALLBACK_SENTINEL) {
             return byteLength(value);
         } else {
@@ -3088,7 +3243,6 @@ library ShortStrings {
 }
 
 // File: @openzeppelin/contracts/utils/math/SignedMath.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/math/SignedMath.sol)
 
@@ -3135,7 +3289,6 @@ library SignedMath {
 
 // File: @openzeppelin/contracts/utils/math/Math.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/math/Math.sol)
 
 pragma solidity ^0.8.20;
@@ -3159,7 +3312,10 @@ library Math {
     /**
      * @dev Returns the addition of two unsigned integers, with an overflow flag.
      */
-    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryAdd(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
         unchecked {
             uint256 c = a + b;
             if (c < a) return (false, 0);
@@ -3170,7 +3326,10 @@ library Math {
     /**
      * @dev Returns the subtraction of two unsigned integers, with an overflow flag.
      */
-    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function trySub(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
         unchecked {
             if (b > a) return (false, 0);
             return (true, a - b);
@@ -3180,7 +3339,10 @@ library Math {
     /**
      * @dev Returns the multiplication of two unsigned integers, with an overflow flag.
      */
-    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryMul(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
         unchecked {
             // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
             // benefit is lost if 'b' is also tested.
@@ -3195,7 +3357,10 @@ library Math {
     /**
      * @dev Returns the division of two unsigned integers, with a division by zero flag.
      */
-    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryDiv(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
         unchecked {
             if (b == 0) return (false, 0);
             return (true, a / b);
@@ -3205,7 +3370,10 @@ library Math {
     /**
      * @dev Returns the remainder of dividing two unsigned integers, with a division by zero flag.
      */
-    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryMod(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
         unchecked {
             if (b == 0) return (false, 0);
             return (true, a % b);
@@ -3257,7 +3425,11 @@ library Math {
      * @dev Original credit to Remco Bloemen under MIT license (https://xn--2-umb.com/21/muldiv) with further edits by
      * Uniswap Labs also under MIT license.
      */
-    function mulDiv(uint256 x, uint256 y, uint256 denominator) internal pure returns (uint256 result) {
+    function mulDiv(
+        uint256 x,
+        uint256 y,
+        uint256 denominator
+    ) internal pure returns (uint256 result) {
         unchecked {
             // 512-bit multiply [prod1 prod0] = x * y. Compute the product mod 2^256 and mod 2^256 - 1, then use
             // use the Chinese Remainder Theorem to reconstruct the 512 bit result. The result is stored in two 256
@@ -3341,7 +3513,12 @@ library Math {
     /**
      * @notice Calculates x * y / denominator with full precision, following the selected rounding direction.
      */
-    function mulDiv(uint256 x, uint256 y, uint256 denominator, Rounding rounding) internal pure returns (uint256) {
+    function mulDiv(
+        uint256 x,
+        uint256 y,
+        uint256 denominator,
+        Rounding rounding
+    ) internal pure returns (uint256) {
         uint256 result = mulDiv(x, y, denominator);
         if (unsignedRoundsUp(rounding) && mulmod(x, y, denominator) > 0) {
             result += 1;
@@ -3391,10 +3568,15 @@ library Math {
     /**
      * @notice Calculates sqrt(a), following the selected rounding direction.
      */
-    function sqrt(uint256 a, Rounding rounding) internal pure returns (uint256) {
+    function sqrt(
+        uint256 a,
+        Rounding rounding
+    ) internal pure returns (uint256) {
         unchecked {
             uint256 result = sqrt(a);
-            return result + (unsignedRoundsUp(rounding) && result * result < a ? 1 : 0);
+            return
+                result +
+                (unsignedRoundsUp(rounding) && result * result < a ? 1 : 0);
         }
     }
 
@@ -3444,10 +3626,15 @@ library Math {
      * @dev Return the log in base 2, following the selected rounding direction, of a positive value.
      * Returns 0 if given 0.
      */
-    function log2(uint256 value, Rounding rounding) internal pure returns (uint256) {
+    function log2(
+        uint256 value,
+        Rounding rounding
+    ) internal pure returns (uint256) {
         unchecked {
             uint256 result = log2(value);
-            return result + (unsignedRoundsUp(rounding) && 1 << result < value ? 1 : 0);
+            return
+                result +
+                (unsignedRoundsUp(rounding) && 1 << result < value ? 1 : 0);
         }
     }
 
@@ -3493,10 +3680,15 @@ library Math {
      * @dev Return the log in base 10, following the selected rounding direction, of a positive value.
      * Returns 0 if given 0.
      */
-    function log10(uint256 value, Rounding rounding) internal pure returns (uint256) {
+    function log10(
+        uint256 value,
+        Rounding rounding
+    ) internal pure returns (uint256) {
         unchecked {
             uint256 result = log10(value);
-            return result + (unsignedRoundsUp(rounding) && 10 ** result < value ? 1 : 0);
+            return
+                result +
+                (unsignedRoundsUp(rounding) && 10 ** result < value ? 1 : 0);
         }
     }
 
@@ -3536,10 +3728,19 @@ library Math {
      * @dev Return the log in base 256, following the selected rounding direction, of a positive value.
      * Returns 0 if given 0.
      */
-    function log256(uint256 value, Rounding rounding) internal pure returns (uint256) {
+    function log256(
+        uint256 value,
+        Rounding rounding
+    ) internal pure returns (uint256) {
         unchecked {
             uint256 result = log256(value);
-            return result + (unsignedRoundsUp(rounding) && 1 << (result << 3) < value ? 1 : 0);
+            return
+                result +
+                (
+                    unsignedRoundsUp(rounding) && 1 << (result << 3) < value
+                        ? 1
+                        : 0
+                );
         }
     }
 
@@ -3553,12 +3754,10 @@ library Math {
 
 // File: @openzeppelin/contracts/utils/structs/Checkpoints.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/structs/Checkpoints.sol)
 // This file was procedurally generated from scripts/generate/templates/Checkpoints.js.
 
 pragma solidity ^0.8.20;
-
 
 /**
  * @dev This library defines the `Trace*` struct, for checkpointing values as they change at different points in
@@ -3590,7 +3789,11 @@ library Checkpoints {
      * IMPORTANT: Never accept `key` as a user input, since an arbitrary `type(uint32).max` key set will disable the
      * library.
      */
-    function push(Trace224 storage self, uint32 key, uint224 value) internal returns (uint224, uint224) {
+    function push(
+        Trace224 storage self,
+        uint32 key,
+        uint224 value
+    ) internal returns (uint224, uint224) {
         return _insert(self._checkpoints, key, value);
     }
 
@@ -3598,7 +3801,10 @@ library Checkpoints {
      * @dev Returns the value in the first (oldest) checkpoint with key greater or equal than the search key, or zero if
      * there is none.
      */
-    function lowerLookup(Trace224 storage self, uint32 key) internal view returns (uint224) {
+    function lowerLookup(
+        Trace224 storage self,
+        uint32 key
+    ) internal view returns (uint224) {
         uint256 len = self._checkpoints.length;
         uint256 pos = _lowerBinaryLookup(self._checkpoints, key, 0, len);
         return pos == len ? 0 : _unsafeAccess(self._checkpoints, pos)._value;
@@ -3608,7 +3814,10 @@ library Checkpoints {
      * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
      * if there is none.
      */
-    function upperLookup(Trace224 storage self, uint32 key) internal view returns (uint224) {
+    function upperLookup(
+        Trace224 storage self,
+        uint32 key
+    ) internal view returns (uint224) {
         uint256 len = self._checkpoints.length;
         uint256 pos = _upperBinaryLookup(self._checkpoints, key, 0, len);
         return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
@@ -3621,7 +3830,10 @@ library Checkpoints {
      * NOTE: This is a variant of {upperLookup} that is optimised to find "recent" checkpoint (checkpoints with high
      * keys).
      */
-    function upperLookupRecent(Trace224 storage self, uint32 key) internal view returns (uint224) {
+    function upperLookupRecent(
+        Trace224 storage self,
+        uint32 key
+    ) internal view returns (uint224) {
         uint256 len = self._checkpoints.length;
 
         uint256 low = 0;
@@ -3653,12 +3865,17 @@ library Checkpoints {
      * @dev Returns whether there is a checkpoint in the structure (i.e. it is not empty), and if so the key and value
      * in the most recent checkpoint.
      */
-    function latestCheckpoint(Trace224 storage self) internal view returns (bool exists, uint32 _key, uint224 _value) {
+    function latestCheckpoint(
+        Trace224 storage self
+    ) internal view returns (bool exists, uint32 _key, uint224 _value) {
         uint256 pos = self._checkpoints.length;
         if (pos == 0) {
             return (false, 0, 0);
         } else {
-            Checkpoint224 memory ckpt = _unsafeAccess(self._checkpoints, pos - 1);
+            Checkpoint224 memory ckpt = _unsafeAccess(
+                self._checkpoints,
+                pos - 1
+            );
             return (true, ckpt._key, ckpt._value);
         }
     }
@@ -3673,7 +3890,10 @@ library Checkpoints {
     /**
      * @dev Returns checkpoint at given position.
      */
-    function at(Trace224 storage self, uint32 pos) internal view returns (Checkpoint224 memory) {
+    function at(
+        Trace224 storage self,
+        uint32 pos
+    ) internal view returns (Checkpoint224 memory) {
         return self._checkpoints[pos];
     }
 
@@ -3681,7 +3901,11 @@ library Checkpoints {
      * @dev Pushes a (`key`, `value`) pair into an ordered list of checkpoints, either by inserting a new checkpoint,
      * or by updating the last one.
      */
-    function _insert(Checkpoint224[] storage self, uint32 key, uint224 value) private returns (uint224, uint224) {
+    function _insert(
+        Checkpoint224[] storage self,
+        uint32 key,
+        uint224 value
+    ) private returns (uint224, uint224) {
         uint256 pos = self.length;
 
         if (pos > 0) {
@@ -3784,7 +4008,11 @@ library Checkpoints {
      * IMPORTANT: Never accept `key` as a user input, since an arbitrary `type(uint48).max` key set will disable the
      * library.
      */
-    function push(Trace208 storage self, uint48 key, uint208 value) internal returns (uint208, uint208) {
+    function push(
+        Trace208 storage self,
+        uint48 key,
+        uint208 value
+    ) internal returns (uint208, uint208) {
         return _insert(self._checkpoints, key, value);
     }
 
@@ -3792,7 +4020,10 @@ library Checkpoints {
      * @dev Returns the value in the first (oldest) checkpoint with key greater or equal than the search key, or zero if
      * there is none.
      */
-    function lowerLookup(Trace208 storage self, uint48 key) internal view returns (uint208) {
+    function lowerLookup(
+        Trace208 storage self,
+        uint48 key
+    ) internal view returns (uint208) {
         uint256 len = self._checkpoints.length;
         uint256 pos = _lowerBinaryLookup(self._checkpoints, key, 0, len);
         return pos == len ? 0 : _unsafeAccess(self._checkpoints, pos)._value;
@@ -3802,7 +4033,10 @@ library Checkpoints {
      * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
      * if there is none.
      */
-    function upperLookup(Trace208 storage self, uint48 key) internal view returns (uint208) {
+    function upperLookup(
+        Trace208 storage self,
+        uint48 key
+    ) internal view returns (uint208) {
         uint256 len = self._checkpoints.length;
         uint256 pos = _upperBinaryLookup(self._checkpoints, key, 0, len);
         return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
@@ -3815,7 +4049,10 @@ library Checkpoints {
      * NOTE: This is a variant of {upperLookup} that is optimised to find "recent" checkpoint (checkpoints with high
      * keys).
      */
-    function upperLookupRecent(Trace208 storage self, uint48 key) internal view returns (uint208) {
+    function upperLookupRecent(
+        Trace208 storage self,
+        uint48 key
+    ) internal view returns (uint208) {
         uint256 len = self._checkpoints.length;
 
         uint256 low = 0;
@@ -3847,12 +4084,17 @@ library Checkpoints {
      * @dev Returns whether there is a checkpoint in the structure (i.e. it is not empty), and if so the key and value
      * in the most recent checkpoint.
      */
-    function latestCheckpoint(Trace208 storage self) internal view returns (bool exists, uint48 _key, uint208 _value) {
+    function latestCheckpoint(
+        Trace208 storage self
+    ) internal view returns (bool exists, uint48 _key, uint208 _value) {
         uint256 pos = self._checkpoints.length;
         if (pos == 0) {
             return (false, 0, 0);
         } else {
-            Checkpoint208 memory ckpt = _unsafeAccess(self._checkpoints, pos - 1);
+            Checkpoint208 memory ckpt = _unsafeAccess(
+                self._checkpoints,
+                pos - 1
+            );
             return (true, ckpt._key, ckpt._value);
         }
     }
@@ -3867,7 +4109,10 @@ library Checkpoints {
     /**
      * @dev Returns checkpoint at given position.
      */
-    function at(Trace208 storage self, uint32 pos) internal view returns (Checkpoint208 memory) {
+    function at(
+        Trace208 storage self,
+        uint32 pos
+    ) internal view returns (Checkpoint208 memory) {
         return self._checkpoints[pos];
     }
 
@@ -3875,7 +4120,11 @@ library Checkpoints {
      * @dev Pushes a (`key`, `value`) pair into an ordered list of checkpoints, either by inserting a new checkpoint,
      * or by updating the last one.
      */
-    function _insert(Checkpoint208[] storage self, uint48 key, uint208 value) private returns (uint208, uint208) {
+    function _insert(
+        Checkpoint208[] storage self,
+        uint48 key,
+        uint208 value
+    ) private returns (uint208, uint208) {
         uint256 pos = self.length;
 
         if (pos > 0) {
@@ -3978,7 +4227,11 @@ library Checkpoints {
      * IMPORTANT: Never accept `key` as a user input, since an arbitrary `type(uint96).max` key set will disable the
      * library.
      */
-    function push(Trace160 storage self, uint96 key, uint160 value) internal returns (uint160, uint160) {
+    function push(
+        Trace160 storage self,
+        uint96 key,
+        uint160 value
+    ) internal returns (uint160, uint160) {
         return _insert(self._checkpoints, key, value);
     }
 
@@ -3986,7 +4239,10 @@ library Checkpoints {
      * @dev Returns the value in the first (oldest) checkpoint with key greater or equal than the search key, or zero if
      * there is none.
      */
-    function lowerLookup(Trace160 storage self, uint96 key) internal view returns (uint160) {
+    function lowerLookup(
+        Trace160 storage self,
+        uint96 key
+    ) internal view returns (uint160) {
         uint256 len = self._checkpoints.length;
         uint256 pos = _lowerBinaryLookup(self._checkpoints, key, 0, len);
         return pos == len ? 0 : _unsafeAccess(self._checkpoints, pos)._value;
@@ -3996,7 +4252,10 @@ library Checkpoints {
      * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
      * if there is none.
      */
-    function upperLookup(Trace160 storage self, uint96 key) internal view returns (uint160) {
+    function upperLookup(
+        Trace160 storage self,
+        uint96 key
+    ) internal view returns (uint160) {
         uint256 len = self._checkpoints.length;
         uint256 pos = _upperBinaryLookup(self._checkpoints, key, 0, len);
         return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
@@ -4009,7 +4268,10 @@ library Checkpoints {
      * NOTE: This is a variant of {upperLookup} that is optimised to find "recent" checkpoint (checkpoints with high
      * keys).
      */
-    function upperLookupRecent(Trace160 storage self, uint96 key) internal view returns (uint160) {
+    function upperLookupRecent(
+        Trace160 storage self,
+        uint96 key
+    ) internal view returns (uint160) {
         uint256 len = self._checkpoints.length;
 
         uint256 low = 0;
@@ -4041,12 +4303,17 @@ library Checkpoints {
      * @dev Returns whether there is a checkpoint in the structure (i.e. it is not empty), and if so the key and value
      * in the most recent checkpoint.
      */
-    function latestCheckpoint(Trace160 storage self) internal view returns (bool exists, uint96 _key, uint160 _value) {
+    function latestCheckpoint(
+        Trace160 storage self
+    ) internal view returns (bool exists, uint96 _key, uint160 _value) {
         uint256 pos = self._checkpoints.length;
         if (pos == 0) {
             return (false, 0, 0);
         } else {
-            Checkpoint160 memory ckpt = _unsafeAccess(self._checkpoints, pos - 1);
+            Checkpoint160 memory ckpt = _unsafeAccess(
+                self._checkpoints,
+                pos - 1
+            );
             return (true, ckpt._key, ckpt._value);
         }
     }
@@ -4061,7 +4328,10 @@ library Checkpoints {
     /**
      * @dev Returns checkpoint at given position.
      */
-    function at(Trace160 storage self, uint32 pos) internal view returns (Checkpoint160 memory) {
+    function at(
+        Trace160 storage self,
+        uint32 pos
+    ) internal view returns (Checkpoint160 memory) {
         return self._checkpoints[pos];
     }
 
@@ -4069,7 +4339,11 @@ library Checkpoints {
      * @dev Pushes a (`key`, `value`) pair into an ordered list of checkpoints, either by inserting a new checkpoint,
      * or by updating the last one.
      */
-    function _insert(Checkpoint160[] storage self, uint96 key, uint160 value) private returns (uint160, uint160) {
+    function _insert(
+        Checkpoint160[] storage self,
+        uint96 key,
+        uint160 value
+    ) private returns (uint160, uint160) {
         uint256 pos = self.length;
 
         if (pos > 0) {
@@ -4158,12 +4432,9 @@ library Checkpoints {
 
 // File: @openzeppelin/contracts/utils/types/Time.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/types/Time.sol)
 
 pragma solidity ^0.8.20;
-
-
 
 /**
  * @dev This library provides helpers for manipulating time-related objects.
@@ -4230,16 +4501,24 @@ library Time {
      * @dev Get the value at a given timepoint plus the pending value and effect timepoint if there is a scheduled
      * change after this timepoint. If the effect timepoint is 0, then the pending value should not be considered.
      */
-    function _getFullAt(Delay self, uint48 timepoint) private pure returns (uint32, uint32, uint48) {
+    function _getFullAt(
+        Delay self,
+        uint48 timepoint
+    ) private pure returns (uint32, uint32, uint48) {
         (uint32 valueBefore, uint32 valueAfter, uint48 effect) = self.unpack();
-        return effect <= timepoint ? (valueAfter, 0, 0) : (valueBefore, valueAfter, effect);
+        return
+            effect <= timepoint
+                ? (valueAfter, 0, 0)
+                : (valueBefore, valueAfter, effect);
     }
 
     /**
      * @dev Get the current value plus the pending value and effect timepoint if there is a scheduled change. If the
      * effect timepoint is 0, then the pending value should not be considered.
      */
-    function getFull(Delay self) internal view returns (uint32, uint32, uint48) {
+    function getFull(
+        Delay self
+    ) internal view returns (uint32, uint32, uint48) {
         return _getFullAt(self, timestamp());
     }
 
@@ -4262,7 +4541,9 @@ library Time {
         uint32 minSetback
     ) internal view returns (Delay updatedDelay, uint48 effect) {
         uint32 value = self.get();
-        uint32 setback = uint32(Math.max(minSetback, value > newValue ? value - newValue : 0));
+        uint32 setback = uint32(
+            Math.max(minSetback, value > newValue ? value - newValue : 0)
+        );
         effect = timestamp() + setback;
         return (pack(value, newValue, effect), effect);
     }
@@ -4270,7 +4551,13 @@ library Time {
     /**
      * @dev Split a delay into its components: valueBefore, valueAfter and effect (transition timepoint).
      */
-    function unpack(Delay self) internal pure returns (uint32 valueBefore, uint32 valueAfter, uint48 effect) {
+    function unpack(
+        Delay self
+    )
+        internal
+        pure
+        returns (uint32 valueBefore, uint32 valueAfter, uint48 effect)
+    {
         uint112 raw = Delay.unwrap(self);
 
         valueAfter = uint32(raw);
@@ -4283,19 +4570,25 @@ library Time {
     /**
      * @dev pack the components into a Delay object.
      */
-    function pack(uint32 valueBefore, uint32 valueAfter, uint48 effect) internal pure returns (Delay) {
-        return Delay.wrap((uint112(effect) << 64) | (uint112(valueBefore) << 32) | uint112(valueAfter));
+    function pack(
+        uint32 valueBefore,
+        uint32 valueAfter,
+        uint48 effect
+    ) internal pure returns (Delay) {
+        return
+            Delay.wrap(
+                (uint112(effect) << 64) |
+                    (uint112(valueBefore) << 32) |
+                    uint112(valueAfter)
+            );
     }
 }
 
 // File: @openzeppelin/contracts/utils/Strings.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/Strings.sol)
 
 pragma solidity ^0.8.20;
-
-
 
 /**
  * @dev String operations.
@@ -4337,8 +4630,14 @@ library Strings {
     /**
      * @dev Converts a `int256` to its ASCII `string` decimal representation.
      */
-    function toStringSigned(int256 value) internal pure returns (string memory) {
-        return string.concat(value < 0 ? "-" : "", toString(SignedMath.abs(value)));
+    function toStringSigned(
+        int256 value
+    ) internal pure returns (string memory) {
+        return
+            string.concat(
+                value < 0 ? "-" : "",
+                toString(SignedMath.abs(value))
+            );
     }
 
     /**
@@ -4353,7 +4652,10 @@ library Strings {
     /**
      * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation with fixed length.
      */
-    function toHexString(uint256 value, uint256 length) internal pure returns (string memory) {
+    function toHexString(
+        uint256 value,
+        uint256 length
+    ) internal pure returns (string memory) {
         uint256 localValue = value;
         bytes memory buffer = new bytes(2 * length + 2);
         buffer[0] = "0";
@@ -4379,18 +4681,21 @@ library Strings {
     /**
      * @dev Returns true if the two strings are equal.
      */
-    function equal(string memory a, string memory b) internal pure returns (bool) {
-        return bytes(a).length == bytes(b).length && keccak256(bytes(a)) == keccak256(bytes(b));
+    function equal(
+        string memory a,
+        string memory b
+    ) internal pure returns (bool) {
+        return
+            bytes(a).length == bytes(b).length &&
+            keccak256(bytes(a)) == keccak256(bytes(b));
     }
 }
 
 // File: @openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/cryptography/MessageHashUtils.sol)
 
 pragma solidity ^0.8.20;
-
 
 /**
  * @dev Signature message hash utilities for producing digests to be consumed by {ECDSA} recovery or signing.
@@ -4414,7 +4719,9 @@ library MessageHashUtils {
      *
      * See {ECDSA-recover}.
      */
-    function toEthSignedMessageHash(bytes32 messageHash) internal pure returns (bytes32 digest) {
+    function toEthSignedMessageHash(
+        bytes32 messageHash
+    ) internal pure returns (bytes32 digest) {
         /// @solidity memory-safe-assembly
         assembly {
             mstore(0x00, "\x19Ethereum Signed Message:\n32") // 32 is the bytes-length of messageHash
@@ -4433,9 +4740,17 @@ library MessageHashUtils {
      *
      * See {ECDSA-recover}.
      */
-    function toEthSignedMessageHash(bytes memory message) internal pure returns (bytes32) {
+    function toEthSignedMessageHash(
+        bytes memory message
+    ) internal pure returns (bytes32) {
         return
-            keccak256(bytes.concat("\x19Ethereum Signed Message:\n", bytes(Strings.toString(message.length)), message));
+            keccak256(
+                bytes.concat(
+                    "\x19Ethereum Signed Message:\n",
+                    bytes(Strings.toString(message.length)),
+                    message
+                )
+            );
     }
 
     /**
@@ -4447,7 +4762,10 @@ library MessageHashUtils {
      *
      * See {ECDSA-recover}.
      */
-    function toDataWithIntendedValidatorHash(address validator, bytes memory data) internal pure returns (bytes32) {
+    function toDataWithIntendedValidatorHash(
+        address validator,
+        bytes memory data
+    ) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked(hex"19_00", validator, data));
     }
 
@@ -4460,7 +4778,10 @@ library MessageHashUtils {
      *
      * See {ECDSA-recover}.
      */
-    function toTypedDataHash(bytes32 domainSeparator, bytes32 structHash) internal pure returns (bytes32 digest) {
+    function toTypedDataHash(
+        bytes32 domainSeparator,
+        bytes32 structHash
+    ) internal pure returns (bytes32 digest) {
         /// @solidity memory-safe-assembly
         assembly {
             let ptr := mload(0x40)
@@ -4474,13 +4795,9 @@ library MessageHashUtils {
 
 // File: @openzeppelin/contracts/utils/cryptography/EIP712.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/cryptography/EIP712.sol)
 
 pragma solidity ^0.8.20;
-
-
-
 
 /**
  * @dev https://eips.ethereum.org/EIPS/eip-712[EIP 712] is a standard for hashing and signing of typed structured data.
@@ -4510,7 +4827,9 @@ abstract contract EIP712 is IERC5267 {
     using ShortStrings for *;
 
     bytes32 private constant TYPE_HASH =
-        keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+        keccak256(
+            "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+        );
 
     // Cache the domain separator as an immutable value, but also store the chain id that it corresponds to, in order to
     // invalidate the cached domain separator if the chain id changes.
@@ -4561,7 +4880,16 @@ abstract contract EIP712 is IERC5267 {
     }
 
     function _buildDomainSeparator() private view returns (bytes32) {
-        return keccak256(abi.encode(TYPE_HASH, _hashedName, _hashedVersion, block.chainid, address(this)));
+        return
+            keccak256(
+                abi.encode(
+                    TYPE_HASH,
+                    _hashedName,
+                    _hashedVersion,
+                    block.chainid,
+                    address(this)
+                )
+            );
     }
 
     /**
@@ -4579,8 +4907,11 @@ abstract contract EIP712 is IERC5267 {
      * address signer = ECDSA.recover(digest, signature);
      * ```
      */
-    function _hashTypedDataV4(bytes32 structHash) internal view virtual returns (bytes32) {
-        return MessageHashUtils.toTypedDataHash(_domainSeparatorV4(), structHash);
+    function _hashTypedDataV4(
+        bytes32 structHash
+    ) internal view virtual returns (bytes32) {
+        return
+            MessageHashUtils.toTypedDataHash(_domainSeparatorV4(), structHash);
     }
 
     /**
@@ -4636,17 +4967,8 @@ abstract contract EIP712 is IERC5267 {
 
 // File: @openzeppelin/contracts/governance/utils/Votes.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (governance/utils/Votes.sol)
 pragma solidity ^0.8.20;
-
-
-
-
-
-
-
-
 
 /**
  * @dev This is a base abstract contract that tracks voting units, which are a measure of voting power that can be
@@ -4674,7 +4996,8 @@ abstract contract Votes is Context, EIP712, Nonces, IERC5805 {
 
     mapping(address account => address) private _delegatee;
 
-    mapping(address delegatee => Checkpoints.Trace208) private _delegateCheckpoints;
+    mapping(address delegatee => Checkpoints.Trace208)
+        private _delegateCheckpoints;
 
     Checkpoints.Trace208 private _totalCheckpoints;
 
@@ -4723,12 +5046,18 @@ abstract contract Votes is Context, EIP712, Nonces, IERC5805 {
      *
      * - `timepoint` must be in the past. If operating using block numbers, the block must be already mined.
      */
-    function getPastVotes(address account, uint256 timepoint) public view virtual returns (uint256) {
+    function getPastVotes(
+        address account,
+        uint256 timepoint
+    ) public view virtual returns (uint256) {
         uint48 currentTimepoint = clock();
         if (timepoint >= currentTimepoint) {
             revert ERC5805FutureLookup(timepoint, currentTimepoint);
         }
-        return _delegateCheckpoints[account].upperLookupRecent(SafeCast.toUint48(timepoint));
+        return
+            _delegateCheckpoints[account].upperLookupRecent(
+                SafeCast.toUint48(timepoint)
+            );
     }
 
     /**
@@ -4743,12 +5072,15 @@ abstract contract Votes is Context, EIP712, Nonces, IERC5805 {
      *
      * - `timepoint` must be in the past. If operating using block numbers, the block must be already mined.
      */
-    function getPastTotalSupply(uint256 timepoint) public view virtual returns (uint256) {
+    function getPastTotalSupply(
+        uint256 timepoint
+    ) public view virtual returns (uint256) {
         uint48 currentTimepoint = clock();
         if (timepoint >= currentTimepoint) {
             revert ERC5805FutureLookup(timepoint, currentTimepoint);
         }
-        return _totalCheckpoints.upperLookupRecent(SafeCast.toUint48(timepoint));
+        return
+            _totalCheckpoints.upperLookupRecent(SafeCast.toUint48(timepoint));
     }
 
     /**
@@ -4788,7 +5120,11 @@ abstract contract Votes is Context, EIP712, Nonces, IERC5805 {
             revert VotesExpiredSignature(expiry);
         }
         address signer = ECDSA.recover(
-            _hashTypedDataV4(keccak256(abi.encode(DELEGATION_TYPEHASH, delegatee, nonce, expiry))),
+            _hashTypedDataV4(
+                keccak256(
+                    abi.encode(DELEGATION_TYPEHASH, delegatee, nonce, expiry)
+                )
+            ),
             v,
             r,
             s
@@ -4814,7 +5150,11 @@ abstract contract Votes is Context, EIP712, Nonces, IERC5805 {
      * @dev Transfers, mints, or burns voting units. To register a mint, `from` should be zero. To register a burn, `to`
      * should be zero. Total supply of voting units will be adjusted with mints and burns.
      */
-    function _transferVotingUnits(address from, address to, uint256 amount) internal virtual {
+    function _transferVotingUnits(
+        address from,
+        address to,
+        uint256 amount
+    ) internal virtual {
         if (from == address(0)) {
             _push(_totalCheckpoints, _add, SafeCast.toUint208(amount));
         }
@@ -4827,7 +5167,11 @@ abstract contract Votes is Context, EIP712, Nonces, IERC5805 {
     /**
      * @dev Moves delegated votes from one delegate to another.
      */
-    function _moveDelegateVotes(address from, address to, uint256 amount) private {
+    function _moveDelegateVotes(
+        address from,
+        address to,
+        uint256 amount
+    ) private {
         if (from != to && amount > 0) {
             if (from != address(0)) {
                 (uint256 oldValue, uint256 newValue) = _push(
@@ -4851,7 +5195,9 @@ abstract contract Votes is Context, EIP712, Nonces, IERC5805 {
     /**
      * @dev Get number of checkpoints for `account`.
      */
-    function _numCheckpoints(address account) internal view virtual returns (uint32) {
+    function _numCheckpoints(
+        address account
+    ) internal view virtual returns (uint32) {
         return SafeCast.toUint32(_delegateCheckpoints[account].length());
     }
 
@@ -4889,13 +5235,9 @@ abstract contract Votes is Context, EIP712, Nonces, IERC5805 {
 
 // File: @openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (token/ERC20/extensions/ERC20Votes.sol)
 
 pragma solidity ^0.8.20;
-
-
-
 
 /**
  * @dev Extension of ERC20 to support Compound-like voting and delegation. This version is more generic than Compound's,
@@ -4935,7 +5277,11 @@ abstract contract ERC20Votes is ERC20, Votes {
      *
      * Emits a {IVotes-DelegateVotesChanged} event.
      */
-    function _update(address from, address to, uint256 value) internal virtual override {
+    function _update(
+        address from,
+        address to,
+        uint256 value
+    ) internal virtual override {
         super._update(from, to, value);
         if (from == address(0)) {
             uint256 supply = totalSupply();
@@ -4953,36 +5299,37 @@ abstract contract ERC20Votes is ERC20, Votes {
      * WARNING: Overriding this function may compromise the internal vote accounting.
      * `ERC20Votes` assumes tokens map to voting units 1:1 and this is not easy to change.
      */
-    function _getVotingUnits(address account) internal view virtual override returns (uint256) {
+    function _getVotingUnits(
+        address account
+    ) internal view virtual override returns (uint256) {
         return balanceOf(account);
     }
 
     /**
      * @dev Get number of checkpoints for `account`.
      */
-    function numCheckpoints(address account) public view virtual returns (uint32) {
+    function numCheckpoints(
+        address account
+    ) public view virtual returns (uint32) {
         return _numCheckpoints(account);
     }
 
     /**
      * @dev Get the `pos`-th checkpoint for `account`.
      */
-    function checkpoints(address account, uint32 pos) public view virtual returns (Checkpoints.Checkpoint208 memory) {
+    function checkpoints(
+        address account,
+        uint32 pos
+    ) public view virtual returns (Checkpoints.Checkpoint208 memory) {
         return _checkpoints(account, pos);
     }
 }
 
 // File: @openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (token/ERC20/extensions/ERC20Permit.sol)
 
 pragma solidity ^0.8.20;
-
-
-
-
-
 
 /**
  * @dev Implementation of the ERC20 Permit extension allowing approvals to be made via signatures, as defined in
@@ -4994,7 +5341,9 @@ pragma solidity ^0.8.20;
  */
 abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
     bytes32 private constant PERMIT_TYPEHASH =
-        keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
+        keccak256(
+            "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
+        );
 
     /**
      * @dev Permit deadline has expired.
@@ -5029,7 +5378,16 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
             revert ERC2612ExpiredSignature(deadline);
         }
 
-        bytes32 structHash = keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, _useNonce(owner), deadline));
+        bytes32 structHash = keccak256(
+            abi.encode(
+                PERMIT_TYPEHASH,
+                owner,
+                spender,
+                value,
+                _useNonce(owner),
+                deadline
+            )
+        );
 
         bytes32 hash = _hashTypedDataV4(structHash);
 
@@ -5044,7 +5402,9 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
     /**
      * @inheritdoc IERC20Permit
      */
-    function nonces(address owner) public view virtual override(IERC20Permit, Nonces) returns (uint256) {
+    function nonces(
+        address owner
+    ) public view virtual override(IERC20Permit, Nonces) returns (uint256) {
         return super.nonces(owner);
     }
 
@@ -5059,13 +5419,8 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
 
 // File: contracts/DAO/miniDAO/TokenDAO.sol
 
-
 // Compatible with OpenZeppelin Contracts ^5.0.0
 pragma solidity ^0.8.20;
-
-
-
-
 
 contract TokenDAO is ERC20, Owned, ERC20Permit, ERC20Votes {
     constructor(
@@ -5116,7 +5471,6 @@ contract TokenDAO is ERC20, Owned, ERC20Permit, ERC20Votes {
 
 // File: @openzeppelin/contracts/utils/introspection/IERC165.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/introspection/IERC165.sol)
 
 pragma solidity ^0.8.20;
@@ -5144,20 +5498,15 @@ interface IERC165 {
 
 // File: @openzeppelin/contracts/interfaces/IERC165.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC165.sol)
 
 pragma solidity ^0.8.20;
 
-
 // File: @openzeppelin/contracts/governance/IGovernor.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (governance/IGovernor.sol)
 
 pragma solidity ^0.8.20;
-
-
 
 /**
  * @dev Interface of the {Governor} core.
@@ -5177,7 +5526,11 @@ interface IGovernor is IERC165, IERC6372 {
     /**
      * @dev Empty proposal or a mismatch between the parameters length for a proposal call.
      */
-    error GovernorInvalidProposalLength(uint256 targets, uint256 calldatas, uint256 values);
+    error GovernorInvalidProposalLength(
+        uint256 targets,
+        uint256 calldatas,
+        uint256 values
+    );
 
     /**
      * @dev The vote was already cast.
@@ -5214,7 +5567,11 @@ interface IGovernor is IERC165, IERC6372 {
      *
      * See {Governor-_encodeStateBitmap}.
      */
-    error GovernorUnexpectedProposalState(uint256 proposalId, ProposalState current, bytes32 expectedStates);
+    error GovernorUnexpectedProposalState(
+        uint256 proposalId,
+        ProposalState current,
+        bytes32 expectedStates
+    );
 
     /**
      * @dev The voting period set is not a valid period.
@@ -5224,7 +5581,11 @@ interface IGovernor is IERC165, IERC6372 {
     /**
      * @dev The `proposer` does not have the required votes to create a proposal.
      */
-    error GovernorInsufficientProposerVotes(address proposer, uint256 votes, uint256 threshold);
+    error GovernorInsufficientProposerVotes(
+        address proposer,
+        uint256 votes,
+        uint256 threshold
+    );
 
     /**
      * @dev The `proposer` is not allowed to create a proposal.
@@ -5292,7 +5653,13 @@ interface IGovernor is IERC165, IERC6372 {
      *
      * Note: `support` values should be seen as buckets. Their interpretation depends on the voting module used.
      */
-    event VoteCast(address indexed voter, uint256 proposalId, uint8 support, uint256 weight, string reason);
+    event VoteCast(
+        address indexed voter,
+        uint256 proposalId,
+        uint8 support,
+        uint256 weight,
+        string reason
+    );
 
     /**
      * @dev Emitted when a vote is cast with params.
@@ -5375,20 +5742,26 @@ interface IGovernor is IERC165, IERC6372 {
      * snapshot is performed at the end of this block. Hence, voting for this proposal starts at the beginning of the
      * following block.
      */
-    function proposalSnapshot(uint256 proposalId) external view returns (uint256);
+    function proposalSnapshot(
+        uint256 proposalId
+    ) external view returns (uint256);
 
     /**
      * @notice module:core
      * @dev Timepoint at which votes close. If using block number, votes close at the end of this block, so it is
      * possible to cast a vote during this block.
      */
-    function proposalDeadline(uint256 proposalId) external view returns (uint256);
+    function proposalDeadline(
+        uint256 proposalId
+    ) external view returns (uint256);
 
     /**
      * @notice module:core
      * @dev The account that created a proposal.
      */
-    function proposalProposer(uint256 proposalId) external view returns (address);
+    function proposalProposer(
+        uint256 proposalId
+    ) external view returns (address);
 
     /**
      * @notice module:core
@@ -5402,7 +5775,9 @@ interface IGovernor is IERC165, IERC6372 {
      * @notice module:core
      * @dev Whether a proposal needs to be queued before execution.
      */
-    function proposalNeedsQueuing(uint256 proposalId) external view returns (bool);
+    function proposalNeedsQueuing(
+        uint256 proposalId
+    ) external view returns (bool);
 
     /**
      * @notice module:user-config
@@ -5447,7 +5822,10 @@ interface IGovernor is IERC165, IERC6372 {
      * Note: this can be implemented in a number of ways, for example by reading the delegated balance from one (or
      * multiple), {ERC20Votes} tokens.
      */
-    function getVotes(address account, uint256 timepoint) external view returns (uint256);
+    function getVotes(
+        address account,
+        uint256 timepoint
+    ) external view returns (uint256);
 
     /**
      * @notice module:reputation
@@ -5463,7 +5841,10 @@ interface IGovernor is IERC165, IERC6372 {
      * @notice module:voting
      * @dev Returns whether `account` has cast a vote on `proposalId`.
      */
-    function hasVoted(uint256 proposalId, address account) external view returns (bool);
+    function hasVoted(
+        uint256 proposalId,
+        address account
+    ) external view returns (bool);
 
     /**
      * @dev Create a new proposal. Vote start after a delay specified by {IGovernor-votingDelay} and lasts for a
@@ -5526,7 +5907,10 @@ interface IGovernor is IERC165, IERC6372 {
      *
      * Emits a {VoteCast} event.
      */
-    function castVote(uint256 proposalId, uint8 support) external returns (uint256 balance);
+    function castVote(
+        uint256 proposalId,
+        uint8 support
+    ) external returns (uint256 balance);
 
     /**
      * @dev Cast a vote with a reason
@@ -5581,11 +5965,9 @@ interface IGovernor is IERC165, IERC6372 {
 
 // File: @openzeppelin/contracts/utils/introspection/ERC165.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/introspection/ERC165.sol)
 
 pragma solidity ^0.8.20;
-
 
 /**
  * @dev Implementation of the {IERC165} interface.
@@ -5603,20 +5985,18 @@ abstract contract ERC165 is IERC165 {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual returns (bool) {
         return interfaceId == type(IERC165).interfaceId;
     }
 }
 
 // File: @openzeppelin/contracts/access/AccessControl.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (access/AccessControl.sol)
 
 pragma solidity ^0.8.20;
-
-
-
 
 /**
  * @dev Contract module that allows children to implement role-based access
@@ -5679,14 +6059,21 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IAccessControl).interfaceId || super.supportsInterface(interfaceId);
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override returns (bool) {
+        return
+            interfaceId == type(IAccessControl).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
     /**
      * @dev Returns `true` if `account` has been granted `role`.
      */
-    function hasRole(bytes32 role, address account) public view virtual returns (bool) {
+    function hasRole(
+        bytes32 role,
+        address account
+    ) public view virtual returns (bool) {
         return _roles[role].hasRole[account];
     }
 
@@ -5730,7 +6117,10 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
      *
      * May emit a {RoleGranted} event.
      */
-    function grantRole(bytes32 role, address account) public virtual onlyRole(getRoleAdmin(role)) {
+    function grantRole(
+        bytes32 role,
+        address account
+    ) public virtual onlyRole(getRoleAdmin(role)) {
         _grantRole(role, account);
     }
 
@@ -5745,7 +6135,10 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
      *
      * May emit a {RoleRevoked} event.
      */
-    function revokeRole(bytes32 role, address account) public virtual onlyRole(getRoleAdmin(role)) {
+    function revokeRole(
+        bytes32 role,
+        address account
+    ) public virtual onlyRole(getRoleAdmin(role)) {
         _revokeRole(role, account);
     }
 
@@ -5765,7 +6158,10 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
      *
      * May emit a {RoleRevoked} event.
      */
-    function renounceRole(bytes32 role, address callerConfirmation) public virtual {
+    function renounceRole(
+        bytes32 role,
+        address callerConfirmation
+    ) public virtual {
         if (callerConfirmation != _msgSender()) {
             revert AccessControlBadConfirmation();
         }
@@ -5791,7 +6187,10 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
      *
      * May emit a {RoleGranted} event.
      */
-    function _grantRole(bytes32 role, address account) internal virtual returns (bool) {
+    function _grantRole(
+        bytes32 role,
+        address account
+    ) internal virtual returns (bool) {
         if (!hasRole(role, account)) {
             _roles[role].hasRole[account] = true;
             emit RoleGranted(role, account, _msgSender());
@@ -5808,7 +6207,10 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
      *
      * May emit a {RoleRevoked} event.
      */
-    function _revokeRole(bytes32 role, address account) internal virtual returns (bool) {
+    function _revokeRole(
+        bytes32 role,
+        address account
+    ) internal virtual returns (bool) {
         if (hasRole(role, account)) {
             _roles[role].hasRole[account] = false;
             emit RoleRevoked(role, account, _msgSender());
@@ -5821,11 +6223,9 @@ abstract contract AccessControl is Context, IAccessControl, ERC165 {
 
 // File: @openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (token/ERC1155/IERC1155Receiver.sol)
 
 pragma solidity ^0.8.20;
-
 
 /**
  * @dev Interface that must be implemented by smart contracts in order to receive
@@ -5882,12 +6282,9 @@ interface IERC1155Receiver is IERC165 {
 
 // File: @openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (token/ERC1155/utils/ERC1155Holder.sol)
 
 pragma solidity ^0.8.20;
-
-
 
 /**
  * @dev Simple implementation of `IERC1155Receiver` that will allow a contract to hold ERC1155 tokens.
@@ -5899,8 +6296,12 @@ abstract contract ERC1155Holder is ERC165, IERC1155Receiver {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
-        return interfaceId == type(IERC1155Receiver).interfaceId || super.supportsInterface(interfaceId);
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC165, IERC165) returns (bool) {
+        return
+            interfaceId == type(IERC1155Receiver).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
     function onERC1155Received(
@@ -5925,7 +6326,6 @@ abstract contract ERC1155Holder is ERC165, IERC1155Receiver {
 }
 
 // File: @openzeppelin/contracts/token/ERC721/IERC721Receiver.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (token/ERC721/IERC721Receiver.sol)
 
@@ -5957,11 +6357,9 @@ interface IERC721Receiver {
 
 // File: @openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (token/ERC721/utils/ERC721Holder.sol)
 
 pragma solidity ^0.8.20;
-
 
 /**
  * @dev Implementation of the {IERC721Receiver} interface.
@@ -5976,21 +6374,21 @@ abstract contract ERC721Holder is IERC721Receiver {
      *
      * Always returns `IERC721Receiver.onERC721Received.selector`.
      */
-    function onERC721Received(address, address, uint256, bytes memory) public virtual returns (bytes4) {
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) public virtual returns (bytes4) {
         return this.onERC721Received.selector;
     }
 }
 
 // File: @openzeppelin/contracts/governance/TimelockController.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (governance/TimelockController.sol)
 
 pragma solidity ^0.8.20;
-
-
-
-
 
 /**
  * @dev Contract module which acts as a timelocked controller. When set as the
@@ -6024,7 +6422,11 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
     /**
      * @dev Mismatch between the parameters length for an operation call.
      */
-    error TimelockInvalidOperationLength(uint256 targets, uint256 payloads, uint256 values);
+    error TimelockInvalidOperationLength(
+        uint256 targets,
+        uint256 payloads,
+        uint256 values
+    );
 
     /**
      * @dev The schedule operation doesn't meet the minimum delay.
@@ -6038,7 +6440,10 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
      *
      * See {_encodeStateBitmap}.
      */
-    error TimelockUnexpectedOperationState(bytes32 operationId, bytes32 expectedStates);
+    error TimelockUnexpectedOperationState(
+        bytes32 operationId,
+        bytes32 expectedStates
+    );
 
     /**
      * @dev The predecessor to an operation not yet done.
@@ -6066,7 +6471,13 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
     /**
      * @dev Emitted when a call is performed as part of operation `id`.
      */
-    event CallExecuted(bytes32 indexed id, uint256 indexed index, address target, uint256 value, bytes data);
+    event CallExecuted(
+        bytes32 indexed id,
+        uint256 indexed index,
+        address target,
+        uint256 value,
+        bytes data
+    );
 
     /**
      * @dev Emitted when new proposal is scheduled with non-zero salt.
@@ -6096,7 +6507,12 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
      * administration through timelocked proposals. Previous versions of this contract would assign
      * this admin to the deployer automatically and should be renounced as well.
      */
-    constructor(uint256 minDelay, address[] memory proposers, address[] memory executors, address admin) {
+    constructor(
+        uint256 minDelay,
+        address[] memory proposers,
+        address[] memory executors,
+        address admin
+    ) {
         // self administration
         _grantRole(DEFAULT_ADMIN_ROLE, address(this));
 
@@ -6143,7 +6559,13 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
      */
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override(AccessControl, ERC1155Holder) returns (bool) {
+    )
+        public
+        view
+        virtual
+        override(AccessControl, ERC1155Holder)
+        returns (bool)
+    {
         return super.supportsInterface(interfaceId);
     }
 
@@ -6188,7 +6610,9 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
     /**
      * @dev Returns operation state.
      */
-    function getOperationState(bytes32 id) public view virtual returns (OperationState) {
+    function getOperationState(
+        bytes32 id
+    ) public view virtual returns (OperationState) {
         uint256 timestamp = getTimestamp(id);
         if (timestamp == 0) {
             return OperationState.Unset;
@@ -6235,7 +6659,8 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
         bytes32 predecessor,
         bytes32 salt
     ) public pure virtual returns (bytes32) {
-        return keccak256(abi.encode(targets, values, payloads, predecessor, salt));
+        return
+            keccak256(abi.encode(targets, values, payloads, predecessor, salt));
     }
 
     /**
@@ -6280,14 +6705,34 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
         bytes32 salt,
         uint256 delay
     ) public virtual onlyRole(PROPOSER_ROLE) {
-        if (targets.length != values.length || targets.length != payloads.length) {
-            revert TimelockInvalidOperationLength(targets.length, payloads.length, values.length);
+        if (
+            targets.length != values.length || targets.length != payloads.length
+        ) {
+            revert TimelockInvalidOperationLength(
+                targets.length,
+                payloads.length,
+                values.length
+            );
         }
 
-        bytes32 id = hashOperationBatch(targets, values, payloads, predecessor, salt);
+        bytes32 id = hashOperationBatch(
+            targets,
+            values,
+            payloads,
+            predecessor,
+            salt
+        );
         _schedule(id, delay);
         for (uint256 i = 0; i < targets.length; ++i) {
-            emit CallScheduled(id, i, targets[i], values[i], payloads[i], predecessor, delay);
+            emit CallScheduled(
+                id,
+                i,
+                targets[i],
+                values[i],
+                payloads[i],
+                predecessor,
+                delay
+            );
         }
         if (salt != bytes32(0)) {
             emit CallSalt(id, salt);
@@ -6299,7 +6744,10 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
      */
     function _schedule(bytes32 id, uint256 delay) private {
         if (isOperation(id)) {
-            revert TimelockUnexpectedOperationState(id, _encodeStateBitmap(OperationState.Unset));
+            revert TimelockUnexpectedOperationState(
+                id,
+                _encodeStateBitmap(OperationState.Unset)
+            );
         }
         uint256 minDelay = getMinDelay();
         if (delay < minDelay) {
@@ -6319,7 +6767,8 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
         if (!isOperationPending(id)) {
             revert TimelockUnexpectedOperationState(
                 id,
-                _encodeStateBitmap(OperationState.Waiting) | _encodeStateBitmap(OperationState.Ready)
+                _encodeStateBitmap(OperationState.Waiting) |
+                    _encodeStateBitmap(OperationState.Ready)
             );
         }
         delete _timestamps[id];
@@ -6373,11 +6822,23 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
         bytes32 predecessor,
         bytes32 salt
     ) public payable virtual onlyRoleOrOpenRole(EXECUTOR_ROLE) {
-        if (targets.length != values.length || targets.length != payloads.length) {
-            revert TimelockInvalidOperationLength(targets.length, payloads.length, values.length);
+        if (
+            targets.length != values.length || targets.length != payloads.length
+        ) {
+            revert TimelockInvalidOperationLength(
+                targets.length,
+                payloads.length,
+                values.length
+            );
         }
 
-        bytes32 id = hashOperationBatch(targets, values, payloads, predecessor, salt);
+        bytes32 id = hashOperationBatch(
+            targets,
+            values,
+            payloads,
+            predecessor,
+            salt
+        );
 
         _beforeCall(id, predecessor);
         for (uint256 i = 0; i < targets.length; ++i) {
@@ -6393,8 +6854,14 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
     /**
      * @dev Execute an operation's call.
      */
-    function _execute(address target, uint256 value, bytes calldata data) internal virtual {
-        (bool success, bytes memory returndata) = target.call{value: value}(data);
+    function _execute(
+        address target,
+        uint256 value,
+        bytes calldata data
+    ) internal virtual {
+        (bool success, bytes memory returndata) = target.call{value: value}(
+            data
+        );
         Address.verifyCallResult(success, returndata);
     }
 
@@ -6403,7 +6870,10 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
      */
     function _beforeCall(bytes32 id, bytes32 predecessor) private view {
         if (!isOperationReady(id)) {
-            revert TimelockUnexpectedOperationState(id, _encodeStateBitmap(OperationState.Ready));
+            revert TimelockUnexpectedOperationState(
+                id,
+                _encodeStateBitmap(OperationState.Ready)
+            );
         }
         if (predecessor != bytes32(0) && !isOperationDone(predecessor)) {
             revert TimelockUnexecutedPredecessor(predecessor);
@@ -6415,7 +6885,10 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
      */
     function _afterCall(bytes32 id) private {
         if (!isOperationReady(id)) {
-            revert TimelockUnexpectedOperationState(id, _encodeStateBitmap(OperationState.Ready));
+            revert TimelockUnexpectedOperationState(
+                id,
+                _encodeStateBitmap(OperationState.Ready)
+            );
         }
         _timestamps[id] = _DONE_TIMESTAMP;
     }
@@ -6450,16 +6923,16 @@ contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
      *           ^-- Waiting
      *            ^- Unset
      */
-    function _encodeStateBitmap(OperationState operationState) internal pure returns (bytes32) {
+    function _encodeStateBitmap(
+        OperationState operationState
+    ) internal pure returns (bytes32) {
         return bytes32(1 << uint8(operationState));
     }
 }
 
 // File: contracts/DAO/miniDAO/TimeLock.sol
 
-
 pragma solidity ^0.8.23;
-
 
 contract TimeLock is TimelockController {
     constructor(
@@ -6472,21 +6945,9 @@ contract TimeLock is TimelockController {
 
 // File: @openzeppelin/contracts/governance/Governor.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (governance/Governor.sol)
 
 pragma solidity ^0.8.20;
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * @dev Core of the governance system, designed to be extended through various modules.
@@ -6497,11 +6958,21 @@ pragma solidity ^0.8.20;
  * - A voting module must implement {_getVotes}
  * - Additionally, {votingPeriod} must also be implemented
  */
-abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC721Receiver, IERC1155Receiver {
+abstract contract Governor is
+    Context,
+    ERC165,
+    EIP712,
+    Nonces,
+    IGovernor,
+    IERC721Receiver,
+    IERC1155Receiver
+{
     using DoubleEndedQueue for DoubleEndedQueue.Bytes32Deque;
 
     bytes32 public constant BALLOT_TYPEHASH =
-        keccak256("Ballot(uint256 proposalId,uint8 support,address voter,uint256 nonce)");
+        keccak256(
+            "Ballot(uint256 proposalId,uint8 support,address voter,uint256 nonce)"
+        );
     bytes32 public constant EXTENDED_BALLOT_TYPEHASH =
         keccak256(
             "ExtendedBallot(uint256 proposalId,uint8 support,address voter,uint256 nonce,string reason,bytes params)"
@@ -6516,7 +6987,8 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         uint48 etaSeconds;
     }
 
-    bytes32 private constant ALL_PROPOSAL_STATES_BITMAP = bytes32((2 ** (uint8(type(ProposalState).max) + 1)) - 1);
+    bytes32 private constant ALL_PROPOSAL_STATES_BITMAP =
+        bytes32((2 ** (uint8(type(ProposalState).max) + 1)) - 1);
     string private _name;
 
     mapping(uint256 proposalId => ProposalCore) private _proposals;
@@ -6561,7 +7033,9 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165, ERC165) returns (bool) {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(IERC165, ERC165) returns (bool) {
         return
             interfaceId == type(IGovernor).interfaceId ||
             interfaceId == type(IERC1155Receiver).interfaceId ||
@@ -6601,13 +7075,20 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         bytes[] memory calldatas,
         bytes32 descriptionHash
     ) public pure virtual returns (uint256) {
-        return uint256(keccak256(abi.encode(targets, values, calldatas, descriptionHash)));
+        return
+            uint256(
+                keccak256(
+                    abi.encode(targets, values, calldatas, descriptionHash)
+                )
+            );
     }
 
     /**
      * @dev See {IGovernor-state}.
      */
-    function state(uint256 proposalId) public view virtual returns (ProposalState) {
+    function state(
+        uint256 proposalId
+    ) public view virtual returns (ProposalState) {
         // We read the struct fields into the stack at once so Solidity emits a single SLOAD
         ProposalCore storage proposal = _proposals[proposalId];
         bool proposalExecuted = proposal.executed;
@@ -6656,28 +7137,38 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
     /**
      * @dev See {IGovernor-proposalSnapshot}.
      */
-    function proposalSnapshot(uint256 proposalId) public view virtual returns (uint256) {
+    function proposalSnapshot(
+        uint256 proposalId
+    ) public view virtual returns (uint256) {
         return _proposals[proposalId].voteStart;
     }
 
     /**
      * @dev See {IGovernor-proposalDeadline}.
      */
-    function proposalDeadline(uint256 proposalId) public view virtual returns (uint256) {
-        return _proposals[proposalId].voteStart + _proposals[proposalId].voteDuration;
+    function proposalDeadline(
+        uint256 proposalId
+    ) public view virtual returns (uint256) {
+        return
+            _proposals[proposalId].voteStart +
+            _proposals[proposalId].voteDuration;
     }
 
     /**
      * @dev See {IGovernor-proposalProposer}.
      */
-    function proposalProposer(uint256 proposalId) public view virtual returns (address) {
+    function proposalProposer(
+        uint256 proposalId
+    ) public view virtual returns (address) {
         return _proposals[proposalId].proposer;
     }
 
     /**
      * @dev See {IGovernor-proposalEta}.
      */
-    function proposalEta(uint256 proposalId) public view virtual returns (uint256) {
+    function proposalEta(
+        uint256 proposalId
+    ) public view virtual returns (uint256) {
         return _proposals[proposalId].etaSeconds;
     }
 
@@ -6707,17 +7198,25 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
     /**
      * @dev Amount of votes already cast passes the threshold limit.
      */
-    function _quorumReached(uint256 proposalId) internal view virtual returns (bool);
+    function _quorumReached(
+        uint256 proposalId
+    ) internal view virtual returns (bool);
 
     /**
      * @dev Is the proposal successful or not.
      */
-    function _voteSucceeded(uint256 proposalId) internal view virtual returns (bool);
+    function _voteSucceeded(
+        uint256 proposalId
+    ) internal view virtual returns (bool);
 
     /**
      * @dev Get the voting weight of `account` at a specific `timepoint`, for a vote as described by `params`.
      */
-    function _getVotes(address account, uint256 timepoint, bytes memory params) internal view virtual returns (uint256);
+    function _getVotes(
+        address account,
+        uint256 timepoint,
+        bytes memory params
+    ) internal view virtual returns (uint256);
 
     /**
      * @dev Register a vote for `proposalId` by `account` with a given `support`, voting `weight` and voting `params`.
@@ -6762,7 +7261,11 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         uint256 proposerVotes = getVotes(proposer, clock() - 1);
         uint256 votesThreshold = proposalThreshold();
         if (proposerVotes < votesThreshold) {
-            revert GovernorInsufficientProposerVotes(proposer, proposerVotes, votesThreshold);
+            revert GovernorInsufficientProposerVotes(
+                proposer,
+                proposerVotes,
+                votesThreshold
+            );
         }
 
         return _propose(targets, values, calldatas, description, proposer);
@@ -6780,13 +7283,30 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         string memory description,
         address proposer
     ) internal virtual returns (uint256 proposalId) {
-        proposalId = hashProposal(targets, values, calldatas, keccak256(bytes(description)));
+        proposalId = hashProposal(
+            targets,
+            values,
+            calldatas,
+            keccak256(bytes(description))
+        );
 
-        if (targets.length != values.length || targets.length != calldatas.length || targets.length == 0) {
-            revert GovernorInvalidProposalLength(targets.length, calldatas.length, values.length);
+        if (
+            targets.length != values.length ||
+            targets.length != calldatas.length ||
+            targets.length == 0
+        ) {
+            revert GovernorInvalidProposalLength(
+                targets.length,
+                calldatas.length,
+                values.length
+            );
         }
         if (_proposals[proposalId].voteStart != 0) {
-            revert GovernorUnexpectedProposalState(proposalId, state(proposalId), bytes32(0));
+            revert GovernorUnexpectedProposalState(
+                proposalId,
+                state(proposalId),
+                bytes32(0)
+            );
         }
 
         uint256 snapshot = clock() + votingDelay();
@@ -6821,11 +7341,25 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         bytes[] memory calldatas,
         bytes32 descriptionHash
     ) public virtual returns (uint256) {
-        uint256 proposalId = hashProposal(targets, values, calldatas, descriptionHash);
+        uint256 proposalId = hashProposal(
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
 
-        _validateStateBitmap(proposalId, _encodeStateBitmap(ProposalState.Succeeded));
+        _validateStateBitmap(
+            proposalId,
+            _encodeStateBitmap(ProposalState.Succeeded)
+        );
 
-        uint48 etaSeconds = _queueOperations(proposalId, targets, values, calldatas, descriptionHash);
+        uint48 etaSeconds = _queueOperations(
+            proposalId,
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
 
         if (etaSeconds != 0) {
             _proposals[proposalId].etaSeconds = etaSeconds;
@@ -6869,11 +7403,17 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         bytes[] memory calldatas,
         bytes32 descriptionHash
     ) public payable virtual returns (uint256) {
-        uint256 proposalId = hashProposal(targets, values, calldatas, descriptionHash);
+        uint256 proposalId = hashProposal(
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
 
         _validateStateBitmap(
             proposalId,
-            _encodeStateBitmap(ProposalState.Succeeded) | _encodeStateBitmap(ProposalState.Queued)
+            _encodeStateBitmap(ProposalState.Succeeded) |
+                _encodeStateBitmap(ProposalState.Queued)
         );
 
         // mark as executed before calls to avoid reentrancy
@@ -6888,7 +7428,13 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
             }
         }
 
-        _executeOperations(proposalId, targets, values, calldatas, descriptionHash);
+        _executeOperations(
+            proposalId,
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
 
         // after execute: cleanup governance call queue.
         if (_executor() != address(this) && !_governanceCall.empty()) {
@@ -6915,7 +7461,9 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         bytes32 /*descriptionHash*/
     ) internal virtual {
         for (uint256 i = 0; i < targets.length; ++i) {
-            (bool success, bytes memory returndata) = targets[i].call{value: values[i]}(calldatas[i]);
+            (bool success, bytes memory returndata) = targets[i].call{
+                value: values[i]
+            }(calldatas[i]);
             Address.verifyCallResult(success, returndata);
         }
     }
@@ -6932,10 +7480,18 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         // The proposalId will be recomputed in the `_cancel` call further down. However we need the value before we
         // do the internal call, because we need to check the proposal state BEFORE the internal `_cancel` call
         // changes it. The `hashProposal` duplication has a cost that is limited, and that we accept.
-        uint256 proposalId = hashProposal(targets, values, calldatas, descriptionHash);
+        uint256 proposalId = hashProposal(
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
 
         // public cancel restrictions (on top of existing _cancel restrictions).
-        _validateStateBitmap(proposalId, _encodeStateBitmap(ProposalState.Pending));
+        _validateStateBitmap(
+            proposalId,
+            _encodeStateBitmap(ProposalState.Pending)
+        );
         if (_msgSender() != proposalProposer(proposalId)) {
             revert GovernorOnlyProposer(_msgSender());
         }
@@ -6955,7 +7511,12 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         bytes[] memory calldatas,
         bytes32 descriptionHash
     ) internal virtual returns (uint256) {
-        uint256 proposalId = hashProposal(targets, values, calldatas, descriptionHash);
+        uint256 proposalId = hashProposal(
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
 
         _validateStateBitmap(
             proposalId,
@@ -6974,7 +7535,10 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
     /**
      * @dev See {IGovernor-getVotes}.
      */
-    function getVotes(address account, uint256 timepoint) public view virtual returns (uint256) {
+    function getVotes(
+        address account,
+        uint256 timepoint
+    ) public view virtual returns (uint256) {
         return _getVotes(account, timepoint, _defaultParams());
     }
 
@@ -6992,7 +7556,10 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
     /**
      * @dev See {IGovernor-castVote}.
      */
-    function castVote(uint256 proposalId, uint8 support) public virtual returns (uint256) {
+    function castVote(
+        uint256 proposalId,
+        uint8 support
+    ) public virtual returns (uint256) {
         address voter = _msgSender();
         return _castVote(proposalId, voter, support, "");
     }
@@ -7033,7 +7600,17 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
     ) public virtual returns (uint256) {
         bool valid = SignatureChecker.isValidSignatureNow(
             voter,
-            _hashTypedDataV4(keccak256(abi.encode(BALLOT_TYPEHASH, proposalId, support, voter, _useNonce(voter)))),
+            _hashTypedDataV4(
+                keccak256(
+                    abi.encode(
+                        BALLOT_TYPEHASH,
+                        proposalId,
+                        support,
+                        voter,
+                        _useNonce(voter)
+                    )
+                )
+            ),
             signature
         );
 
@@ -7092,7 +7669,8 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         uint8 support,
         string memory reason
     ) internal virtual returns (uint256) {
-        return _castVote(proposalId, account, support, reason, _defaultParams());
+        return
+            _castVote(proposalId, account, support, reason, _defaultParams());
     }
 
     /**
@@ -7108,15 +7686,29 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         string memory reason,
         bytes memory params
     ) internal virtual returns (uint256) {
-        _validateStateBitmap(proposalId, _encodeStateBitmap(ProposalState.Active));
+        _validateStateBitmap(
+            proposalId,
+            _encodeStateBitmap(ProposalState.Active)
+        );
 
-        uint256 weight = _getVotes(account, proposalSnapshot(proposalId), params);
+        uint256 weight = _getVotes(
+            account,
+            proposalSnapshot(proposalId),
+            params
+        );
         _countVote(proposalId, account, support, weight, params);
 
         if (params.length == 0) {
             emit VoteCast(account, proposalId, support, weight, reason);
         } else {
-            emit VoteCastWithParams(account, proposalId, support, weight, reason, params);
+            emit VoteCastWithParams(
+                account,
+                proposalId,
+                support,
+                weight,
+                reason,
+                params
+            );
         }
 
         return weight;
@@ -7128,8 +7720,14 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
      * in a governance proposal to recover tokens or Ether that was sent to the governor contract by mistake.
      * Note that if the executor is simply the governor itself, use of `relay` is redundant.
      */
-    function relay(address target, uint256 value, bytes calldata data) external payable virtual onlyGovernance {
-        (bool success, bytes memory returndata) = target.call{value: value}(data);
+    function relay(
+        address target,
+        uint256 value,
+        bytes calldata data
+    ) external payable virtual onlyGovernance {
+        (bool success, bytes memory returndata) = target.call{value: value}(
+            data
+        );
         Address.verifyCallResult(success, returndata);
     }
 
@@ -7145,7 +7743,12 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
      * @dev See {IERC721Receiver-onERC721Received}.
      * Receiving tokens is disabled if the governance executor is other than the governor itself (eg. when using with a timelock).
      */
-    function onERC721Received(address, address, uint256, bytes memory) public virtual returns (bytes4) {
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) public virtual returns (bytes4) {
         if (_executor() != address(this)) {
             revert GovernorDisabledDeposit();
         }
@@ -7156,7 +7759,13 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
      * @dev See {IERC1155Receiver-onERC1155Received}.
      * Receiving tokens is disabled if the governance executor is other than the governor itself (eg. when using with a timelock).
      */
-    function onERC1155Received(address, address, uint256, uint256, bytes memory) public virtual returns (bytes4) {
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
+    ) public virtual returns (bytes4) {
         if (_executor() != address(this)) {
             revert GovernorDisabledDeposit();
         }
@@ -7192,7 +7801,9 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
      *            ^-- Active
      *             ^- Pending
      */
-    function _encodeStateBitmap(ProposalState proposalState) internal pure returns (bytes32) {
+    function _encodeStateBitmap(
+        ProposalState proposalState
+    ) internal pure returns (bytes32) {
         return bytes32(1 << uint8(proposalState));
     }
 
@@ -7202,10 +7813,17 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
      *
      * If requirements are not met, reverts with a {GovernorUnexpectedProposalState} error.
      */
-    function _validateStateBitmap(uint256 proposalId, bytes32 allowedStates) private view returns (ProposalState) {
+    function _validateStateBitmap(
+        uint256 proposalId,
+        bytes32 allowedStates
+    ) private view returns (ProposalState) {
         ProposalState currentState = state(proposalId);
         if (_encodeStateBitmap(currentState) & allowedStates == bytes32(0)) {
-            revert GovernorUnexpectedProposalState(proposalId, currentState, allowedStates);
+            revert GovernorUnexpectedProposalState(
+                proposalId,
+                currentState,
+                allowedStates
+            );
         }
         return currentState;
     }
@@ -7324,14 +7942,9 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
 
 // File: @openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (governance/extensions/GovernorTimelockControl.sol)
 
 pragma solidity ^0.8.20;
-
-
-
-
 
 /**
  * @dev Extension of {Governor} that binds the execution process to an instance of {TimelockController}. This adds a
@@ -7369,7 +7982,9 @@ abstract contract GovernorTimelockControl is Governor {
     /**
      * @dev Overridden version of the {Governor-state} function that considers the status reported by the timelock.
      */
-    function state(uint256 proposalId) public view virtual override returns (ProposalState) {
+    function state(
+        uint256 proposalId
+    ) public view virtual override returns (ProposalState) {
         ProposalState currentState = super.state(proposalId);
 
         if (currentState != ProposalState.Queued) {
@@ -7398,7 +8013,9 @@ abstract contract GovernorTimelockControl is Governor {
     /**
      * @dev See {IGovernor-proposalNeedsQueuing}.
      */
-    function proposalNeedsQueuing(uint256) public view virtual override returns (bool) {
+    function proposalNeedsQueuing(
+        uint256
+    ) public view virtual override returns (bool) {
         return true;
     }
 
@@ -7415,7 +8032,13 @@ abstract contract GovernorTimelockControl is Governor {
         uint256 delay = _timelock.getMinDelay();
 
         bytes32 salt = _timelockSalt(descriptionHash);
-        _timelockIds[proposalId] = _timelock.hashOperationBatch(targets, values, calldatas, 0, salt);
+        _timelockIds[proposalId] = _timelock.hashOperationBatch(
+            targets,
+            values,
+            calldatas,
+            0,
+            salt
+        );
         _timelock.scheduleBatch(targets, values, calldatas, 0, salt, delay);
 
         return SafeCast.toUint48(block.timestamp + delay);
@@ -7433,7 +8056,13 @@ abstract contract GovernorTimelockControl is Governor {
         bytes32 descriptionHash
     ) internal virtual override {
         // execute
-        _timelock.executeBatch{value: msg.value}(targets, values, calldatas, 0, _timelockSalt(descriptionHash));
+        _timelock.executeBatch{value: msg.value}(
+            targets,
+            values,
+            calldatas,
+            0,
+            _timelockSalt(descriptionHash)
+        );
         // cleanup for refund
         delete _timelockIds[proposalId];
     }
@@ -7451,7 +8080,12 @@ abstract contract GovernorTimelockControl is Governor {
         bytes[] memory calldatas,
         bytes32 descriptionHash
     ) internal virtual override returns (uint256) {
-        uint256 proposalId = super._cancel(targets, values, calldatas, descriptionHash);
+        uint256 proposalId = super._cancel(
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
 
         bytes32 timelockId = _timelockIds[proposalId];
         if (timelockId != 0) {
@@ -7477,7 +8111,9 @@ abstract contract GovernorTimelockControl is Governor {
      *
      * CAUTION: It is not recommended to change the timelock while there are other queued governance proposals.
      */
-    function updateTimelock(TimelockController newTimelock) external virtual onlyGovernance {
+    function updateTimelock(
+        TimelockController newTimelock
+    ) external virtual onlyGovernance {
         _updateTimelock(newTimelock);
     }
 
@@ -7492,22 +8128,18 @@ abstract contract GovernorTimelockControl is Governor {
      * It is computed with the governor address itself to avoid collisions across governor instances using the
      * same timelock.
      */
-    function _timelockSalt(bytes32 descriptionHash) private view returns (bytes32) {
+    function _timelockSalt(
+        bytes32 descriptionHash
+    ) private view returns (bytes32) {
         return bytes20(address(this)) ^ descriptionHash;
     }
 }
 
 // File: @openzeppelin/contracts/governance/extensions/GovernorVotes.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (governance/extensions/GovernorVotes.sol)
 
 pragma solidity ^0.8.20;
-
-
-
-
-
 
 /**
  * @dev Extension of {Governor} for voting weight extraction from an {ERC20Votes} token, or since v4.5 an {ERC721Votes}
@@ -7565,13 +8197,9 @@ abstract contract GovernorVotes is Governor {
 
 // File: @openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (governance/extensions/GovernorVotesQuorumFraction.sol)
 
 pragma solidity ^0.8.20;
-
-
-
 
 /**
  * @dev Extension of {Governor} for voting weight extraction from an {ERC20Votes} token and a quorum expressed as a
@@ -7582,12 +8210,18 @@ abstract contract GovernorVotesQuorumFraction is GovernorVotes {
 
     Checkpoints.Trace208 private _quorumNumeratorHistory;
 
-    event QuorumNumeratorUpdated(uint256 oldQuorumNumerator, uint256 newQuorumNumerator);
+    event QuorumNumeratorUpdated(
+        uint256 oldQuorumNumerator,
+        uint256 newQuorumNumerator
+    );
 
     /**
      * @dev The quorum set is not a valid fraction.
      */
-    error GovernorInvalidQuorumFraction(uint256 quorumNumerator, uint256 quorumDenominator);
+    error GovernorInvalidQuorumFraction(
+        uint256 quorumNumerator,
+        uint256 quorumDenominator
+    );
 
     /**
      * @dev Initialize quorum as a fraction of the token's total supply.
@@ -7610,11 +8244,14 @@ abstract contract GovernorVotesQuorumFraction is GovernorVotes {
     /**
      * @dev Returns the quorum numerator at a specific timepoint. See {quorumDenominator}.
      */
-    function quorumNumerator(uint256 timepoint) public view virtual returns (uint256) {
+    function quorumNumerator(
+        uint256 timepoint
+    ) public view virtual returns (uint256) {
         uint256 length = _quorumNumeratorHistory._checkpoints.length;
 
         // Optimistic search, check the latest checkpoint
-        Checkpoints.Checkpoint208 storage latest = _quorumNumeratorHistory._checkpoints[length - 1];
+        Checkpoints.Checkpoint208 storage latest = _quorumNumeratorHistory
+            ._checkpoints[length - 1];
         uint48 latestKey = latest._key;
         uint208 latestValue = latest._value;
         if (latestKey <= timepoint) {
@@ -7622,7 +8259,10 @@ abstract contract GovernorVotesQuorumFraction is GovernorVotes {
         }
 
         // Otherwise, do the binary search
-        return _quorumNumeratorHistory.upperLookupRecent(SafeCast.toUint48(timepoint));
+        return
+            _quorumNumeratorHistory.upperLookupRecent(
+                SafeCast.toUint48(timepoint)
+            );
     }
 
     /**
@@ -7635,8 +8275,12 @@ abstract contract GovernorVotesQuorumFraction is GovernorVotes {
     /**
      * @dev Returns the quorum for a timepoint, in terms of number of votes: `supply * numerator / denominator`.
      */
-    function quorum(uint256 timepoint) public view virtual override returns (uint256) {
-        return (token().getPastTotalSupply(timepoint) * quorumNumerator(timepoint)) / quorumDenominator();
+    function quorum(
+        uint256 timepoint
+    ) public view virtual override returns (uint256) {
+        return
+            (token().getPastTotalSupply(timepoint) *
+                quorumNumerator(timepoint)) / quorumDenominator();
     }
 
     /**
@@ -7649,7 +8293,9 @@ abstract contract GovernorVotesQuorumFraction is GovernorVotes {
      * - Must be called through a governance proposal.
      * - New numerator must be smaller or equal to the denominator.
      */
-    function updateQuorumNumerator(uint256 newQuorumNumerator) external virtual onlyGovernance {
+    function updateQuorumNumerator(
+        uint256 newQuorumNumerator
+    ) external virtual onlyGovernance {
         _updateQuorumNumerator(newQuorumNumerator);
     }
 
@@ -7662,14 +8308,22 @@ abstract contract GovernorVotesQuorumFraction is GovernorVotes {
      *
      * - New numerator must be smaller or equal to the denominator.
      */
-    function _updateQuorumNumerator(uint256 newQuorumNumerator) internal virtual {
+    function _updateQuorumNumerator(
+        uint256 newQuorumNumerator
+    ) internal virtual {
         uint256 denominator = quorumDenominator();
         if (newQuorumNumerator > denominator) {
-            revert GovernorInvalidQuorumFraction(newQuorumNumerator, denominator);
+            revert GovernorInvalidQuorumFraction(
+                newQuorumNumerator,
+                denominator
+            );
         }
 
         uint256 oldQuorumNumerator = quorumNumerator();
-        _quorumNumeratorHistory.push(clock(), SafeCast.toUint208(newQuorumNumerator));
+        _quorumNumeratorHistory.push(
+            clock(),
+            SafeCast.toUint208(newQuorumNumerator)
+        );
 
         emit QuorumNumeratorUpdated(oldQuorumNumerator, newQuorumNumerator);
     }
@@ -7677,11 +8331,9 @@ abstract contract GovernorVotesQuorumFraction is GovernorVotes {
 
 // File: @openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (governance/extensions/GovernorCountingSimple.sol)
 
 pragma solidity ^0.8.20;
-
 
 /**
  * @dev Extension of {Governor} for simple, 3 options, vote counting.
@@ -7709,14 +8361,23 @@ abstract contract GovernorCountingSimple is Governor {
      * @dev See {IGovernor-COUNTING_MODE}.
      */
     // solhint-disable-next-line func-name-mixedcase
-    function COUNTING_MODE() public pure virtual override returns (string memory) {
+    function COUNTING_MODE()
+        public
+        pure
+        virtual
+        override
+        returns (string memory)
+    {
         return "support=bravo&quorum=for,abstain";
     }
 
     /**
      * @dev See {IGovernor-hasVoted}.
      */
-    function hasVoted(uint256 proposalId, address account) public view virtual override returns (bool) {
+    function hasVoted(
+        uint256 proposalId,
+        address account
+    ) public view virtual override returns (bool) {
         return _proposalVotes[proposalId].hasVoted[account];
     }
 
@@ -7725,24 +8386,39 @@ abstract contract GovernorCountingSimple is Governor {
      */
     function proposalVotes(
         uint256 proposalId
-    ) public view virtual returns (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes) {
+    )
+        public
+        view
+        virtual
+        returns (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes)
+    {
         ProposalVote storage proposalVote = _proposalVotes[proposalId];
-        return (proposalVote.againstVotes, proposalVote.forVotes, proposalVote.abstainVotes);
+        return (
+            proposalVote.againstVotes,
+            proposalVote.forVotes,
+            proposalVote.abstainVotes
+        );
     }
 
     /**
      * @dev See {Governor-_quorumReached}.
      */
-    function _quorumReached(uint256 proposalId) internal view virtual override returns (bool) {
+    function _quorumReached(
+        uint256 proposalId
+    ) internal view virtual override returns (bool) {
         ProposalVote storage proposalVote = _proposalVotes[proposalId];
 
-        return quorum(proposalSnapshot(proposalId)) <= proposalVote.forVotes + proposalVote.abstainVotes;
+        return
+            quorum(proposalSnapshot(proposalId)) <=
+            proposalVote.forVotes + proposalVote.abstainVotes;
     }
 
     /**
      * @dev See {Governor-_voteSucceeded}. In this module, the forVotes must be strictly over the againstVotes.
      */
-    function _voteSucceeded(uint256 proposalId) internal view virtual override returns (bool) {
+    function _voteSucceeded(
+        uint256 proposalId
+    ) internal view virtual override returns (bool) {
         ProposalVote storage proposalVote = _proposalVotes[proposalId];
 
         return proposalVote.forVotes > proposalVote.againstVotes;
@@ -7779,11 +8455,9 @@ abstract contract GovernorCountingSimple is Governor {
 
 // File: @openzeppelin/contracts/governance/extensions/GovernorSettings.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (governance/extensions/GovernorSettings.sol)
 
 pragma solidity ^0.8.20;
-
 
 /**
  * @dev Extension of {Governor} for settings updatable through governance.
@@ -7798,12 +8472,19 @@ abstract contract GovernorSettings is Governor {
 
     event VotingDelaySet(uint256 oldVotingDelay, uint256 newVotingDelay);
     event VotingPeriodSet(uint256 oldVotingPeriod, uint256 newVotingPeriod);
-    event ProposalThresholdSet(uint256 oldProposalThreshold, uint256 newProposalThreshold);
+    event ProposalThresholdSet(
+        uint256 oldProposalThreshold,
+        uint256 newProposalThreshold
+    );
 
     /**
      * @dev Initialize the governance parameters.
      */
-    constructor(uint48 initialVotingDelay, uint32 initialVotingPeriod, uint256 initialProposalThreshold) {
+    constructor(
+        uint48 initialVotingDelay,
+        uint32 initialVotingPeriod,
+        uint256 initialProposalThreshold
+    ) {
         _setVotingDelay(initialVotingDelay);
         _setVotingPeriod(initialVotingPeriod);
         _setProposalThreshold(initialProposalThreshold);
@@ -7826,7 +8507,13 @@ abstract contract GovernorSettings is Governor {
     /**
      * @dev See {Governor-proposalThreshold}.
      */
-    function proposalThreshold() public view virtual override returns (uint256) {
+    function proposalThreshold()
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         return _proposalThreshold;
     }
 
@@ -7835,7 +8522,9 @@ abstract contract GovernorSettings is Governor {
      *
      * Emits a {VotingDelaySet} event.
      */
-    function setVotingDelay(uint48 newVotingDelay) public virtual onlyGovernance {
+    function setVotingDelay(
+        uint48 newVotingDelay
+    ) public virtual onlyGovernance {
         _setVotingDelay(newVotingDelay);
     }
 
@@ -7844,7 +8533,9 @@ abstract contract GovernorSettings is Governor {
      *
      * Emits a {VotingPeriodSet} event.
      */
-    function setVotingPeriod(uint32 newVotingPeriod) public virtual onlyGovernance {
+    function setVotingPeriod(
+        uint32 newVotingPeriod
+    ) public virtual onlyGovernance {
         _setVotingPeriod(newVotingPeriod);
     }
 
@@ -7853,7 +8544,9 @@ abstract contract GovernorSettings is Governor {
      *
      * Emits a {ProposalThresholdSet} event.
      */
-    function setProposalThreshold(uint256 newProposalThreshold) public virtual onlyGovernance {
+    function setProposalThreshold(
+        uint256 newProposalThreshold
+    ) public virtual onlyGovernance {
         _setProposalThreshold(newProposalThreshold);
     }
 
@@ -7885,7 +8578,9 @@ abstract contract GovernorSettings is Governor {
      *
      * Emits a {ProposalThresholdSet} event.
      */
-    function _setProposalThreshold(uint256 newProposalThreshold) internal virtual {
+    function _setProposalThreshold(
+        uint256 newProposalThreshold
+    ) internal virtual {
         emit ProposalThresholdSet(_proposalThreshold, newProposalThreshold);
         _proposalThreshold = newProposalThreshold;
     }
@@ -7893,15 +8588,8 @@ abstract contract GovernorSettings is Governor {
 
 // File: contracts/DAO/miniDAO/MiniDAO.sol
 
-
 // Compatible with OpenZeppelin Contracts ^5.0.0
 pragma solidity ^0.8.23;
-
-
-
-
-
-
 
 contract MiniDAO is
     Governor,
@@ -8037,12 +8725,7 @@ contract MiniDAO is
 
 // File: contracts/DAO/SuperDAO.sol
 
-
 pragma solidity ^0.8.23;
-
-
-
-
 
 contract SuperDAO {
     TimeLock public immutable timeLock;
