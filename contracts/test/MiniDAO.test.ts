@@ -93,9 +93,9 @@ describe("MiniDAO", function () {
     const description =
       "Let's repair the stairs on the third floor and paint the ceiling, walls, doors and locks on the same floor?";
 
-    let targets: string[] = ["0x0000000000000000000000000000000000000000"];
-    let values: number[] = [0];
-    let calldatas: string[] = ["0x00"];
+    const targets: string[] = ["0x0000000000000000000000000000000000000000"];
+    const values: number[] = [0];
+    const calldatas: string[] = ["0x00"];
 
     const descriptionHash = hre.ethers.keccak256(
       hre.ethers.toUtf8Bytes(description)
