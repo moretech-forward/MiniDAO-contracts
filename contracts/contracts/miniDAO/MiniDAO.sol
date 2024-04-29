@@ -36,17 +36,6 @@ contract MiniDAO is
         GovernorTimelockControl(_timelock)
     {}
 
-    function simplePropose(string memory _description) external {
-        address[] memory targets = new address[](1);
-        uint256[] memory values = new uint256[](1);
-        bytes[] memory calldatas = new bytes[](1);
-        propose(targets, values, calldatas, _description);
-    }
-
-    function nownow() external view returns (uint) {
-        return block.timestamp;
-    }
-
     // The following functions are overrides required by Solidity.
 
     function votingDelay()

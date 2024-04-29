@@ -38,6 +38,10 @@ describe("MiniDAO", function () {
       4 // _quorumValue
     );
 
+    const Treasury = await hre.ethers.getContractFactory("Treasury");
+    const treasury = await Treasury.deploy(timeLock, { value: 10000 });
+    expect(await treasury.owner()).to.equal(timeLock.target);
+
     // timelock settings
     const proposerRole = await timeLock.PROPOSER_ROLE();
     const executorRole = await timeLock.EXECUTOR_ROLE();
@@ -62,6 +66,7 @@ describe("MiniDAO", function () {
       acc4,
       acc5,
       acc6,
+      treasury,
     };
   }
 
@@ -85,19 +90,13 @@ describe("MiniDAO", function () {
     const description =
       "Let's repair the stairs on the third floor and paint the ceiling, walls, doors and locks on the same floor?";
 
-    const targets: string[] = [];
-    const values: number[] = [];
-    const calldatas: string[] = [];
+    let targets: string[] = ["0x0000000000000000000000000000000000000000"];
+    let values: number[] = [0];
+    let calldatas: string[] = ["0x00"];
 
     const descriptionHash = hre.ethers.keccak256(
       hre.ethers.toUtf8Bytes(description)
     );
-
-    // proposal created
-    // await expect(miniDAO.simplePropose(description)).to.emit(
-    //   miniDAO,
-    //   "ProposalCreated"
-    // );
 
     await expect(
       miniDAO.propose(targets, values, calldatas, description)
@@ -143,19 +142,33 @@ describe("MiniDAO", function () {
     await time.increaseTo(now + 100);
 
     await miniDAO.execute(targets, values, calldatas, descriptionHash);
+
+    // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+    // console.log(await miniDAO.state(proposalId)); // Executed
   });
 
-  it("Vouting PayGrant", async function () {
-    const { token, miniDAO, timeLock, owner, acc1, acc2, acc3, acc4, acc6 } =
+  it("Vouting pay grant", async function () {
+    const { miniDAO, owner, acc1, acc2, acc3, acc4, acc6, treasury } =
       await loadFixture(deployDAO);
 
-    const PayGrant = await hre.ethers.getContractFactory("PayGrant");
-    const payGrant = await PayGrant.deploy(acc6, timeLock, { value: 10000 });
-    expect(await payGrant.owner()).to.equal(timeLock.target);
+    await expect(
+      acc1.sendTransaction({
+        to: treasury,
+        value: hre.ethers.parseEther("10.0"),
+      })
+    ).to.changeEtherBalance(treasury, hre.ethers.parseEther("10.0"));
 
-    const target = payGrant.target;
-    const calldata = (await payGrant.releaseFunds.populateTransaction()).data;
+    let ABI = ["function releaseNativeToken(address to, uint256 amount)"];
+    const iface = new hre.ethers.Interface(ABI);
+    const calldata = iface.encodeFunctionData("releaseNativeToken", [
+      acc6.address,
+      hre.ethers.parseEther("1.1"),
+    ]);
+
+    const target = treasury.target;
     const description = "Pay out a grant to the first team";
+
+    //console.log(calldata);
 
     // proposal created
     await expect(
@@ -209,7 +222,9 @@ describe("MiniDAO", function () {
     const now = await time.latest();
     await time.increaseTo(now + 100);
 
-    await miniDAO.execute([target], [0], [calldata], descriptionHash);
+    await expect(
+      miniDAO.execute([target], [0], [calldata], descriptionHash)
+    ).to.changeEtherBalance(acc6, hre.ethers.parseEther("1.1"));
 
     // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
     // console.log(await miniDAO.state(proposalId)); // Executed

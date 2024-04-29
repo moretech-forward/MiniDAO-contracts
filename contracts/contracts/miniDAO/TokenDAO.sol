@@ -2,19 +2,19 @@
 // Compatible with OpenZeppelin Contracts ^5.0.0
 pragma solidity ^0.8.20;
 
+import "./utils/Owned.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 
-contract TokenDAO is ERC20, Ownable, ERC20Permit, ERC20Votes {
+contract TokenDAO is ERC20, Owned, ERC20Permit, ERC20Votes {
     constructor(
         address _timelock,
         string memory _name,
         string memory _symbol,
         address[] memory to,
         uint256[] memory amount
-    ) ERC20(_name, _symbol) Ownable(_timelock) ERC20Permit(_name) {
+    ) ERC20(_name, _symbol) Owned(_timelock) ERC20Permit(_name) {
         _mintBatch(to, amount);
     }
 
@@ -48,8 +48,8 @@ contract TokenDAO is ERC20, Ownable, ERC20Permit, ERC20Votes {
     }
 
     function nonces(
-        address owner
+        address _owner
     ) public view override(ERC20Permit, Nonces) returns (uint256) {
-        return super.nonces(owner);
+        return super.nonces(_owner);
     }
 }
