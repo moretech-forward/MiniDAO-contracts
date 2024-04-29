@@ -26,6 +26,7 @@ describe("MiniDAO", function () {
       "100000000"
     );
 
+    // token distribution
     await token.connect(owner).transfer(acc1, "1000");
     await token.connect(owner).transfer(acc2, "1000");
     await token.connect(owner).transfer(acc3, "1000");
@@ -62,6 +63,7 @@ describe("MiniDAO", function () {
       token,
       miniDAO,
       timeLock,
+      treasury,
       owner,
       acc1,
       acc2,
@@ -69,7 +71,6 @@ describe("MiniDAO", function () {
       acc4,
       acc5,
       acc6,
-      treasury,
     };
   }
 
