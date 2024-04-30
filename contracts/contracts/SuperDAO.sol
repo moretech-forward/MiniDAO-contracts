@@ -56,6 +56,9 @@ contract SuperDAO {
         _timeLock.grantRole(proposerRole, address(_governor));
         _timeLock.grantRole(executorRole, address(_governor));
 
+        bytes32 DEFAULT_ADMIN_ROLE = 0x00;
+        _timeLock.grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+
         timeLock = _timeLock;
         governor = _governor;
 

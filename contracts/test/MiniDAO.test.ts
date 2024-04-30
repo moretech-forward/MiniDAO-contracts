@@ -23,7 +23,7 @@ describe("MiniDAO", function () {
       "Token",
       "TKN",
       owner,
-      "100000000"
+      "50000"
     );
 
     // token distribution

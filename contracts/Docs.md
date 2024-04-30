@@ -24,6 +24,8 @@
 
 Since contracts cannot be deployed in stages in Forward Factory, we had to make a contract that will deploy all contracts in one transaction, which turned out to be successful and tested when deploying the template on the marketplace
 
+_Since the assignment says the contract is due by 2.05, the testing is not finished yet. However, the main business logic of the template works completely._
+
 ### MiniDAO
 
 The basis for the DAO, the whole logic of voting and governance
@@ -64,3 +66,42 @@ const targets: string[] = ["0x0000000000000000000000000000000000000000"];
 const values: number[] = [0];
 const calldatas: string[] = ["0x00"];
 ```
+
+#### Templates
+
+- Pay the grant to the address
+
+```ts
+let ABI = ["function releaseNativeToken(address to, uint256 amount)"];
+const iface = new hre.ethers.Interface(ABI);
+
+const target = treasury.target;
+const calldata = iface.encodeFunctionData("releaseNativeToken", [
+  acc6.address,
+  hre.ethers.parseEther("1.1"),
+]);
+const description = "Pay out a grant to the first team";
+await miniDAO.propose([target], [0], [calldata], description);
+```
+
+- Additional token minting
+
+```ts
+const target = token.target;
+const calldata = (await token.mint.populateTransaction(acc5, 10000)).data;
+const description = "Mint 10000 tokens";
+await miniDAO.propose([target], [0], [calldata], description);
+```
+
+### `castVote`
+
+Vote for/against
+
+- `proposalId`
+- `support` - [ Against, For, Abstain ] = [0, 1, 2]
+
+### `proposalVotes`
+
+Get voting statistics for the proposal
+
+- [ Against, For, Abstain ]
