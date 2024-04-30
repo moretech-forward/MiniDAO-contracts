@@ -6,18 +6,29 @@ import "./miniDAO/TimeLock.sol";
 import "./miniDAO/TokenDAO.sol";
 import "./miniDAO/Treasury.sol";
 
+/// @title SuperDAO Contract
+/// @notice This contract represents a super DAO that integrates multiple DAO components.
 contract SuperDAO {
     TimeLock public immutable timeLock;
     TokenDAO public immutable token;
     MiniDAO public immutable governor;
     Treasury public immutable treasury;
 
+    /// @notice Constructs the SuperDAO contract with specified parameters.
+    /// @param _minDelay The minimum delay for a proposal to be executed in the TimeLock contract (in timestamp).
+    /// @param _nameToken The name of the token used in the TokenDAO contract.
+    /// @param _symbolToken The symbol of the token used in the TokenDAO contract.
+    /// @param _nameDAO The name of the DAO used in the MiniDAO contract.
+    /// @param _mintAmount The amount of tokens to mint for the initial supply in the TokenDAO contract.
+    /// @param _votingDelay The delay before voting on a proposal can start in the MiniDAO contract (in blocks).
+    /// @param _votingPeriod The duration in which a proposal can be voted on in the MiniDAO contract (in blocks).
+    /// @param _quorumValue The quorum value required for a proposal to pass in the MiniDAO contract.
     constructor(
         uint256 _minDelay,
         string memory _nameToken,
         string memory _symbolToken,
         string memory _nameDAO,
-        uint256 mintAmount,
+        uint256 _mintAmount,
         uint48 _votingDelay,
         uint32 _votingPeriod,
         uint256 _quorumValue
@@ -39,7 +50,7 @@ contract SuperDAO {
             _nameToken,
             _symbolToken,
             msg.sender,
-            mintAmount
+            _mintAmount
         );
 
         MiniDAO _governor = new MiniDAO(

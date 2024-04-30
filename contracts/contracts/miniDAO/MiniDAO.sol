@@ -9,6 +9,8 @@ import "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
 import "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
 
+/// @title MiniDAO Contract
+/// @notice This contract implements a minimalistic DAO with governance functionalities.
 contract MiniDAO is
     Governor,
     GovernorSettings,
@@ -17,6 +19,13 @@ contract MiniDAO is
     GovernorVotesQuorumFraction,
     GovernorTimelockControl
 {
+    /// @notice Constructs the MiniDAO contract with specified parameters.
+    /// @param _token The token used for voting.
+    /// @param _timelock The timelock controller contract.
+    /// @param _name The name of the DAO.
+    /// @param _votingDelay The delay before voting on a proposal can start (in blocks).
+    /// @param _votingPeriod The duration in which a proposal can be voted on (in blocks).
+    /// @param _quorumValue The quorum value required for a proposal to pass.
     constructor(
         IVotes _token,
         TimelockController _timelock,
