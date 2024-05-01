@@ -24,11 +24,9 @@
 
 Since contracts cannot be deployed in stages in Forward Factory, we had to make a contract that will deploy all contracts in one transaction, which turned out to be successful and tested when deploying the template on the marketplace
 
-_Since the assignment says the contract is due by 2.05, the testing is not finished yet. However, the main business logic of the template works completely._
-
 ### MiniDAO
 
-The basis for the DAO, the whole logic of voting and governance
+The basis for the DAO, the whole logic of voting and governance.
 
 ### TimeLock
 
@@ -69,7 +67,16 @@ const calldatas: string[] = ["0x00"];
 
 #### Templates
 
-- Pay the grant to the address
+- Additional TokenDAO minting
+
+```ts
+const target = token.target;
+const calldata = (await token.mint.populateTransaction(acc5, 10000)).data;
+const description = "Mint 10000 tokens";
+await miniDAO.propose([target], [0], [calldata], description);
+```
+
+- Pay the grant to the address in native tokens
 
 ```ts
 let ABI = ["function releaseNativeToken(address to, uint256 amount)"];
@@ -84,12 +91,42 @@ const description = "Pay out a grant to the first team";
 await miniDAO.propose([target], [0], [calldata], description);
 ```
 
-- Additional token minting
+- Pay the grant to the address in ERC20 tokens
 
 ```ts
-const target = token.target;
-const calldata = (await token.mint.populateTransaction(acc5, 10000)).data;
-const description = "Mint 10000 tokens";
+let ABI = [
+  "function releaseERC20Token(address to, uint256 amount, address token)",
+];
+const iface = new hre.ethers.Interface(ABI);
+const calldata = iface.encodeFunctionData("releaseERC20Token", [
+  acc6.address,
+  200000,
+  erc20.target,
+]);
+const target = treasury.target;
+const description = "Pay out a grant to the second team";
+await miniDAO.propose([target], [0], [calldata], description);
+```
+
+- Pay the grant to the address in ERC721 token
+
+```ts
+let ABI = [
+  "function releaseERC721Token(address to, uint256 id, address token)",
+];
+const iface = new hre.ethers.Interface(ABI);
+const calldata = iface.encodeFunctionData("releaseERC721Token", [
+  acc6.address,
+  0,
+  erc721.target,
+]);
+
+// const calldata = (
+//   await treasury.releaseERC721Token.populateTransaction(acc6, 0, erc721)
+// ).data;
+
+const target = treasury.target;
+const description = "Pay out a grant to the third team";
 await miniDAO.propose([target], [0], [calldata], description);
 ```
 

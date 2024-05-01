@@ -280,5 +280,271 @@ describe("SuperDAO", function () {
       // minted
       expect(await token.balanceOf(acc5)).to.be.equal(10000);
     });
+
+    it("Vouting pay grant in native tokens", async function () {
+      const { miniDAO, owner, acc1, acc2, acc3, acc4, acc6, treasury } =
+        await loadFixture(deployDAO);
+
+      await expect(
+        acc1.sendTransaction({
+          to: treasury,
+          value: hre.ethers.parseEther("10.0"),
+        })
+      ).to.changeEtherBalance(treasury, hre.ethers.parseEther("10.0"));
+
+      let ABI = ["function releaseNativeToken(address to, uint256 amount)"];
+      const iface = new hre.ethers.Interface(ABI);
+      const calldata = iface.encodeFunctionData("releaseNativeToken", [
+        acc6.address,
+        hre.ethers.parseEther("1.1"),
+      ]);
+
+      const target = treasury.target;
+      const description = "Pay out a grant to the first team";
+
+      //console.log(calldata);
+
+      // proposal created
+      await expect(
+        miniDAO.propose([target], [0], [calldata], description)
+      ).to.emit(miniDAO, "ProposalCreated");
+
+      const descriptionHash = hre.ethers.keccak256(
+        hre.ethers.toUtf8Bytes(description)
+      );
+
+      const proposalId = await miniDAO.hashProposal(
+        [target],
+        [0],
+        [calldata],
+        descriptionHash
+      );
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Pending
+
+      await mine(6);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Active
+
+      // 0 = Against, 1 = For, 2 = Abstain
+      await miniDAO.connect(owner).castVote(proposalId, 1);
+      await miniDAO.connect(acc1).castVote(proposalId, 1);
+      await miniDAO.connect(acc2).castVote(proposalId, 1);
+      await miniDAO.connect(acc3).castVote(proposalId, 2);
+      await miniDAO.connect(acc4).castVote(proposalId, 2);
+
+      // [ Against, For, Abstain ]
+      // console.log(await miniDAO.proposalVotes(proposalId));
+
+      await mine(50);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Active
+
+      await mine(50);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Succeeded
+
+      await miniDAO.queue([target], [0], [calldata], descriptionHash);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Queued
+
+      const now = await time.latest();
+      await time.increaseTo(now + 100);
+
+      await expect(
+        miniDAO.execute([target], [0], [calldata], descriptionHash)
+      ).to.changeEtherBalance(acc6, hre.ethers.parseEther("1.1"));
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Executed
+    });
+
+    it("Vouting pay grant in ERC20 tokens", async function () {
+      const { miniDAO, owner, acc1, acc2, acc3, acc4, acc6, treasury } =
+        await loadFixture(deployDAO);
+
+      const ERC20 = await hre.ethers.getContractFactory("MockTokenERC20");
+      const erc20 = await ERC20.deploy();
+
+      await expect(erc20.connect(owner).transfer(treasury, 200000)).to.emit(
+        erc20,
+        "Transfer"
+      );
+
+      let ABI = [
+        "function releaseERC20Token(address to, uint256 amount, address token)",
+      ];
+      const iface = new hre.ethers.Interface(ABI);
+      const calldata = iface.encodeFunctionData("releaseERC20Token", [
+        acc6.address,
+        200000,
+        erc20.target,
+      ]);
+
+      const target = treasury.target;
+      const description = "Pay out a grant to the second team";
+
+      // proposal created
+      await expect(
+        miniDAO.propose([target], [0], [calldata], description)
+      ).to.emit(miniDAO, "ProposalCreated");
+
+      const descriptionHash = hre.ethers.keccak256(
+        hre.ethers.toUtf8Bytes(description)
+      );
+
+      const proposalId = await miniDAO.hashProposal(
+        [target],
+        [0],
+        [calldata],
+        descriptionHash
+      );
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Pending
+
+      await mine(6);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Active
+
+      // 0 = Against, 1 = For, 2 = Abstain
+      await miniDAO.connect(owner).castVote(proposalId, 1);
+      await miniDAO.connect(acc1).castVote(proposalId, 1);
+      await miniDAO.connect(acc2).castVote(proposalId, 1);
+      await miniDAO.connect(acc3).castVote(proposalId, 2);
+      await miniDAO.connect(acc4).castVote(proposalId, 2);
+
+      // [ Against, For, Abstain ]
+      // console.log(await miniDAO.proposalVotes(proposalId));
+
+      await mine(50);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Active
+
+      await mine(50);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Succeeded
+
+      await miniDAO.queue([target], [0], [calldata], descriptionHash);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Queued
+
+      const now = await time.latest();
+      await time.increaseTo(now + 100);
+
+      await expect(
+        miniDAO.execute([target], [0], [calldata], descriptionHash)
+      ).to.changeTokenBalance(erc20, acc6, 200000);
+
+      expect(await erc20.balanceOf(acc6)).to.be.equal(200000);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Executed
+    });
+
+    it("Send ERC721 token", async function () {
+      const { miniDAO, owner, acc1, acc2, acc3, acc4, acc6, treasury } =
+        await loadFixture(deployDAO);
+
+      const ERC721 = await hre.ethers.getContractFactory("MockTokenERC721");
+      const erc721 = await ERC721.deploy();
+
+      const id = 0;
+
+      await expect(
+        erc721
+          .connect(owner)
+          ["safeTransferFrom(address,address,uint256)"](owner, treasury, id)
+      ).to.emit(erc721, "Transfer");
+      expect(await erc721.ownerOf(id)).to.be.equal(treasury);
+      expect(await erc721.balanceOf(treasury)).to.be.equal(1);
+
+      let ABI = [
+        "function releaseERC721Token(address to, uint256 id, address token)",
+      ];
+      const iface = new hre.ethers.Interface(ABI);
+      const calldata = iface.encodeFunctionData("releaseERC721Token", [
+        acc6.address,
+        0,
+        erc721.target,
+      ]);
+
+      // const calldata = (
+      //   await treasury.releaseERC721Token.populateTransaction(acc6, 0, erc721)
+      // ).data;
+
+      const target = treasury.target;
+      const description = "Pay out a grant to the third team";
+
+      // proposal created
+      await expect(
+        miniDAO.propose([target], [0], [calldata], description)
+      ).to.emit(miniDAO, "ProposalCreated");
+
+      const descriptionHash = hre.ethers.keccak256(
+        hre.ethers.toUtf8Bytes(description)
+      );
+
+      const proposalId = await miniDAO.hashProposal(
+        [target],
+        [0],
+        [calldata],
+        descriptionHash
+      );
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Pending
+
+      await mine(6);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Active
+
+      // 0 = Against, 1 = For, 2 = Abstain
+      await miniDAO.connect(owner).castVote(proposalId, 1);
+      await miniDAO.connect(acc1).castVote(proposalId, 1);
+      await miniDAO.connect(acc2).castVote(proposalId, 1);
+      await miniDAO.connect(acc3).castVote(proposalId, 2);
+      await miniDAO.connect(acc4).castVote(proposalId, 2);
+
+      // [ Against, For, Abstain ]
+      // console.log(await miniDAO.proposalVotes(proposalId));
+
+      await mine(50);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Active
+
+      await mine(50);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Succeeded
+
+      await miniDAO.queue([target], [0], [calldata], descriptionHash);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Queued
+
+      const now = await time.latest();
+      await time.increaseTo(now + 100);
+
+      await expect(
+        miniDAO.execute([target], [0], [calldata], descriptionHash)
+      ).to.emit(erc721, "Transfer");
+
+      expect(await erc721.balanceOf(acc6)).to.be.equal(1);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Executed
+    });
   });
 });

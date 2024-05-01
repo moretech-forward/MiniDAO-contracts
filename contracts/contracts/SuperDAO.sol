@@ -65,8 +65,10 @@ contract SuperDAO {
             _quorumValue
         );
 
+        // Customizing contract roles
         _timeLock.grantRole(keccak256("PROPOSER_ROLE"), address(_governor));
         _timeLock.grantRole(keccak256("EXECUTOR_ROLE"), address(_governor));
+        //  bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
         _timeLock.grantRole(0x00, msg.sender);
 
         treasury = new Treasury(address(_timeLock));

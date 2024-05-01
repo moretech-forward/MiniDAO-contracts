@@ -54,7 +54,7 @@ contract Treasury is Owned, ERC721TokenReceiver {
     /// @param to The recipient address of the ERC721 token
     /// @param id The token ID of the ERC721 token to transfer
     /// @param token The address of the ERC721 token contract
-    function releaseERC721oken(
+    function releaseERC721Token(
         address to,
         uint256 id,
         address token
@@ -72,6 +72,7 @@ contract Treasury is Owned, ERC721TokenReceiver {
 
         // Execute the safe transfer of the token to the specified address
         ERC721Token.safeTransferFrom(address(this), to, id, "0x00");
+        //ERC721Token.transferFrom(address(this), to, id);
     }
 
     /// @dev Fallback function to receive native tokens.
