@@ -42,7 +42,7 @@ contract SuperDAO {
             _minDelay,
             _proposers,
             _executors,
-            address(this)
+            msg.sender
         );
 
         token = new TokenDAO(
@@ -53,7 +53,7 @@ contract SuperDAO {
             _mintAmount
         );
 
-        MiniDAO _governor = new MiniDAO(
+        governor = new MiniDAO(
             token,
             timeLock,
             _nameDAO,
@@ -62,16 +62,7 @@ contract SuperDAO {
             _quorumValue
         );
 
-        bytes32 proposerRole = _timeLock.PROPOSER_ROLE();
-        bytes32 executorRole = _timeLock.EXECUTOR_ROLE();
-        _timeLock.grantRole(proposerRole, address(_governor));
-        _timeLock.grantRole(executorRole, address(_governor));
-
-        bytes32 DEFAULT_ADMIN_ROLE = 0x00;
-        _timeLock.grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-
         timeLock = _timeLock;
-        governor = _governor;
 
         treasury = new Treasury(address(_timeLock));
     }
