@@ -43,6 +43,9 @@ contract MiniDAO is
 
     // The following functions are overrides required by Solidity.
 
+    /// @notice Returns the delay before voting starts
+    /// @dev Returns the value set in GovernorSettings, overriding Governor
+    /// @return Delay before voting starts in blocks
     function votingDelay()
         public
         view
@@ -52,6 +55,9 @@ contract MiniDAO is
         return super.votingDelay();
     }
 
+    /// @notice Returns the voting period
+    /// @dev Returns the value set in GovernorSettings, overriding Governor
+    /// @return Length of voting period in blocks
     function votingPeriod()
         public
         view
@@ -61,6 +67,10 @@ contract MiniDAO is
         return super.votingPeriod();
     }
 
+    /// @notice Returns the quorum required to accept proposals on the specified block number
+    /// @dev Overrides the quorum function from GovernorVotesQuorumFraction for the specified block number
+    /// @param blockNumber Number of the block for which a quorum is required
+    /// @return Quorum of votes required
     function quorum(
         uint256 blockNumber
     )
@@ -72,6 +82,10 @@ contract MiniDAO is
         return super.quorum(blockNumber);
     }
 
+    /// @notice Returns the current state of the proposal
+    /// @dev Uses GovernorTimelockControl to check the state of the proposal
+    /// @param proposalId Proposal ID
+    /// @return Current state of the proposal
     function state(
         uint256 proposalId
     )
@@ -83,12 +97,19 @@ contract MiniDAO is
         return super.state(proposalId);
     }
 
+    /// @notice Checks if the proposal needs to be queued for execution
+    /// @dev Overrides a function from GovernorTimelockControl
+    /// @param proposalId Proposal ID
+    /// @return true if the proposal requires queuing
     function proposalNeedsQueuing(
         uint256 proposalId
     ) public view override(Governor, GovernorTimelockControl) returns (bool) {
         return super.proposalNeedsQueuing(proposalId);
     }
 
+    /// @notice Returns the threshold value for submitting proposals
+    /// @dev Returns the value set in GovernorSettings, overriding Governor
+    /// @return Threshold value for suggestions in tokens
     function proposalThreshold()
         public
         view
@@ -98,6 +119,14 @@ contract MiniDAO is
         return super.proposalThreshold();
     }
 
+    /// @notice Sends proposal operations to the execution queue
+    /// @dev Overrides function from GovernorTimelockControl, handles the execution of operations
+    /// @param proposalId Proposal ID
+    /// @param targets Array of target addresses
+    /// @param values Array of values for each operation
+    /// @param calldatas Array of call data
+    /// @param descriptionHash Hash of sentence description
+    /// @return Timestamp for the execution of operations
     function _queueOperations(
         uint256 proposalId,
         address[] memory targets,
@@ -115,6 +144,13 @@ contract MiniDAO is
             );
     }
 
+    /// @notice Executes operations queued by suggestion
+    /// @dev Overrides a function from GovernorTimelockControl to perform operations
+    /// @param proposalId Proposal ID
+    /// @param targets Array of target addresses
+    /// @param values Array of values for each operation
+    //// @param calldatas Array of call data
+    /// @param descriptionHash Hash of proposal description
     function _executeOperations(
         uint256 proposalId,
         address[] memory targets,
@@ -131,6 +167,13 @@ contract MiniDAO is
         );
     }
 
+    /// @notice Cancels operations queued by suggestion
+    /// @dev Overrides a function from GovernorTimelockControl to cancel operations
+    /// @param targets Array of target addresses
+    /// @param values Array of values for each operation
+    /// @param calldatas Array of call data
+    /// @param descriptionHash The hash of the sentence description
+    /// @return Identifier of the offer that was canceled
     function _cancel(
         address[] memory targets,
         uint256[] memory values,
@@ -140,6 +183,9 @@ contract MiniDAO is
         return super._cancel(targets, values, calldatas, descriptionHash);
     }
 
+    /// @notice Returns the address of the executor of operations
+    /// @dev Overrides the function from GovernorTimelockControl to get the address of the executor.
+    /// @return Executor address
     function _executor()
         internal
         view

@@ -27,7 +27,6 @@ describe("SuperDAO", function () {
       "Token",
       "TKN",
       "miniDAO",
-      "5000",
       5, // _votingDelay
       100, // _votingPeriod
       4 // _quorumValue
@@ -53,10 +52,10 @@ describe("SuperDAO", function () {
     await timeLock.connect(owner).grantRole(executorRole, miniDAO);
 
     // token distribution
-    await token.connect(owner).transfer(acc1, "1000");
-    await token.connect(owner).transfer(acc2, "1000");
-    await token.connect(owner).transfer(acc3, "1000");
-    await token.connect(owner).transfer(acc4, "1000");
+    await token.tokenDistribution(
+      [owner, acc1, acc2, acc3, acc4],
+      ["1000", "1000", "1000", "1000", "1000"]
+    );
 
     // delegate tokens
     await token.connect(owner).delegate(owner);
@@ -67,6 +66,7 @@ describe("SuperDAO", function () {
 
     return {
       superDAO,
+      timeLock,
       token,
       treasury,
       miniDAO,
@@ -80,149 +80,155 @@ describe("SuperDAO", function () {
     };
   }
 
-  it("Deploy", async function () {
-    const { superDAO } = await loadFixture(deployDAO);
+  describe("Deployment", function () {
+    it("Right name and symbol", async function () {
+      const { token, miniDAO } = await loadFixture(deployDAO);
+      expect(await token.name()).to.equal("Token");
+      expect(await token.symbol()).to.equal("TKN");
+      expect(await miniDAO.name()).to.equal("miniDAO");
+    });
 
-    console.log(await superDAO.timeLock());
-    console.log(await superDAO.token());
-    console.log(await superDAO.governor());
-    console.log(await superDAO.treasury());
+    it("Right owner", async function () {
+      const { token, superDAO } = await loadFixture(deployDAO);
+      expect(await token.owner()).to.equal(await superDAO.timeLock());
+    });
+
+    it("Right timelock", async function () {
+      const { miniDAO, timeLock, superDAO } = await loadFixture(deployDAO);
+      expect(await miniDAO.timelock()).to.equal(timeLock);
+    });
+
+    it("Right settings", async function () {
+      const { miniDAO, timeLock, superDAO } = await loadFixture(deployDAO);
+      expect(await miniDAO.votingDelay()).to.equal(5);
+      expect(await miniDAO.votingPeriod()).to.equal(100);
+    });
   });
 
-  it("Right name and symbol", async function () {
-    const { token, miniDAO } = await loadFixture(deployDAO);
-    expect(await token.name()).to.equal("Token");
-    expect(await token.symbol()).to.equal("TKN");
-    expect(await miniDAO.name()).to.equal("miniDAO");
-  });
+  describe("Vouting", function () {
+    it("Simple Vouting", async function () {
+      const { miniDAO, owner, acc1, acc2, acc3, acc4 } = await loadFixture(
+        deployDAO
+      );
 
-  it("Right owner", async function () {
-    const { token, superDAO } = await loadFixture(deployDAO);
-    expect(await token.owner()).to.equal(await superDAO.timeLock());
-  });
+      const description =
+        "Let's repair the stairs on the third floor and paint the ceiling, walls, doors and locks on the same floor?";
 
-  it("Simple Vouting", async function () {
-    const { miniDAO, owner, acc1, acc2, acc3, acc4 } = await loadFixture(
-      deployDAO
-    );
+      const targets: string[] = ["0x0000000000000000000000000000000000000000"];
+      const values: number[] = [0];
+      const calldatas: string[] = ["0x00"];
 
-    const description =
-      "Let's repair the stairs on the third floor and paint the ceiling, walls, doors and locks on the same floor?";
+      const descriptionHash = hre.ethers.keccak256(
+        hre.ethers.toUtf8Bytes(description)
+      );
 
-    const targets: string[] = ["0x0000000000000000000000000000000000000000"];
-    const values: number[] = [0];
-    const calldatas: string[] = ["0x00"];
+      await expect(
+        miniDAO.connect(acc4).propose(targets, values, calldatas, description)
+      ).to.emit(miniDAO, "ProposalCreated");
 
-    const descriptionHash = hre.ethers.keccak256(
-      hre.ethers.toUtf8Bytes(description)
-    );
+      const proposalId = await miniDAO.hashProposal(
+        targets,
+        values,
+        calldatas,
+        descriptionHash
+      );
+      await mine(6);
 
-    await expect(
-      miniDAO.connect(acc4).propose(targets, values, calldatas, description)
-    ).to.emit(miniDAO, "ProposalCreated");
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Active
 
-    const proposalId = await miniDAO.hashProposal(
-      targets,
-      values,
-      calldatas,
-      descriptionHash
-    );
-    await mine(6);
+      // 0 = Against, 1 = For, 2 = Abstain
+      await miniDAO.connect(owner).castVote(proposalId, 1);
+      await miniDAO.connect(acc1).castVote(proposalId, 1);
+      await miniDAO.connect(acc2).castVote(proposalId, 1);
+      await miniDAO.connect(acc3).castVote(proposalId, 2);
+      await miniDAO.connect(acc4).castVote(proposalId, 2);
 
-    // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
-    // console.log(await miniDAO.state(proposalId)); // Active
+      // [ Against, For, Abstain ]
+      // console.log(await miniDAO.proposalVotes(proposalId));
 
-    // 0 = Against, 1 = For, 2 = Abstain
-    await miniDAO.connect(owner).castVote(proposalId, 1);
-    await miniDAO.connect(acc1).castVote(proposalId, 1);
-    await miniDAO.connect(acc2).castVote(proposalId, 1);
-    await miniDAO.connect(acc3).castVote(proposalId, 2);
-    await miniDAO.connect(acc4).castVote(proposalId, 2);
+      await mine(50);
 
-    // [ Against, For, Abstain ]
-    // console.log(await miniDAO.proposalVotes(proposalId));
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Active
 
-    await mine(50);
+      await mine(50);
 
-    // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
-    // console.log(await miniDAO.state(proposalId)); // Active
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Succeeded
+    });
 
-    await mine(50);
+    it("Vouting Mint", async function () {
+      const { token, miniDAO, owner, acc1, acc2, acc3, acc4, acc5 } =
+        await loadFixture(deployDAO);
 
-    // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
-    //  console.log(await miniDAO.state(proposalId)); // Succeeded
-  });
+      const target = await token.getAddress();
+      const calldata = (await token.mint.populateTransaction(acc5, 10000)).data;
+      const description = "Mint 10000 tokens";
 
-  it("Vouting Mint", async function () {
-    const { token, miniDAO, owner, acc1, acc2, acc3, acc4, acc5 } =
-      await loadFixture(deployDAO);
+      const targets = [target];
+      const values: number[] = [0];
+      const calldatas: string[] = [calldata];
 
-    const target = token.target;
-    const calldata = (await token.mint.populateTransaction(acc5, 10000)).data;
-    const description = "Mint 10000 tokens";
+      // proposal created
+      await expect(
+        miniDAO.connect(acc2).propose(targets, values, calldatas, description)
+      ).to.emit(miniDAO, "ProposalCreated");
 
-    const targets = [target];
-    const values: number[] = [0];
-    const calldatas: string[] = [calldata];
+      const descriptionHash = hre.ethers.keccak256(
+        hre.ethers.toUtf8Bytes(description)
+      );
 
-    // proposal created
-    await expect(
-      miniDAO.connect(acc2).propose(targets, values, calldatas, description)
-    ).to.emit(miniDAO, "ProposalCreated");
+      const proposalId = await miniDAO.hashProposal(
+        targets,
+        values,
+        calldatas,
+        descriptionHash
+      );
 
-    const descriptionHash = hre.ethers.keccak256(
-      hre.ethers.toUtf8Bytes(description)
-    );
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Pending
 
-    const proposalId = await miniDAO.hashProposal(
-      targets,
-      values,
-      calldatas,
-      descriptionHash
-    );
+      await mine(6);
 
-    // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
-    // console.log(await miniDAO.state(proposalId)); // Pending
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Active
 
-    await mine(6);
+      // 0 = Against, 1 = For, 2 = Abstain
+      await miniDAO.connect(owner).castVote(proposalId, 1);
+      await miniDAO.connect(acc1).castVote(proposalId, 1);
+      await miniDAO.connect(acc2).castVote(proposalId, 1);
+      await miniDAO.connect(acc3).castVote(proposalId, 2);
+      await miniDAO.connect(acc4).castVote(proposalId, 2);
 
-    // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
-    // console.log(await miniDAO.state(proposalId)); // Active
+      // [ Against, For, Abstain ]
+      // console.log(await miniDAO.proposalVotes(proposalId));
 
-    // 0 = Against, 1 = For, 2 = Abstain
-    await miniDAO.connect(owner).castVote(proposalId, 1);
-    await miniDAO.connect(acc1).castVote(proposalId, 1);
-    await miniDAO.connect(acc2).castVote(proposalId, 1);
-    await miniDAO.connect(acc3).castVote(proposalId, 2);
-    await miniDAO.connect(acc4).castVote(proposalId, 2);
+      await mine(50);
 
-    // [ Against, For, Abstain ]
-    console.log(await miniDAO.proposalVotes(proposalId));
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Active
 
-    await mine(50);
+      await mine(400);
 
-    // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
-    // console.log(await miniDAO.state(proposalId)); // Active
+      //  States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Succeeded;
 
-    await mine(400);
+      await miniDAO.queue(targets, values, calldatas, descriptionHash);
 
-    //  States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
-    console.log(await miniDAO.state(proposalId)); // Succeeded;
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      //  console.log(await miniDAO.state(proposalId)); // Queued
 
-    await miniDAO.queue(targets, values, calldatas, descriptionHash);
+      const now = await time.latest();
+      await time.increaseTo(now + 100);
 
-    // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
-    console.log(await miniDAO.state(proposalId)); // Queued
+      await miniDAO.execute(targets, values, calldatas, descriptionHash);
 
-    const now = await time.latest();
-    await time.increaseTo(now + 100);
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      // console.log(await miniDAO.state(proposalId)); // Executed
 
-    await miniDAO.execute(targets, values, calldatas, descriptionHash);
-
-    // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
-    console.log(await miniDAO.state(proposalId)); // Executed
-
-    // minted
-    expect(await token.balanceOf(acc5)).to.be.equal(10000);
+      // minted
+      expect(await token.balanceOf(acc5)).to.be.equal(10000);
+    });
   });
 });

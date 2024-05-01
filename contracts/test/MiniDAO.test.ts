@@ -18,19 +18,13 @@ describe("MiniDAO", function () {
     const timeLock = await TimeLock.deploy(1, [owner], [owner], owner);
 
     const Token = await hre.ethers.getContractFactory("TokenDAO");
-    const token = await Token.deploy(
-      timeLock.target,
-      "Token",
-      "TKN",
-      owner,
-      "50000"
-    );
+    const token = await Token.deploy(timeLock.target, "Token", "TKN");
 
     // token distribution
-    await token.connect(owner).transfer(acc1, "1000");
-    await token.connect(owner).transfer(acc2, "1000");
-    await token.connect(owner).transfer(acc3, "1000");
-    await token.connect(owner).transfer(acc4, "1000");
+    await token.tokenDistribution(
+      [owner, acc1, acc2, acc3, acc4],
+      ["1000", "1000", "1000", "1000", "1000"]
+    );
 
     const MiniDAO = await hre.ethers.getContractFactory("MiniDAO");
     const miniDAO = await MiniDAO.deploy(

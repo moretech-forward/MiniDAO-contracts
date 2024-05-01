@@ -19,7 +19,6 @@ contract SuperDAO {
     /// @param _nameToken The name of the token used in the TokenDAO contract.
     /// @param _symbolToken The symbol of the token used in the TokenDAO contract.
     /// @param _nameDAO The name of the DAO used in the MiniDAO contract.
-    /// @param _mintAmount The amount of tokens to mint for the initial supply in the TokenDAO contract.
     /// @param _votingDelay The delay before voting on a proposal can start in the MiniDAO contract (in blocks).
     /// @param _votingPeriod The duration in which a proposal can be voted on in the MiniDAO contract (in blocks).
     /// @param _quorumValue The quorum value required for a proposal to pass in the MiniDAO contract.
@@ -28,7 +27,6 @@ contract SuperDAO {
         string memory _nameToken,
         string memory _symbolToken,
         string memory _nameDAO,
-        uint256 _mintAmount,
         uint48 _votingDelay,
         uint32 _votingPeriod,
         uint256 _quorumValue
@@ -45,17 +43,15 @@ contract SuperDAO {
             msg.sender
         );
 
-        token = new TokenDAO(
+        TokenDAO _token = new TokenDAO(
             address(_timeLock),
             _nameToken,
-            _symbolToken,
-            msg.sender,
-            _mintAmount
+            _symbolToken
         );
 
         governor = new MiniDAO(
-            token,
-            timeLock,
+            _token,
+            _timeLock,
             _nameDAO,
             _votingDelay,
             _votingPeriod,
@@ -63,6 +59,7 @@ contract SuperDAO {
         );
 
         timeLock = _timeLock;
+        token = _token;
 
         treasury = new Treasury(address(_timeLock));
     }
