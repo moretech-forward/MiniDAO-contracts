@@ -9,9 +9,16 @@ import "./miniDAO/Treasury.sol";
 /// @title SuperDAO Contract
 /// @notice This contract represents a super DAO that integrates multiple DAO components.
 contract SuperDAO {
+    /// @notice The TimeLock component of the DAO used for managing the timing of proposal executions
     TimeLock public immutable timeLock;
+
+    /// @notice The TokenDAO component managing the native token of the DAO
     TokenDAO public immutable token;
+
+    /// @notice The MiniDAO component responsible for governance decisions
     MiniDAO public immutable governor;
+
+    /// @notice The Treasury component managing the financial assets of the DAO
     Treasury public immutable treasury;
 
     /// @notice Constructs the SuperDAO contract with specified parameters.
@@ -40,7 +47,7 @@ contract SuperDAO {
             _minDelay,
             _proposers,
             _executors,
-            msg.sender
+            address(this)
         );
 
         TokenDAO _token = new TokenDAO(
@@ -49,7 +56,7 @@ contract SuperDAO {
             _symbolToken
         );
 
-        governor = new MiniDAO(
+        MiniDAO _governor = new MiniDAO(
             _token,
             _timeLock,
             _nameDAO,
@@ -58,9 +65,17 @@ contract SuperDAO {
             _quorumValue
         );
 
-        timeLock = _timeLock;
-        token = _token;
+        bytes32 proposerRole = _timeLock.PROPOSER_ROLE();
+        bytes32 executorRole = _timeLock.EXECUTOR_ROLE();
+        bytes32 DEFAULT_ADMIN_ROLE = 0x00;
+
+        _timeLock.grantRole(proposerRole, address(_governor));
+        _timeLock.grantRole(executorRole, address(_governor));
+        _timeLock.grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
         treasury = new Treasury(address(_timeLock));
+        timeLock = _timeLock;
+        token = _token;
+        governor = _governor;
     }
 }

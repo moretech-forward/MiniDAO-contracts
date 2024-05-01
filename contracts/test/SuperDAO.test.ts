@@ -45,12 +45,6 @@ describe("SuperDAO", function () {
     const treasury = Treasury__factory.connect(treasuryAddr, owner);
     expect(await treasury.owner()).to.equal(timeLockAddr);
 
-    // timelock settings
-    const proposerRole = await timeLock.PROPOSER_ROLE();
-    const executorRole = await timeLock.EXECUTOR_ROLE();
-    await timeLock.connect(owner).grantRole(proposerRole, miniDAO);
-    await timeLock.connect(owner).grantRole(executorRole, miniDAO);
-
     // token distribution
     await token.tokenDistribution(
       [owner, acc1, acc2, acc3, acc4],
@@ -94,14 +88,36 @@ describe("SuperDAO", function () {
     });
 
     it("Right timelock", async function () {
-      const { miniDAO, timeLock, superDAO } = await loadFixture(deployDAO);
+      const { miniDAO, timeLock } = await loadFixture(deployDAO);
       expect(await miniDAO.timelock()).to.equal(timeLock);
     });
 
     it("Right settings", async function () {
-      const { miniDAO, timeLock, superDAO } = await loadFixture(deployDAO);
+      const { miniDAO } = await loadFixture(deployDAO);
+
       expect(await miniDAO.votingDelay()).to.equal(5);
       expect(await miniDAO.votingPeriod()).to.equal(100);
+    });
+  });
+
+  describe("Access control", function () {
+    it("Grant Role", async function () {
+      const { miniDAO, timeLock, owner, acc1 } = await loadFixture(deployDAO);
+
+      await expect(
+        timeLock
+          .connect(owner)
+          .grantRole(await timeLock.DEFAULT_ADMIN_ROLE(), miniDAO)
+      ).to.emit(timeLock, "RoleGranted");
+
+      await expect(
+        timeLock
+          .connect(acc1)
+          .grantRole(await timeLock.DEFAULT_ADMIN_ROLE(), miniDAO)
+      ).to.be.revertedWithCustomError(
+        timeLock,
+        "AccessControlUnauthorizedAccount"
+      );
     });
   });
 
