@@ -65,13 +65,9 @@ contract SuperDAO {
             _quorumValue
         );
 
-        bytes32 proposerRole = _timeLock.PROPOSER_ROLE();
-        bytes32 executorRole = _timeLock.EXECUTOR_ROLE();
-        bytes32 DEFAULT_ADMIN_ROLE = 0x00;
-
-        _timeLock.grantRole(proposerRole, address(_governor));
-        _timeLock.grantRole(executorRole, address(_governor));
-        _timeLock.grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _timeLock.grantRole(keccak256("PROPOSER_ROLE"), address(_governor));
+        _timeLock.grantRole(keccak256("EXECUTOR_ROLE"), address(_governor));
+        _timeLock.grantRole(0x00, msg.sender);
 
         treasury = new Treasury(address(_timeLock));
         timeLock = _timeLock;
