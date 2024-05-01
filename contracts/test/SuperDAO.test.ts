@@ -105,6 +105,40 @@ describe("SuperDAO", function () {
     });
   });
 
+  describe("Token DAO", function () {
+    it("unauthorized mint", async function () {
+      const { token, owner } = await loadFixture(deployDAO);
+
+      await expect(token.connect(owner).mint(owner, 1000)).to.be.revertedWith(
+        "UNAUTHORIZED"
+      );
+    });
+
+    it("attempting to redistribute the tokens a second time", async function () {
+      const { token, owner } = await loadFixture(deployDAO);
+      await expect(
+        token.connect(owner).tokenDistribution([owner], [1000])
+      ).to.be.revertedWith("A function can be called only once");
+    });
+  });
+
+  describe("Treasury", function () {
+    it("unauthorized releaseNativeToken", async function () {
+      const { treasury, owner } = await loadFixture(deployDAO);
+
+      await expect(
+        treasury.connect(owner).releaseNativeToken(owner, 1000)
+      ).to.be.revertedWith("UNAUTHORIZED");
+    });
+
+    it("unauthorized releaseERC20Token", async function () {
+      const { treasury, owner, token } = await loadFixture(deployDAO);
+      await expect(
+        treasury.connect(owner).releaseERC20Token(owner, 1000, token)
+      ).to.be.revertedWith("UNAUTHORIZED");
+    });
+  });
+
   describe("Vouting", function () {
     it("Simple Vouting", async function () {
       const { miniDAO, owner, acc1, acc2, acc3, acc4 } = await loadFixture(
