@@ -9,6 +9,9 @@ import "./miniDAO/Treasury.sol";
 /// @title SuperDAO Contract
 /// @notice This contract represents a super DAO that integrates multiple DAO components.
 contract SuperDAO {
+    /// @notice Auxiliary variable for frontend
+    address public immutable myAddr;
+
     /// @notice The TimeLock component of the DAO used for managing the timing of proposal executions
     TimeLock public immutable timeLock;
 
@@ -38,6 +41,8 @@ contract SuperDAO {
         uint32 _votingPeriod,
         uint256 _quorumValue
     ) payable {
+        myAddr = address(this);
+
         address[] memory _proposers = new address[](1);
         address[] memory _executors = new address[](1);
         _proposers[0] = msg.sender;

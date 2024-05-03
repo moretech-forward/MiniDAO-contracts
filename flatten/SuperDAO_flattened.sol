@@ -8302,6 +8302,9 @@ pragma solidity ^0.8.23;
 /// @title SuperDAO Contract
 /// @notice This contract represents a super DAO that integrates multiple DAO components.
 contract SuperDAO {
+    /// @notice Auxiliary variable for frontend
+    address public immutable myAddr;
+
     /// @notice The TimeLock component of the DAO used for managing the timing of proposal executions
     TimeLock public immutable timeLock;
 
@@ -8331,6 +8334,8 @@ contract SuperDAO {
         uint32 _votingPeriod,
         uint256 _quorumValue
     ) payable {
+        myAddr = address(this);
+
         address[] memory _proposers = new address[](1);
         address[] memory _executors = new address[](1);
         _proposers[0] = msg.sender;
@@ -8358,8 +8363,10 @@ contract SuperDAO {
             _quorumValue
         );
 
+        // Customizing contract roles
         _timeLock.grantRole(keccak256("PROPOSER_ROLE"), address(_governor));
         _timeLock.grantRole(keccak256("EXECUTOR_ROLE"), address(_governor));
+        //  bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
         _timeLock.grantRole(0x00, msg.sender);
 
         treasury = new Treasury(address(_timeLock));

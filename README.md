@@ -7,15 +7,14 @@
 
 ## Docs
 
-- [Docs](https://github.com/moretech-forward/miniDAO/blob/main/contracts/Docs.md)
-- [Audit](https://github.com/moretech-forward/miniDAO/blob/main/contracts/audit/Audit.md)
+- [Docs](https://github.com/moretech-forward/miniDAO/blob/main/Docs.md)
+- [Audit](https://github.com/moretech-forward/miniDAO/blob/main/audit/Audit.md)
 
 ## Usage
 
 ```sh
-git clone git@github.com:moretech-forward/miniDAO.git
-cd miniDAO
-cd contracts
+git clone git@github.com:moretech-forward/miniDAO-contracts.git
+cd miniDAO-contracts
 npm install
 npx hardhat compile
 npx hardhat test
