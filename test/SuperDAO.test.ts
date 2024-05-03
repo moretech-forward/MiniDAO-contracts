@@ -546,5 +546,73 @@ describe("SuperDAO", function () {
       // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
       // console.log(await miniDAO.state(proposalId)); // Executed
     });
+    it("Cancel proposal", async function () {
+      const { miniDAO, owner, acc1, acc2, acc3, acc4, acc6, treasury } =
+        await loadFixture(deployDAO);
+
+      const ERC721 = await hre.ethers.getContractFactory("MockTokenERC721");
+      const erc721 = await ERC721.deploy();
+
+      const id = 0;
+
+      await expect(
+        erc721
+          .connect(owner)
+          ["safeTransferFrom(address,address,uint256)"](owner, treasury, id)
+      ).to.emit(erc721, "Transfer");
+      expect(await erc721.ownerOf(id)).to.be.equal(treasury);
+      expect(await erc721.balanceOf(treasury)).to.be.equal(1);
+
+      let ABI = [
+        "function releaseERC721Token(address to, uint256 id, address token)",
+      ];
+      const iface = new hre.ethers.Interface(ABI);
+      const calldata = iface.encodeFunctionData("releaseERC721Token", [
+        acc6.address,
+        0,
+        erc721.target,
+      ]);
+
+      const target = treasury.target;
+      const description = "Pay out a grant to the third team";
+
+      // proposal created
+      await expect(
+        miniDAO.connect(acc1).propose([target], [0], [calldata], description)
+      ).to.emit(miniDAO, "ProposalCreated");
+
+      const descriptionHash = hre.ethers.keccak256(
+        hre.ethers.toUtf8Bytes(description)
+      );
+
+      const proposalId = await miniDAO.hashProposal(
+        [target],
+        [0],
+        [calldata],
+        descriptionHash
+      );
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      console.log(await miniDAO.state(proposalId)); // Pending
+
+      await expect(
+        miniDAO.connect(acc2).cancel([target], [0], [calldata], descriptionHash)
+      ).to.be.revertedWithCustomError(miniDAO, "GovernorOnlyProposer");
+
+      await expect(
+        miniDAO
+          .connect(owner)
+          .cancel([target], [0], [calldata], descriptionHash)
+      ).to.be.revertedWithCustomError(miniDAO, "GovernorOnlyProposer");
+
+      await miniDAO
+        .connect(acc1)
+        .cancel([target], [0], [calldata], descriptionHash);
+
+      await mine(6);
+
+      // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
+      console.log(await miniDAO.state(proposalId)); // Active
+    });
   });
 });
