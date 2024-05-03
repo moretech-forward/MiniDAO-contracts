@@ -452,7 +452,7 @@ describe("SuperDAO", function () {
     });
 
     it("Send ERC721 token", async function () {
-      const { miniDAO, owner, acc1, acc2, acc3, acc4, acc6, treasury } =
+      const { miniDAO, owner, acc1, acc2, acc3, acc4, acc5, acc6, treasury } =
         await loadFixture(deployDAO);
 
       const ERC721 = await hre.ethers.getContractFactory("MockTokenERC721");
@@ -529,7 +529,9 @@ describe("SuperDAO", function () {
       // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
       // console.log(await miniDAO.state(proposalId)); // Succeeded
 
-      await miniDAO.queue([target], [0], [calldata], descriptionHash);
+      await miniDAO
+        .connect(acc4)
+        .queue([target], [0], [calldata], descriptionHash);
 
       // States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
       // console.log(await miniDAO.state(proposalId)); // Queued
@@ -538,7 +540,9 @@ describe("SuperDAO", function () {
       await time.increaseTo(now + 100);
 
       await expect(
-        miniDAO.execute([target], [0], [calldata], descriptionHash)
+        miniDAO
+          .connect(acc5)
+          .execute([target], [0], [calldata], descriptionHash)
       ).to.emit(erc721, "Transfer");
 
       expect(await erc721.balanceOf(acc6)).to.be.equal(1);
