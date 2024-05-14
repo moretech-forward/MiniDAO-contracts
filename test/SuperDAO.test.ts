@@ -29,7 +29,7 @@ describe("SuperDAO", function () {
       "miniDAO",
       5, // _votingDelay
       100, // _votingPeriod
-      4 // _quorumValue
+      21 // _quorumValue
     );
 
     const timeLockAddr = await superDAO.timeLock();
@@ -40,6 +40,7 @@ describe("SuperDAO", function () {
 
     const miniDAOAddr = await superDAO.governor();
     const miniDAO = MiniDAO__factory.connect(miniDAOAddr, owner);
+    expect(await miniDAO.name()).to.equal("miniDAO");
 
     const treasuryAddr = await superDAO.treasury();
     const treasury = Treasury__factory.connect(treasuryAddr, owner);
@@ -262,7 +263,7 @@ describe("SuperDAO", function () {
       await mine(400);
 
       //  States: Pending, Active, Canceled, Defeated, Succeeded, Queued, Expired, Executed
-      // console.log(await miniDAO.state(proposalId)); // Succeeded;
+      console.log(await miniDAO.state(proposalId)); // Succeeded;
 
       await miniDAO.queue(targets, values, calldatas, descriptionHash);
 
@@ -421,7 +422,7 @@ describe("SuperDAO", function () {
       await miniDAO.connect(acc4).castVote(proposalId, 2);
 
       // [ Against, For, Abstain ]
-      // console.log(await miniDAO.proposalVotes(proposalId));
+      console.log(await miniDAO.proposalVotes(proposalId));
 
       await mine(50);
 

@@ -14,6 +14,23 @@ async function main() {
   );
 
   console.log(`SuperDAO deployed to ${await superDAO.getAddress()}`);
+
+  const miniDAOAddr = await superDAO.governor();
+
+  const miniDAO = await ethers.getContractAt("MiniDAO", miniDAOAddr);
+
+  const description =
+    "Let's repair the stairs on the third floor and paint the ceiling, walls, doors and locks on the same floor?";
+
+  const targets: string[] = ["0x0000000000000000000000000000000000000000"];
+  const values: number[] = [0];
+  const calldatas: string[] = ["0x00"];
+
+  console.log(await miniDAO.name());
+
+  await miniDAO.propose(targets, values, calldatas, description);
+
+  console.log("Simple vouting created");
 }
 
 main().catch((error) => {
