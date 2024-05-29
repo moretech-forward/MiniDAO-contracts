@@ -19,6 +19,16 @@ contract MiniDAO is
     GovernorVotesQuorumFraction,
     GovernorTimelockControl
 {
+    struct ProposalInfo {
+        string _against;
+        string _for;
+        string _abstain;
+        string _name;
+        string _link;
+    }
+
+    mapping(uint256 => ProposalInfo) public info;
+
     /// @notice Constructs the MiniDAO contract with specified parameters.
     /// @param _token The token used for voting.
     /// @param _timelock The timelock controller contract.
@@ -40,6 +50,29 @@ contract MiniDAO is
         GovernorVotesQuorumFraction(_quorumValue)
         GovernorTimelockControl(_timelock)
     {}
+
+    function propose(
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory calldatas,
+        string memory description,
+        string[5] memory _info
+    ) public returns (uint256) {
+        uint256 proposalId = super.propose(
+            targets,
+            values,
+            calldatas,
+            description
+        );
+        info[proposalId] = ProposalInfo({
+            _against: _info[0],
+            _for: _info[1],
+            _abstain: _info[2],
+            _name: _info[3],
+            _link: _info[4]
+        });
+        return proposalId;
+    }
 
     // The following functions are overrides required by Solidity.
 

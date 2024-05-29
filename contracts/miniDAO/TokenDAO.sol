@@ -25,6 +25,15 @@ contract TokenDAO is ERC20, Owned, ERC20Permit, ERC20Votes {
         string memory _symbol
     ) ERC20(_name, _symbol) Owned(_timelock) ERC20Permit(_name) {}
 
+    function clock() public view override returns (uint48) {
+        return uint48(block.timestamp);
+    }
+
+    // solhint-disable-next-line func-name-mixedcase
+    function CLOCK_MODE() public pure override returns (string memory) {
+        return "mode=timestamp";
+    }
+
     /// @notice Performs batch token allocation to specified addresses
     /// @dev The function should be called only once, the second call will cause an error.
     /// @param to Array of addresses to which tokens will be credited

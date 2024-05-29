@@ -1,0 +1,108 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_minDelay",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_nameToken",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_symbolToken",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_nameDAO",
+        "type": "string"
+      },
+      {
+        "internalType": "uint48",
+        "name": "_votingDelay",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_votingPeriod",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_quorumValue",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "payable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "governor",
+    "outputs": [
+      {
+        "internalType": "contract MiniDAO",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "myAddr",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "timeLock",
+    "outputs": [
+      {
+        "internalType": "contract TimeLock",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "token",
+    "outputs": [
+      {
+        "internalType": "contract TokenDAO",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "treasury",
+    "outputs": [
+      {
+        "internalType": "contract Treasury",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
