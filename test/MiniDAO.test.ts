@@ -26,10 +26,13 @@ describe("MiniDAO", function () {
     const token = await Token.deploy(timeLock.target, "Token", "TKN");
 
     // token distribution
-    await token.tokenDistribution(
-      [owner, acc1, acc2, acc3, acc4],
-      ["1000", "1000", "1000", "1000", "1000"]
-    );
+    await token.tokenDistribution(owner, 6000);
+
+    await token.transfer(acc1, 1000);
+    await token.transfer(acc2, 1000);
+    await token.transfer(acc3, 1000);
+    await token.transfer(acc4, 1000);
+    await token.transfer(acc5, 1000);
 
     const MiniDAO = await hre.ethers.getContractFactory("MiniDAO");
     const miniDAO = await MiniDAO.deploy(

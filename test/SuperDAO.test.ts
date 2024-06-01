@@ -47,10 +47,13 @@ describe("SuperDAO", function () {
     expect(await treasury.owner()).to.equal(timeLockAddr);
 
     // token distribution
-    await token.tokenDistribution(
-      [owner, acc1, acc2, acc3, acc4],
-      ["1000", "1000", "1000", "1000", "1000"]
-    );
+    await token.tokenDistribution(owner, 6000);
+
+    await token.transfer(acc1, 1000);
+    await token.transfer(acc2, 1000);
+    await token.transfer(acc3, 1000);
+    await token.transfer(acc4, 1000);
+    await token.transfer(acc5, 1000);
 
     // delegate tokens
     await token.connect(owner).delegate(owner);
@@ -134,7 +137,7 @@ describe("SuperDAO", function () {
     it("attempting to redistribute the tokens a second time", async function () {
       const { token, owner } = await loadFixture(deployDAO);
       await expect(
-        token.connect(owner).tokenDistribution([owner], [1000])
+        token.connect(owner).tokenDistribution(owner, 1000)
       ).to.be.revertedWith("A function can be called only once");
     });
   });
@@ -279,7 +282,7 @@ describe("SuperDAO", function () {
       // console.log(await miniDAO.state(proposalId)); // Executed
 
       // minted
-      expect(await token.balanceOf(acc5)).to.be.equal(10000);
+      expect(await token.balanceOf(acc5)).to.be.equal(11000);
     });
 
     it("Vouting pay grant in native tokens", async function () {

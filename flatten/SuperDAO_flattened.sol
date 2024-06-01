@@ -5024,17 +5024,23 @@ contract TokenDAO is ERC20, Owned, ERC20Permit, ERC20Votes {
         string memory _symbol
     ) ERC20(_name, _symbol) Owned(_timelock) ERC20Permit(_name) {}
 
+    function clock() public view override returns (uint48) {
+        return uint48(block.timestamp);
+    }
+
+    // solhint-disable-next-line func-name-mixedcase
+    function CLOCK_MODE() public pure override returns (string memory) {
+        return "mode=timestamp";
+    }
+
     /// @notice Performs batch token allocation to specified addresses
     /// @dev The function should be called only once, the second call will cause an error.
     /// @param to Array of addresses to which tokens will be credited
     /// @param amount Array of token amounts that will be credited to the corresponding addresses
-    function tokenDistribution(
-        address[] memory to,
-        uint256[] memory amount
-    ) external {
+    function tokenDistribution(address to, uint256 amount) external {
         require(!isInit, "A function can be called only once");
         isInit = true;
-        _mintBatch(to, amount);
+        _mint(to, amount);
     }
 
     /// @notice Mints tokens and assigns them to a specified recipient.
@@ -5311,7 +5317,7 @@ contract Treasury is Owned, ERC721TokenReceiver {
     /// @param to The recipient address of the ERC721 token
     /// @param id The token ID of the ERC721 token to transfer
     /// @param token The address of the ERC721 token contract
-    function releaseERC721oken(
+    function releaseERC721Token(
         address to,
         uint256 id,
         address token
@@ -5329,6 +5335,7 @@ contract Treasury is Owned, ERC721TokenReceiver {
 
         // Execute the safe transfer of the token to the specified address
         ERC721Token.safeTransferFrom(address(this), to, id, "0x00");
+        //ERC721Token.transferFrom(address(this), to, id);
     }
 
     /// @dev Fallback function to receive native tokens.
@@ -8113,6 +8120,16 @@ contract MiniDAO is
     GovernorVotesQuorumFraction,
     GovernorTimelockControl
 {
+    struct ProposalInfo {
+        string _against;
+        string _for;
+        string _abstain;
+        string _name;
+        string _link;
+    }
+
+    mapping(uint256 => ProposalInfo) public info;
+
     /// @notice Constructs the MiniDAO contract with specified parameters.
     /// @param _token The token used for voting.
     /// @param _timelock The timelock controller contract.
@@ -8134,6 +8151,29 @@ contract MiniDAO is
         GovernorVotesQuorumFraction(_quorumValue)
         GovernorTimelockControl(_timelock)
     {}
+
+    function propose(
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory calldatas,
+        string memory description,
+        string[5] memory _info
+    ) public returns (uint256) {
+        uint256 proposalId = super.propose(
+            targets,
+            values,
+            calldatas,
+            description
+        );
+        info[proposalId] = ProposalInfo({
+            _against: _info[0],
+            _for: _info[1],
+            _abstain: _info[2],
+            _name: _info[3],
+            _link: _info[4]
+        });
+        return proposalId;
+    }
 
     // The following functions are overrides required by Solidity.
 

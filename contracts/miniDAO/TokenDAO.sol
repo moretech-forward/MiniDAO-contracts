@@ -38,13 +38,10 @@ contract TokenDAO is ERC20, Owned, ERC20Permit, ERC20Votes {
     /// @dev The function should be called only once, the second call will cause an error.
     /// @param to Array of addresses to which tokens will be credited
     /// @param amount Array of token amounts that will be credited to the corresponding addresses
-    function tokenDistribution(
-        address[] memory to,
-        uint256[] memory amount
-    ) external {
+    function tokenDistribution(address to, uint256 amount) external {
         require(!isInit, "A function can be called only once");
         isInit = true;
-        _mintBatch(to, amount);
+        _mint(to, amount);
     }
 
     /// @notice Mints tokens and assigns them to a specified recipient.
