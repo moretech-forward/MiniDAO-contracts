@@ -27,7 +27,7 @@ contract MiniDAO is
         string _link;
     }
 
-    mapping(uint256 => ProposalInfo) public info;
+    mapping(uint256 => string) public titles;
 
     /// @notice Constructs the MiniDAO contract with specified parameters.
     /// @param _token The token used for voting.
@@ -51,12 +51,12 @@ contract MiniDAO is
         GovernorTimelockControl(_timelock)
     {}
 
-    function propose(
+    function proposeWithTitle(
         address[] memory targets,
         uint256[] memory values,
         bytes[] memory calldatas,
         string memory description,
-        string[5] memory _info
+        string memory title
     ) public returns (uint256) {
         uint256 proposalId = super.propose(
             targets,
@@ -64,13 +64,8 @@ contract MiniDAO is
             calldatas,
             description
         );
-        info[proposalId] = ProposalInfo({
-            _against: _info[0],
-            _for: _info[1],
-            _abstain: _info[2],
-            _name: _info[3],
-            _link: _info[4]
-        });
+        titles[proposalId] = title;
+
         return proposalId;
     }
 

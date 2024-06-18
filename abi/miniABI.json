@@ -67,7 +67,7 @@
   "function proposalThreshold() view returns (uint256)",
   "function proposalVotes(uint256 proposalId) view returns (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes)",
   "function propose(address[] targets, uint256[] values, bytes[] calldatas, string description) returns (uint256)",
-  "function propose(address[] targets, uint256[] values, bytes[] calldatas, string description, string[5] _info) returns (uint256)",
+  "function proposeWithTitle(address[] targets, uint256[] values, bytes[] calldatas, string description, string title) returns (uint256)",
   "function queue(address[] targets, uint256[] values, bytes[] calldatas, bytes32 descriptionHash) returns (uint256)",
   "function quorum(uint256 blockNumber) view returns (uint256)",
   "function quorumDenominator() view returns (uint256)",

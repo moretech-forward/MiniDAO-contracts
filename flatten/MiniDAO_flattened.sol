@@ -1,614 +1,1652 @@
+// File: @openzeppelin/contracts/token/ERC721/IERC721Receiver.sol
 
-// File: @openzeppelin/contracts/access/IAccessControl.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (access/IAccessControl.sol)
+// OpenZeppelin Contracts (last updated v5.0.0) (token/ERC721/IERC721Receiver.sol)
 
 pragma solidity ^0.8.20;
 
 /**
- * @dev External interface of AccessControl declared to support ERC165 detection.
+ * @title ERC721 token receiver interface
+ * @dev Interface for any contract that wants to support safeTransfers
+ * from ERC721 asset contracts.
  */
-interface IAccessControl {
+interface IERC721Receiver {
     /**
-     * @dev The `account` is missing a role.
+     * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}
+     * by `operator` from `from`, this function is called.
+     *
+     * It must return its Solidity selector to confirm the token transfer.
+     * If any other value is returned or the interface is not implemented by the recipient, the transfer will be
+     * reverted.
+     *
+     * The selector can be obtained in Solidity with `IERC721Receiver.onERC721Received.selector`.
      */
-    error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);
-
-    /**
-     * @dev The caller of a function is not the expected one.
-     *
-     * NOTE: Don't confuse with {AccessControlUnauthorizedAccount}.
-     */
-    error AccessControlBadConfirmation();
-
-    /**
-     * @dev Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole`
-     *
-     * `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite
-     * {RoleAdminChanged} not being emitted signaling this.
-     */
-    event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole);
-
-    /**
-     * @dev Emitted when `account` is granted `role`.
-     *
-     * `sender` is the account that originated the contract call, an admin role
-     * bearer except when using {AccessControl-_setupRole}.
-     */
-    event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender);
-
-    /**
-     * @dev Emitted when `account` is revoked `role`.
-     *
-     * `sender` is the account that originated the contract call:
-     *   - if using `revokeRole`, it is the admin role bearer
-     *   - if using `renounceRole`, it is the role bearer (i.e. `account`)
-     */
-    event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender);
-
-    /**
-     * @dev Returns `true` if `account` has been granted `role`.
-     */
-    function hasRole(bytes32 role, address account) external view returns (bool);
-
-    /**
-     * @dev Returns the admin role that controls `role`. See {grantRole} and
-     * {revokeRole}.
-     *
-     * To change a role's admin, use {AccessControl-_setRoleAdmin}.
-     */
-    function getRoleAdmin(bytes32 role) external view returns (bytes32);
-
-    /**
-     * @dev Grants `role` to `account`.
-     *
-     * If `account` had not been already granted `role`, emits a {RoleGranted}
-     * event.
-     *
-     * Requirements:
-     *
-     * - the caller must have ``role``'s admin role.
-     */
-    function grantRole(bytes32 role, address account) external;
-
-    /**
-     * @dev Revokes `role` from `account`.
-     *
-     * If `account` had been granted `role`, emits a {RoleRevoked} event.
-     *
-     * Requirements:
-     *
-     * - the caller must have ``role``'s admin role.
-     */
-    function revokeRole(bytes32 role, address account) external;
-
-    /**
-     * @dev Revokes `role` from the calling account.
-     *
-     * Roles are often managed via {grantRole} and {revokeRole}: this function's
-     * purpose is to provide a mechanism for accounts to lose their privileges
-     * if they are compromised (such as when a trusted device is misplaced).
-     *
-     * If the calling account had been granted `role`, emits a {RoleRevoked}
-     * event.
-     *
-     * Requirements:
-     *
-     * - the caller must be `callerConfirmation`.
-     */
-    function renounceRole(bytes32 role, address callerConfirmation) external;
+    function onERC721Received(
+        address operator,
+        address from,
+        uint256 tokenId,
+        bytes calldata data
+    ) external returns (bytes4);
 }
 
-// File: @openzeppelin/contracts/governance/utils/IVotes.sol
+// File: @openzeppelin/contracts/utils/introspection/IERC165.sol
 
-
-// OpenZeppelin Contracts (last updated v5.0.0) (governance/utils/IVotes.sol)
-pragma solidity ^0.8.20;
-
-/**
- * @dev Common interface for {ERC20Votes}, {ERC721Votes}, and other {Votes}-enabled contracts.
- */
-interface IVotes {
-    /**
-     * @dev The signature used has expired.
-     */
-    error VotesExpiredSignature(uint256 expiry);
-
-    /**
-     * @dev Emitted when an account changes their delegate.
-     */
-    event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate);
-
-    /**
-     * @dev Emitted when a token transfer or delegate change results in changes to a delegate's number of voting units.
-     */
-    event DelegateVotesChanged(address indexed delegate, uint256 previousVotes, uint256 newVotes);
-
-    /**
-     * @dev Returns the current amount of votes that `account` has.
-     */
-    function getVotes(address account) external view returns (uint256);
-
-    /**
-     * @dev Returns the amount of votes that `account` had at a specific moment in the past. If the `clock()` is
-     * configured to use block numbers, this will return the value at the end of the corresponding block.
-     */
-    function getPastVotes(address account, uint256 timepoint) external view returns (uint256);
-
-    /**
-     * @dev Returns the total supply of votes available at a specific moment in the past. If the `clock()` is
-     * configured to use block numbers, this will return the value at the end of the corresponding block.
-     *
-     * NOTE: This value is the sum of all available votes, which is not necessarily the sum of all delegated votes.
-     * Votes that have not been delegated are still part of total supply, even though they would not participate in a
-     * vote.
-     */
-    function getPastTotalSupply(uint256 timepoint) external view returns (uint256);
-
-    /**
-     * @dev Returns the delegate that `account` has chosen.
-     */
-    function delegates(address account) external view returns (address);
-
-    /**
-     * @dev Delegates votes from the sender to `delegatee`.
-     */
-    function delegate(address delegatee) external;
-
-    /**
-     * @dev Delegates votes from signer to `delegatee`.
-     */
-    function delegateBySig(address delegatee, uint256 nonce, uint256 expiry, uint8 v, bytes32 r, bytes32 s) external;
-}
-
-// File: @openzeppelin/contracts/interfaces/IERC6372.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC6372.sol)
-
-pragma solidity ^0.8.20;
-
-interface IERC6372 {
-    /**
-     * @dev Clock used for flagging checkpoints. Can be overridden to implement timestamp based checkpoints (and voting).
-     */
-    function clock() external view returns (uint48);
-
-    /**
-     * @dev Description of the clock
-     */
-    // solhint-disable-next-line func-name-mixedcase
-    function CLOCK_MODE() external view returns (string memory);
-}
-
-// File: @openzeppelin/contracts/interfaces/IERC5805.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC5805.sol)
-
-pragma solidity ^0.8.20;
-
-
-
-interface IERC5805 is IERC6372, IVotes {}
-
-// File: @openzeppelin/contracts/utils/Nonces.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/Nonces.sol)
-pragma solidity ^0.8.20;
-
-/**
- * @dev Provides tracking nonces for addresses. Nonces will only increment.
- */
-abstract contract Nonces {
-    /**
-     * @dev The nonce used for an `account` is not the expected current nonce.
-     */
-    error InvalidAccountNonce(address account, uint256 currentNonce);
-
-    mapping(address account => uint256) private _nonces;
-
-    /**
-     * @dev Returns the next unused nonce for an address.
-     */
-    function nonces(address owner) public view virtual returns (uint256) {
-        return _nonces[owner];
-    }
-
-    /**
-     * @dev Consumes a nonce.
-     *
-     * Returns the current value and increments nonce.
-     */
-    function _useNonce(address owner) internal virtual returns (uint256) {
-        // For each account, the nonce has an initial value of 0, can only be incremented by one, and cannot be
-        // decremented or reset. This guarantees that the nonce never overflows.
-        unchecked {
-            // It is important to do x++ and not ++x here.
-            return _nonces[owner]++;
-        }
-    }
-
-    /**
-     * @dev Same as {_useNonce} but checking that `nonce` is the next valid for `owner`.
-     */
-    function _useCheckedNonce(address owner, uint256 nonce) internal virtual {
-        uint256 current = _useNonce(owner);
-        if (nonce != current) {
-            revert InvalidAccountNonce(owner, current);
-        }
-    }
-}
-
-// File: @openzeppelin/contracts/utils/Context.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/introspection/IERC165.sol)
 
 pragma solidity ^0.8.20;
 
 /**
- * @dev Provides information about the current execution context, including the
- * sender of the transaction and its data. While these are generally available
- * via msg.sender and msg.data, they should not be accessed in such a direct
- * manner, since when dealing with meta-transactions the account sending and
- * paying for execution may not be the actual sender (as far as an application
- * is concerned).
+ * @dev Interface of the ERC165 standard, as defined in the
+ * https://eips.ethereum.org/EIPS/eip-165[EIP].
  *
- * This contract is only required for intermediate, library-like contracts.
+ * Implementers can declare support of contract interfaces, which can then be
+ * queried by others ({ERC165Checker}).
+ *
+ * For an implementation, see {ERC165}.
  */
-abstract contract Context {
-    function _msgSender() internal view virtual returns (address) {
-        return msg.sender;
-    }
-
-    function _msgData() internal view virtual returns (bytes calldata) {
-        return msg.data;
-    }
-
-    function _contextSuffixLength() internal view virtual returns (uint256) {
-        return 0;
-    }
+interface IERC165 {
+    /**
+     * @dev Returns true if this contract implements the interface defined by
+     * `interfaceId`. See the corresponding
+     * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]
+     * to learn more about how these ids are created.
+     *
+     * This function call must use less than 30 000 gas.
+     */
+    function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
 
-// File: @openzeppelin/contracts/utils/Address.sol
+// File: @openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol
 
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/Address.sol)
+// OpenZeppelin Contracts (last updated v5.0.0) (token/ERC1155/IERC1155Receiver.sol)
 
 pragma solidity ^0.8.20;
 
 /**
- * @dev Collection of functions related to the address type
+ * @dev Interface that must be implemented by smart contracts in order to receive
+ * ERC-1155 token transfers.
  */
-library Address {
+interface IERC1155Receiver is IERC165 {
     /**
-     * @dev The ETH balance of the account is not enough to perform the operation.
+     * @dev Handles the receipt of a single ERC1155 token type. This function is
+     * called at the end of a `safeTransferFrom` after the balance has been updated.
+     *
+     * NOTE: To accept the transfer, this must return
+     * `bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"))`
+     * (i.e. 0xf23a6e61, or its own function selector).
+     *
+     * @param operator The address which initiated the transfer (i.e. msg.sender)
+     * @param from The address which previously owned the token
+     * @param id The ID of the token being transferred
+     * @param value The amount of tokens being transferred
+     * @param data Additional data with no specified format
+     * @return `bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"))` if transfer is allowed
      */
-    error AddressInsufficientBalance(address account);
+    function onERC1155Received(
+        address operator,
+        address from,
+        uint256 id,
+        uint256 value,
+        bytes calldata data
+    ) external returns (bytes4);
 
     /**
-     * @dev There's no code at `target` (it is not a contract).
+     * @dev Handles the receipt of a multiple ERC1155 token types. This function
+     * is called at the end of a `safeBatchTransferFrom` after the balances have
+     * been updated.
+     *
+     * NOTE: To accept the transfer(s), this must return
+     * `bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"))`
+     * (i.e. 0xbc197c81, or its own function selector).
+     *
+     * @param operator The address which initiated the batch transfer (i.e. msg.sender)
+     * @param from The address which previously owned the token
+     * @param ids An array containing ids of each token being transferred (order and length must match values array)
+     * @param values An array containing amounts of each token being transferred (order and length must match ids array)
+     * @param data Additional data with no specified format
+     * @return `bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"))` if transfer is allowed
      */
-    error AddressEmptyCode(address target);
+    function onERC1155BatchReceived(
+        address operator,
+        address from,
+        uint256[] calldata ids,
+        uint256[] calldata values,
+        bytes calldata data
+    ) external returns (bytes4);
+}
+
+// File: @openzeppelin/contracts/utils/math/Math.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/math/Math.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Standard math utilities missing in the Solidity language.
+ */
+library Math {
+    /**
+     * @dev Muldiv operation overflow.
+     */
+    error MathOverflowedMulDiv();
+
+    enum Rounding {
+        Floor, // Toward negative infinity
+        Ceil, // Toward positive infinity
+        Trunc, // Toward zero
+        Expand // Away from zero
+    }
 
     /**
-     * @dev A call to an address target failed. The target may have reverted.
+     * @dev Returns the addition of two unsigned integers, with an overflow flag.
      */
-    error FailedInnerCall();
+    function tryAdd(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
+        unchecked {
+            uint256 c = a + b;
+            if (c < a) return (false, 0);
+            return (true, c);
+        }
+    }
 
     /**
-     * @dev Replacement for Solidity's `transfer`: sends `amount` wei to
-     * `recipient`, forwarding all available gas and reverting on errors.
-     *
-     * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost
-     * of certain opcodes, possibly making contracts go over the 2300 gas limit
-     * imposed by `transfer`, making them unable to receive funds via
-     * `transfer`. {sendValue} removes this limitation.
-     *
-     * https://consensys.net/diligence/blog/2019/09/stop-using-soliditys-transfer-now/[Learn more].
-     *
-     * IMPORTANT: because control is transferred to `recipient`, care must be
-     * taken to not create reentrancy vulnerabilities. Consider using
-     * {ReentrancyGuard} or the
-     * https://solidity.readthedocs.io/en/v0.8.20/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
+     * @dev Returns the subtraction of two unsigned integers, with an overflow flag.
      */
-    function sendValue(address payable recipient, uint256 amount) internal {
-        if (address(this).balance < amount) {
-            revert AddressInsufficientBalance(address(this));
+    function trySub(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
+        unchecked {
+            if (b > a) return (false, 0);
+            return (true, a - b);
+        }
+    }
+
+    /**
+     * @dev Returns the multiplication of two unsigned integers, with an overflow flag.
+     */
+    function tryMul(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
+        unchecked {
+            // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+            // benefit is lost if 'b' is also tested.
+            // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
+            if (a == 0) return (true, 0);
+            uint256 c = a * b;
+            if (c / a != b) return (false, 0);
+            return (true, c);
+        }
+    }
+
+    /**
+     * @dev Returns the division of two unsigned integers, with a division by zero flag.
+     */
+    function tryDiv(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
+        unchecked {
+            if (b == 0) return (false, 0);
+            return (true, a / b);
+        }
+    }
+
+    /**
+     * @dev Returns the remainder of dividing two unsigned integers, with a division by zero flag.
+     */
+    function tryMod(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
+        unchecked {
+            if (b == 0) return (false, 0);
+            return (true, a % b);
+        }
+    }
+
+    /**
+     * @dev Returns the largest of two numbers.
+     */
+    function max(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a > b ? a : b;
+    }
+
+    /**
+     * @dev Returns the smallest of two numbers.
+     */
+    function min(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a < b ? a : b;
+    }
+
+    /**
+     * @dev Returns the average of two numbers. The result is rounded towards
+     * zero.
+     */
+    function average(uint256 a, uint256 b) internal pure returns (uint256) {
+        // (a + b) / 2 can overflow.
+        return (a & b) + (a ^ b) / 2;
+    }
+
+    /**
+     * @dev Returns the ceiling of the division of two numbers.
+     *
+     * This differs from standard division with `/` in that it rounds towards infinity instead
+     * of rounding towards zero.
+     */
+    function ceilDiv(uint256 a, uint256 b) internal pure returns (uint256) {
+        if (b == 0) {
+            // Guarantee the same behavior as in a regular Solidity division.
+            return a / b;
         }
 
-        (bool success, ) = recipient.call{value: amount}("");
-        if (!success) {
-            revert FailedInnerCall();
-        }
+        // (a + b - 1) / b can overflow on addition, so we distribute.
+        return a == 0 ? 0 : (a - 1) / b + 1;
     }
 
     /**
-     * @dev Performs a Solidity function call using a low level `call`. A
-     * plain `call` is an unsafe replacement for a function call: use this
-     * function instead.
-     *
-     * If `target` reverts with a revert reason or custom error, it is bubbled
-     * up by this function (like regular Solidity function calls). However, if
-     * the call reverted with no returned reason, this function reverts with a
-     * {FailedInnerCall} error.
-     *
-     * Returns the raw returned data. To convert to the expected return value,
-     * use https://solidity.readthedocs.io/en/latest/units-and-global-variables.html?highlight=abi.decode#abi-encoding-and-decoding-functions[`abi.decode`].
-     *
-     * Requirements:
-     *
-     * - `target` must be a contract.
-     * - calling `target` with `data` must not revert.
+     * @notice Calculates floor(x * y / denominator) with full precision. Throws if result overflows a uint256 or
+     * denominator == 0.
+     * @dev Original credit to Remco Bloemen under MIT license (https://xn--2-umb.com/21/muldiv) with further edits by
+     * Uniswap Labs also under MIT license.
      */
-    function functionCall(address target, bytes memory data) internal returns (bytes memory) {
-        return functionCallWithValue(target, data, 0);
-    }
-
-    /**
-     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
-     * but also transferring `value` wei to `target`.
-     *
-     * Requirements:
-     *
-     * - the calling contract must have an ETH balance of at least `value`.
-     * - the called Solidity function must be `payable`.
-     */
-    function functionCallWithValue(address target, bytes memory data, uint256 value) internal returns (bytes memory) {
-        if (address(this).balance < value) {
-            revert AddressInsufficientBalance(address(this));
-        }
-        (bool success, bytes memory returndata) = target.call{value: value}(data);
-        return verifyCallResultFromTarget(target, success, returndata);
-    }
-
-    /**
-     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
-     * but performing a static call.
-     */
-    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
-        (bool success, bytes memory returndata) = target.staticcall(data);
-        return verifyCallResultFromTarget(target, success, returndata);
-    }
-
-    /**
-     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
-     * but performing a delegate call.
-     */
-    function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
-        (bool success, bytes memory returndata) = target.delegatecall(data);
-        return verifyCallResultFromTarget(target, success, returndata);
-    }
-
-    /**
-     * @dev Tool to verify that a low level call to smart-contract was successful, and reverts if the target
-     * was not a contract or bubbling up the revert reason (falling back to {FailedInnerCall}) in case of an
-     * unsuccessful call.
-     */
-    function verifyCallResultFromTarget(
-        address target,
-        bool success,
-        bytes memory returndata
-    ) internal view returns (bytes memory) {
-        if (!success) {
-            _revert(returndata);
-        } else {
-            // only check if target is a contract if the call was successful and the return data is empty
-            // otherwise we already know that it was a contract
-            if (returndata.length == 0 && target.code.length == 0) {
-                revert AddressEmptyCode(target);
+    function mulDiv(
+        uint256 x,
+        uint256 y,
+        uint256 denominator
+    ) internal pure returns (uint256 result) {
+        unchecked {
+            // 512-bit multiply [prod1 prod0] = x * y. Compute the product mod 2^256 and mod 2^256 - 1, then use
+            // use the Chinese Remainder Theorem to reconstruct the 512 bit result. The result is stored in two 256
+            // variables such that product = prod1 * 2^256 + prod0.
+            uint256 prod0 = x * y; // Least significant 256 bits of the product
+            uint256 prod1; // Most significant 256 bits of the product
+            assembly {
+                let mm := mulmod(x, y, not(0))
+                prod1 := sub(sub(mm, prod0), lt(mm, prod0))
             }
-            return returndata;
+
+            // Handle non-overflow cases, 256 by 256 division.
+            if (prod1 == 0) {
+                // Solidity will revert if denominator == 0, unlike the div opcode on its own.
+                // The surrounding unchecked block does not change this fact.
+                // See https://docs.soliditylang.org/en/latest/control-structures.html#checked-or-unchecked-arithmetic.
+                return prod0 / denominator;
+            }
+
+            // Make sure the result is less than 2^256. Also prevents denominator == 0.
+            if (denominator <= prod1) {
+                revert MathOverflowedMulDiv();
+            }
+
+            ///////////////////////////////////////////////
+            // 512 by 256 division.
+            ///////////////////////////////////////////////
+
+            // Make division exact by subtracting the remainder from [prod1 prod0].
+            uint256 remainder;
+            assembly {
+                // Compute remainder using mulmod.
+                remainder := mulmod(x, y, denominator)
+
+                // Subtract 256 bit number from 512 bit number.
+                prod1 := sub(prod1, gt(remainder, prod0))
+                prod0 := sub(prod0, remainder)
+            }
+
+            // Factor powers of two out of denominator and compute largest power of two divisor of denominator.
+            // Always >= 1. See https://cs.stackexchange.com/q/138556/92363.
+
+            uint256 twos = denominator & (0 - denominator);
+            assembly {
+                // Divide denominator by twos.
+                denominator := div(denominator, twos)
+
+                // Divide [prod1 prod0] by twos.
+                prod0 := div(prod0, twos)
+
+                // Flip twos such that it is 2^256 / twos. If twos is zero, then it becomes one.
+                twos := add(div(sub(0, twos), twos), 1)
+            }
+
+            // Shift in bits from prod1 into prod0.
+            prod0 |= prod1 * twos;
+
+            // Invert denominator mod 2^256. Now that denominator is an odd number, it has an inverse modulo 2^256 such
+            // that denominator * inv = 1 mod 2^256. Compute the inverse by starting with a seed that is correct for
+            // four bits. That is, denominator * inv = 1 mod 2^4.
+            uint256 inverse = (3 * denominator) ^ 2;
+
+            // Use the Newton-Raphson iteration to improve the precision. Thanks to Hensel's lifting lemma, this also
+            // works in modular arithmetic, doubling the correct bits in each step.
+            inverse *= 2 - denominator * inverse; // inverse mod 2^8
+            inverse *= 2 - denominator * inverse; // inverse mod 2^16
+            inverse *= 2 - denominator * inverse; // inverse mod 2^32
+            inverse *= 2 - denominator * inverse; // inverse mod 2^64
+            inverse *= 2 - denominator * inverse; // inverse mod 2^128
+            inverse *= 2 - denominator * inverse; // inverse mod 2^256
+
+            // Because the division is now exact we can divide by multiplying with the modular inverse of denominator.
+            // This will give us the correct result modulo 2^256. Since the preconditions guarantee that the outcome is
+            // less than 2^256, this is the final result. We don't need to compute the high bits of the result and prod1
+            // is no longer required.
+            result = prod0 * inverse;
+            return result;
         }
     }
 
     /**
-     * @dev Tool to verify that a low level call was successful, and reverts if it wasn't, either by bubbling the
-     * revert reason or with a default {FailedInnerCall} error.
+     * @notice Calculates x * y / denominator with full precision, following the selected rounding direction.
      */
-    function verifyCallResult(bool success, bytes memory returndata) internal pure returns (bytes memory) {
-        if (!success) {
-            _revert(returndata);
-        } else {
-            return returndata;
+    function mulDiv(
+        uint256 x,
+        uint256 y,
+        uint256 denominator,
+        Rounding rounding
+    ) internal pure returns (uint256) {
+        uint256 result = mulDiv(x, y, denominator);
+        if (unsignedRoundsUp(rounding) && mulmod(x, y, denominator) > 0) {
+            result += 1;
+        }
+        return result;
+    }
+
+    /**
+     * @dev Returns the square root of a number. If the number is not a perfect square, the value is rounded
+     * towards zero.
+     *
+     * Inspired by Henry S. Warren, Jr.'s "Hacker's Delight" (Chapter 11).
+     */
+    function sqrt(uint256 a) internal pure returns (uint256) {
+        if (a == 0) {
+            return 0;
+        }
+
+        // For our first guess, we get the biggest power of 2 which is smaller than the square root of the target.
+        //
+        // We know that the "msb" (most significant bit) of our target number `a` is a power of 2 such that we have
+        // `msb(a) <= a < 2*msb(a)`. This value can be written `msb(a)=2**k` with `k=log2(a)`.
+        //
+        // This can be rewritten `2**log2(a) <= a < 2**(log2(a) + 1)`
+        // → `sqrt(2**k) <= sqrt(a) < sqrt(2**(k+1))`
+        // → `2**(k/2) <= sqrt(a) < 2**((k+1)/2) <= 2**(k/2 + 1)`
+        //
+        // Consequently, `2**(log2(a) / 2)` is a good first approximation of `sqrt(a)` with at least 1 correct bit.
+        uint256 result = 1 << (log2(a) >> 1);
+
+        // At this point `result` is an estimation with one bit of precision. We know the true value is a uint128,
+        // since it is the square root of a uint256. Newton's method converges quadratically (precision doubles at
+        // every iteration). We thus need at most 7 iteration to turn our partial result with one bit of precision
+        // into the expected uint128 result.
+        unchecked {
+            result = (result + a / result) >> 1;
+            result = (result + a / result) >> 1;
+            result = (result + a / result) >> 1;
+            result = (result + a / result) >> 1;
+            result = (result + a / result) >> 1;
+            result = (result + a / result) >> 1;
+            result = (result + a / result) >> 1;
+            return min(result, a / result);
         }
     }
 
     /**
-     * @dev Reverts with returndata if present. Otherwise reverts with {FailedInnerCall}.
+     * @notice Calculates sqrt(a), following the selected rounding direction.
      */
-    function _revert(bytes memory returndata) private pure {
-        // Look for revert reason and bubble it up if present
-        if (returndata.length > 0) {
-            // The easiest way to bubble the revert reason is using memory via assembly
+    function sqrt(
+        uint256 a,
+        Rounding rounding
+    ) internal pure returns (uint256) {
+        unchecked {
+            uint256 result = sqrt(a);
+            return
+                result +
+                (unsignedRoundsUp(rounding) && result * result < a ? 1 : 0);
+        }
+    }
+
+    /**
+     * @dev Return the log in base 2 of a positive value rounded towards zero.
+     * Returns 0 if given 0.
+     */
+    function log2(uint256 value) internal pure returns (uint256) {
+        uint256 result = 0;
+        unchecked {
+            if (value >> 128 > 0) {
+                value >>= 128;
+                result += 128;
+            }
+            if (value >> 64 > 0) {
+                value >>= 64;
+                result += 64;
+            }
+            if (value >> 32 > 0) {
+                value >>= 32;
+                result += 32;
+            }
+            if (value >> 16 > 0) {
+                value >>= 16;
+                result += 16;
+            }
+            if (value >> 8 > 0) {
+                value >>= 8;
+                result += 8;
+            }
+            if (value >> 4 > 0) {
+                value >>= 4;
+                result += 4;
+            }
+            if (value >> 2 > 0) {
+                value >>= 2;
+                result += 2;
+            }
+            if (value >> 1 > 0) {
+                result += 1;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @dev Return the log in base 2, following the selected rounding direction, of a positive value.
+     * Returns 0 if given 0.
+     */
+    function log2(
+        uint256 value,
+        Rounding rounding
+    ) internal pure returns (uint256) {
+        unchecked {
+            uint256 result = log2(value);
+            return
+                result +
+                (unsignedRoundsUp(rounding) && 1 << result < value ? 1 : 0);
+        }
+    }
+
+    /**
+     * @dev Return the log in base 10 of a positive value rounded towards zero.
+     * Returns 0 if given 0.
+     */
+    function log10(uint256 value) internal pure returns (uint256) {
+        uint256 result = 0;
+        unchecked {
+            if (value >= 10 ** 64) {
+                value /= 10 ** 64;
+                result += 64;
+            }
+            if (value >= 10 ** 32) {
+                value /= 10 ** 32;
+                result += 32;
+            }
+            if (value >= 10 ** 16) {
+                value /= 10 ** 16;
+                result += 16;
+            }
+            if (value >= 10 ** 8) {
+                value /= 10 ** 8;
+                result += 8;
+            }
+            if (value >= 10 ** 4) {
+                value /= 10 ** 4;
+                result += 4;
+            }
+            if (value >= 10 ** 2) {
+                value /= 10 ** 2;
+                result += 2;
+            }
+            if (value >= 10 ** 1) {
+                result += 1;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @dev Return the log in base 10, following the selected rounding direction, of a positive value.
+     * Returns 0 if given 0.
+     */
+    function log10(
+        uint256 value,
+        Rounding rounding
+    ) internal pure returns (uint256) {
+        unchecked {
+            uint256 result = log10(value);
+            return
+                result +
+                (unsignedRoundsUp(rounding) && 10 ** result < value ? 1 : 0);
+        }
+    }
+
+    /**
+     * @dev Return the log in base 256 of a positive value rounded towards zero.
+     * Returns 0 if given 0.
+     *
+     * Adding one to the result gives the number of pairs of hex symbols needed to represent `value` as a hex string.
+     */
+    function log256(uint256 value) internal pure returns (uint256) {
+        uint256 result = 0;
+        unchecked {
+            if (value >> 128 > 0) {
+                value >>= 128;
+                result += 16;
+            }
+            if (value >> 64 > 0) {
+                value >>= 64;
+                result += 8;
+            }
+            if (value >> 32 > 0) {
+                value >>= 32;
+                result += 4;
+            }
+            if (value >> 16 > 0) {
+                value >>= 16;
+                result += 2;
+            }
+            if (value >> 8 > 0) {
+                result += 1;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @dev Return the log in base 256, following the selected rounding direction, of a positive value.
+     * Returns 0 if given 0.
+     */
+    function log256(
+        uint256 value,
+        Rounding rounding
+    ) internal pure returns (uint256) {
+        unchecked {
+            uint256 result = log256(value);
+            return
+                result +
+                (
+                    unsignedRoundsUp(rounding) && 1 << (result << 3) < value
+                        ? 1
+                        : 0
+                );
+        }
+    }
+
+    /**
+     * @dev Returns whether a provided rounding mode is considered rounding up for unsigned integers.
+     */
+    function unsignedRoundsUp(Rounding rounding) internal pure returns (bool) {
+        return uint8(rounding) % 2 == 1;
+    }
+}
+
+// File: @openzeppelin/contracts/utils/math/SignedMath.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/math/SignedMath.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Standard signed math utilities missing in the Solidity language.
+ */
+library SignedMath {
+    /**
+     * @dev Returns the largest of two signed numbers.
+     */
+    function max(int256 a, int256 b) internal pure returns (int256) {
+        return a > b ? a : b;
+    }
+
+    /**
+     * @dev Returns the smallest of two signed numbers.
+     */
+    function min(int256 a, int256 b) internal pure returns (int256) {
+        return a < b ? a : b;
+    }
+
+    /**
+     * @dev Returns the average of two signed numbers without overflow.
+     * The result is rounded towards zero.
+     */
+    function average(int256 a, int256 b) internal pure returns (int256) {
+        // Formula from the book "Hacker's Delight"
+        int256 x = (a & b) + ((a ^ b) >> 1);
+        return x + (int256(uint256(x) >> 255) & (a ^ b));
+    }
+
+    /**
+     * @dev Returns the absolute unsigned value of a signed value.
+     */
+    function abs(int256 n) internal pure returns (uint256) {
+        unchecked {
+            // must be unchecked in order to support `n = type(int256).min`
+            return uint256(n >= 0 ? n : -n);
+        }
+    }
+}
+
+// File: @openzeppelin/contracts/utils/Strings.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/Strings.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev String operations.
+ */
+library Strings {
+    bytes16 private constant HEX_DIGITS = "0123456789abcdef";
+    uint8 private constant ADDRESS_LENGTH = 20;
+
+    /**
+     * @dev The `value` string doesn't fit in the specified `length`.
+     */
+    error StringsInsufficientHexLength(uint256 value, uint256 length);
+
+    /**
+     * @dev Converts a `uint256` to its ASCII `string` decimal representation.
+     */
+    function toString(uint256 value) internal pure returns (string memory) {
+        unchecked {
+            uint256 length = Math.log10(value) + 1;
+            string memory buffer = new string(length);
+            uint256 ptr;
             /// @solidity memory-safe-assembly
             assembly {
-                let returndata_size := mload(returndata)
-                revert(add(32, returndata), returndata_size)
+                ptr := add(buffer, add(32, length))
             }
-        } else {
-            revert FailedInnerCall();
+            while (true) {
+                ptr--;
+                /// @solidity memory-safe-assembly
+                assembly {
+                    mstore8(ptr, byte(mod(value, 10), HEX_DIGITS))
+                }
+                value /= 10;
+                if (value == 0) break;
+            }
+            return buffer;
+        }
+    }
+
+    /**
+     * @dev Converts a `int256` to its ASCII `string` decimal representation.
+     */
+    function toStringSigned(
+        int256 value
+    ) internal pure returns (string memory) {
+        return
+            string.concat(
+                value < 0 ? "-" : "",
+                toString(SignedMath.abs(value))
+            );
+    }
+
+    /**
+     * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation.
+     */
+    function toHexString(uint256 value) internal pure returns (string memory) {
+        unchecked {
+            return toHexString(value, Math.log256(value) + 1);
+        }
+    }
+
+    /**
+     * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation with fixed length.
+     */
+    function toHexString(
+        uint256 value,
+        uint256 length
+    ) internal pure returns (string memory) {
+        uint256 localValue = value;
+        bytes memory buffer = new bytes(2 * length + 2);
+        buffer[0] = "0";
+        buffer[1] = "x";
+        for (uint256 i = 2 * length + 1; i > 1; --i) {
+            buffer[i] = HEX_DIGITS[localValue & 0xf];
+            localValue >>= 4;
+        }
+        if (localValue != 0) {
+            revert StringsInsufficientHexLength(value, length);
+        }
+        return string(buffer);
+    }
+
+    /**
+     * @dev Converts an `address` with fixed length of 20 bytes to its not checksummed ASCII `string` hexadecimal
+     * representation.
+     */
+    function toHexString(address addr) internal pure returns (string memory) {
+        return toHexString(uint256(uint160(addr)), ADDRESS_LENGTH);
+    }
+
+    /**
+     * @dev Returns true if the two strings are equal.
+     */
+    function equal(
+        string memory a,
+        string memory b
+    ) internal pure returns (bool) {
+        return
+            bytes(a).length == bytes(b).length &&
+            keccak256(bytes(a)) == keccak256(bytes(b));
+    }
+}
+
+// File: @openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/cryptography/MessageHashUtils.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Signature message hash utilities for producing digests to be consumed by {ECDSA} recovery or signing.
+ *
+ * The library provides methods for generating a hash of a message that conforms to the
+ * https://eips.ethereum.org/EIPS/eip-191[EIP 191] and https://eips.ethereum.org/EIPS/eip-712[EIP 712]
+ * specifications.
+ */
+library MessageHashUtils {
+    /**
+     * @dev Returns the keccak256 digest of an EIP-191 signed data with version
+     * `0x45` (`personal_sign` messages).
+     *
+     * The digest is calculated by prefixing a bytes32 `messageHash` with
+     * `"\x19Ethereum Signed Message:\n32"` and hashing the result. It corresponds with the
+     * hash signed when using the https://eth.wiki/json-rpc/API#eth_sign[`eth_sign`] JSON-RPC method.
+     *
+     * NOTE: The `messageHash` parameter is intended to be the result of hashing a raw message with
+     * keccak256, although any bytes32 value can be safely used because the final digest will
+     * be re-hashed.
+     *
+     * See {ECDSA-recover}.
+     */
+    function toEthSignedMessageHash(
+        bytes32 messageHash
+    ) internal pure returns (bytes32 digest) {
+        /// @solidity memory-safe-assembly
+        assembly {
+            mstore(0x00, "\x19Ethereum Signed Message:\n32") // 32 is the bytes-length of messageHash
+            mstore(0x1c, messageHash) // 0x1c (28) is the length of the prefix
+            digest := keccak256(0x00, 0x3c) // 0x3c is the length of the prefix (0x1c) + messageHash (0x20)
+        }
+    }
+
+    /**
+     * @dev Returns the keccak256 digest of an EIP-191 signed data with version
+     * `0x45` (`personal_sign` messages).
+     *
+     * The digest is calculated by prefixing an arbitrary `message` with
+     * `"\x19Ethereum Signed Message:\n" + len(message)` and hashing the result. It corresponds with the
+     * hash signed when using the https://eth.wiki/json-rpc/API#eth_sign[`eth_sign`] JSON-RPC method.
+     *
+     * See {ECDSA-recover}.
+     */
+    function toEthSignedMessageHash(
+        bytes memory message
+    ) internal pure returns (bytes32) {
+        return
+            keccak256(
+                bytes.concat(
+                    "\x19Ethereum Signed Message:\n",
+                    bytes(Strings.toString(message.length)),
+                    message
+                )
+            );
+    }
+
+    /**
+     * @dev Returns the keccak256 digest of an EIP-191 signed data with version
+     * `0x00` (data with intended validator).
+     *
+     * The digest is calculated by prefixing an arbitrary `data` with `"\x19\x00"` and the intended
+     * `validator` address. Then hashing the result.
+     *
+     * See {ECDSA-recover}.
+     */
+    function toDataWithIntendedValidatorHash(
+        address validator,
+        bytes memory data
+    ) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(hex"19_00", validator, data));
+    }
+
+    /**
+     * @dev Returns the keccak256 digest of an EIP-712 typed data (EIP-191 version `0x01`).
+     *
+     * The digest is calculated from a `domainSeparator` and a `structHash`, by prefixing them with
+     * `\x19\x01` and hashing the result. It corresponds to the hash signed by the
+     * https://eips.ethereum.org/EIPS/eip-712[`eth_signTypedData`] JSON-RPC method as part of EIP-712.
+     *
+     * See {ECDSA-recover}.
+     */
+    function toTypedDataHash(
+        bytes32 domainSeparator,
+        bytes32 structHash
+    ) internal pure returns (bytes32 digest) {
+        /// @solidity memory-safe-assembly
+        assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, hex"19_01")
+            mstore(add(ptr, 0x02), domainSeparator)
+            mstore(add(ptr, 0x22), structHash)
+            digest := keccak256(ptr, 0x42)
         }
     }
 }
 
-// File: @openzeppelin/contracts/utils/structs/DoubleEndedQueue.sol
+// File: @openzeppelin/contracts/utils/StorageSlot.sol
 
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/StorageSlot.sol)
+// This file was procedurally generated from scripts/generate/templates/StorageSlot.js.
 
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/structs/DoubleEndedQueue.sol)
 pragma solidity ^0.8.20;
 
 /**
- * @dev A sequence of items with the ability to efficiently push and pop items (i.e. insert and remove) on both ends of
- * the sequence (called front and back). Among other access patterns, it can be used to implement efficient LIFO and
- * FIFO queues. Storage use is optimized, and all operations are O(1) constant time. This includes {clear}, given that
- * the existing queue contents are left in storage.
+ * @dev Library for reading and writing primitive types to specific storage slots.
  *
- * The struct is called `Bytes32Deque`. Other types can be cast to and from `bytes32`. This data structure can only be
- * used in storage, and not in memory.
+ * Storage slots are often used to avoid storage conflict when dealing with upgradeable contracts.
+ * This library helps with reading and writing to such slots without the need for inline assembly.
+ *
+ * The functions in this library return Slot structs that contain a `value` member that can be used to read or write.
+ *
+ * Example usage to set ERC1967 implementation slot:
  * ```solidity
- * DoubleEndedQueue.Bytes32Deque queue;
+ * contract ERC1967 {
+ *     bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+ *
+ *     function _getImplementation() internal view returns (address) {
+ *         return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
+ *     }
+ *
+ *     function _setImplementation(address newImplementation) internal {
+ *         require(newImplementation.code.length > 0);
+ *         StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = newImplementation;
+ *     }
+ * }
  * ```
  */
-library DoubleEndedQueue {
-    /**
-     * @dev An operation (e.g. {front}) couldn't be completed due to the queue being empty.
-     */
-    error QueueEmpty();
+library StorageSlot {
+    struct AddressSlot {
+        address value;
+    }
 
-    /**
-     * @dev A push operation couldn't be completed due to the queue being full.
-     */
-    error QueueFull();
+    struct BooleanSlot {
+        bool value;
+    }
 
-    /**
-     * @dev An operation (e.g. {at}) couldn't be completed due to an index being out of bounds.
-     */
-    error QueueOutOfBounds();
+    struct Bytes32Slot {
+        bytes32 value;
+    }
 
-    /**
-     * @dev Indices are 128 bits so begin and end are packed in a single storage slot for efficient access.
-     *
-     * Struct members have an underscore prefix indicating that they are "private" and should not be read or written to
-     * directly. Use the functions provided below instead. Modifying the struct manually may violate assumptions and
-     * lead to unexpected behavior.
-     *
-     * The first item is at data[begin] and the last item is at data[end - 1]. This range can wrap around.
-     */
-    struct Bytes32Deque {
-        uint128 _begin;
-        uint128 _end;
-        mapping(uint128 index => bytes32) _data;
+    struct Uint256Slot {
+        uint256 value;
+    }
+
+    struct StringSlot {
+        string value;
+    }
+
+    struct BytesSlot {
+        bytes value;
     }
 
     /**
-     * @dev Inserts an item at the end of the queue.
-     *
-     * Reverts with {QueueFull} if the queue is full.
+     * @dev Returns an `AddressSlot` with member `value` located at `slot`.
      */
-    function pushBack(Bytes32Deque storage deque, bytes32 value) internal {
-        unchecked {
-            uint128 backIndex = deque._end;
-            if (backIndex + 1 == deque._begin) revert QueueFull();
-            deque._data[backIndex] = value;
-            deque._end = backIndex + 1;
+    function getAddressSlot(
+        bytes32 slot
+    ) internal pure returns (AddressSlot storage r) {
+        /// @solidity memory-safe-assembly
+        assembly {
+            r.slot := slot
         }
     }
 
     /**
-     * @dev Removes the item at the end of the queue and returns it.
-     *
-     * Reverts with {QueueEmpty} if the queue is empty.
+     * @dev Returns an `BooleanSlot` with member `value` located at `slot`.
      */
-    function popBack(Bytes32Deque storage deque) internal returns (bytes32 value) {
-        unchecked {
-            uint128 backIndex = deque._end;
-            if (backIndex == deque._begin) revert QueueEmpty();
-            --backIndex;
-            value = deque._data[backIndex];
-            delete deque._data[backIndex];
-            deque._end = backIndex;
+    function getBooleanSlot(
+        bytes32 slot
+    ) internal pure returns (BooleanSlot storage r) {
+        /// @solidity memory-safe-assembly
+        assembly {
+            r.slot := slot
         }
     }
 
     /**
-     * @dev Inserts an item at the beginning of the queue.
-     *
-     * Reverts with {QueueFull} if the queue is full.
+     * @dev Returns an `Bytes32Slot` with member `value` located at `slot`.
      */
-    function pushFront(Bytes32Deque storage deque, bytes32 value) internal {
-        unchecked {
-            uint128 frontIndex = deque._begin - 1;
-            if (frontIndex == deque._end) revert QueueFull();
-            deque._data[frontIndex] = value;
-            deque._begin = frontIndex;
+    function getBytes32Slot(
+        bytes32 slot
+    ) internal pure returns (Bytes32Slot storage r) {
+        /// @solidity memory-safe-assembly
+        assembly {
+            r.slot := slot
         }
     }
 
     /**
-     * @dev Removes the item at the beginning of the queue and returns it.
-     *
-     * Reverts with `QueueEmpty` if the queue is empty.
+     * @dev Returns an `Uint256Slot` with member `value` located at `slot`.
      */
-    function popFront(Bytes32Deque storage deque) internal returns (bytes32 value) {
-        unchecked {
-            uint128 frontIndex = deque._begin;
-            if (frontIndex == deque._end) revert QueueEmpty();
-            value = deque._data[frontIndex];
-            delete deque._data[frontIndex];
-            deque._begin = frontIndex + 1;
+    function getUint256Slot(
+        bytes32 slot
+    ) internal pure returns (Uint256Slot storage r) {
+        /// @solidity memory-safe-assembly
+        assembly {
+            r.slot := slot
         }
     }
 
     /**
-     * @dev Returns the item at the beginning of the queue.
-     *
-     * Reverts with `QueueEmpty` if the queue is empty.
+     * @dev Returns an `StringSlot` with member `value` located at `slot`.
      */
-    function front(Bytes32Deque storage deque) internal view returns (bytes32 value) {
-        if (empty(deque)) revert QueueEmpty();
-        return deque._data[deque._begin];
-    }
-
-    /**
-     * @dev Returns the item at the end of the queue.
-     *
-     * Reverts with `QueueEmpty` if the queue is empty.
-     */
-    function back(Bytes32Deque storage deque) internal view returns (bytes32 value) {
-        if (empty(deque)) revert QueueEmpty();
-        unchecked {
-            return deque._data[deque._end - 1];
+    function getStringSlot(
+        bytes32 slot
+    ) internal pure returns (StringSlot storage r) {
+        /// @solidity memory-safe-assembly
+        assembly {
+            r.slot := slot
         }
     }
 
     /**
-     * @dev Return the item at a position in the queue given by `index`, with the first item at 0 and last item at
-     * `length(deque) - 1`.
-     *
-     * Reverts with `QueueOutOfBounds` if the index is out of bounds.
+     * @dev Returns an `StringSlot` representation of the string storage pointer `store`.
      */
-    function at(Bytes32Deque storage deque, uint256 index) internal view returns (bytes32 value) {
-        if (index >= length(deque)) revert QueueOutOfBounds();
-        // By construction, length is a uint128, so the check above ensures that index can be safely downcast to uint128
-        unchecked {
-            return deque._data[deque._begin + uint128(index)];
+    function getStringSlot(
+        string storage store
+    ) internal pure returns (StringSlot storage r) {
+        /// @solidity memory-safe-assembly
+        assembly {
+            r.slot := store.slot
         }
     }
 
     /**
-     * @dev Resets the queue back to being empty.
-     *
-     * NOTE: The current items are left behind in storage. This does not affect the functioning of the queue, but misses
-     * out on potential gas refunds.
+     * @dev Returns an `BytesSlot` with member `value` located at `slot`.
      */
-    function clear(Bytes32Deque storage deque) internal {
-        deque._begin = 0;
-        deque._end = 0;
-    }
-
-    /**
-     * @dev Returns the number of items in the queue.
-     */
-    function length(Bytes32Deque storage deque) internal view returns (uint256) {
-        unchecked {
-            return uint256(deque._end - deque._begin);
+    function getBytesSlot(
+        bytes32 slot
+    ) internal pure returns (BytesSlot storage r) {
+        /// @solidity memory-safe-assembly
+        assembly {
+            r.slot := slot
         }
     }
 
     /**
-     * @dev Returns true if the queue is empty.
+     * @dev Returns an `BytesSlot` representation of the bytes storage pointer `store`.
      */
-    function empty(Bytes32Deque storage deque) internal view returns (bool) {
-        return deque._end == deque._begin;
+    function getBytesSlot(
+        bytes storage store
+    ) internal pure returns (BytesSlot storage r) {
+        /// @solidity memory-safe-assembly
+        assembly {
+            r.slot := store.slot
+        }
+    }
+}
+
+// File: @openzeppelin/contracts/utils/ShortStrings.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/ShortStrings.sol)
+
+pragma solidity ^0.8.20;
+
+// | string  | 0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA   |
+// | length  | 0x                                                              BB |
+type ShortString is bytes32;
+
+/**
+ * @dev This library provides functions to convert short memory strings
+ * into a `ShortString` type that can be used as an immutable variable.
+ *
+ * Strings of arbitrary length can be optimized using this library if
+ * they are short enough (up to 31 bytes) by packing them with their
+ * length (1 byte) in a single EVM word (32 bytes). Additionally, a
+ * fallback mechanism can be used for every other case.
+ *
+ * Usage example:
+ *
+ * ```solidity
+ * contract Named {
+ *     using ShortStrings for *;
+ *
+ *     ShortString private immutable _name;
+ *     string private _nameFallback;
+ *
+ *     constructor(string memory contractName) {
+ *         _name = contractName.toShortStringWithFallback(_nameFallback);
+ *     }
+ *
+ *     function name() external view returns (string memory) {
+ *         return _name.toStringWithFallback(_nameFallback);
+ *     }
+ * }
+ * ```
+ */
+library ShortStrings {
+    // Used as an identifier for strings longer than 31 bytes.
+    bytes32 private constant FALLBACK_SENTINEL =
+        0x00000000000000000000000000000000000000000000000000000000000000FF;
+
+    error StringTooLong(string str);
+    error InvalidShortString();
+
+    /**
+     * @dev Encode a string of at most 31 chars into a `ShortString`.
+     *
+     * This will trigger a `StringTooLong` error is the input string is too long.
+     */
+    function toShortString(
+        string memory str
+    ) internal pure returns (ShortString) {
+        bytes memory bstr = bytes(str);
+        if (bstr.length > 31) {
+            revert StringTooLong(str);
+        }
+        return ShortString.wrap(bytes32(uint256(bytes32(bstr)) | bstr.length));
+    }
+
+    /**
+     * @dev Decode a `ShortString` back to a "normal" string.
+     */
+    function toString(ShortString sstr) internal pure returns (string memory) {
+        uint256 len = byteLength(sstr);
+        // using `new string(len)` would work locally but is not memory safe.
+        string memory str = new string(32);
+        /// @solidity memory-safe-assembly
+        assembly {
+            mstore(str, len)
+            mstore(add(str, 0x20), sstr)
+        }
+        return str;
+    }
+
+    /**
+     * @dev Return the length of a `ShortString`.
+     */
+    function byteLength(ShortString sstr) internal pure returns (uint256) {
+        uint256 result = uint256(ShortString.unwrap(sstr)) & 0xFF;
+        if (result > 31) {
+            revert InvalidShortString();
+        }
+        return result;
+    }
+
+    /**
+     * @dev Encode a string into a `ShortString`, or write it to storage if it is too long.
+     */
+    function toShortStringWithFallback(
+        string memory value,
+        string storage store
+    ) internal returns (ShortString) {
+        if (bytes(value).length < 32) {
+            return toShortString(value);
+        } else {
+            StorageSlot.getStringSlot(store).value = value;
+            return ShortString.wrap(FALLBACK_SENTINEL);
+        }
+    }
+
+    /**
+     * @dev Decode a string that was encoded to `ShortString` or written to storage using {setWithFallback}.
+     */
+    function toStringWithFallback(
+        ShortString value,
+        string storage store
+    ) internal pure returns (string memory) {
+        if (ShortString.unwrap(value) != FALLBACK_SENTINEL) {
+            return toString(value);
+        } else {
+            return store;
+        }
+    }
+
+    /**
+     * @dev Return the length of a string that was encoded to `ShortString` or written to storage using
+     * {setWithFallback}.
+     *
+     * WARNING: This will return the "byte length" of the string. This may not reflect the actual length in terms of
+     * actual characters as the UTF-8 encoding of a single character can span over multiple bytes.
+     */
+    function byteLengthWithFallback(
+        ShortString value,
+        string storage store
+    ) internal view returns (uint256) {
+        if (ShortString.unwrap(value) != FALLBACK_SENTINEL) {
+            return byteLength(value);
+        } else {
+            return bytes(store).length;
+        }
+    }
+}
+
+// File: @openzeppelin/contracts/interfaces/IERC5267.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC5267.sol)
+
+pragma solidity ^0.8.20;
+
+interface IERC5267 {
+    /**
+     * @dev MAY be emitted to signal that the domain could have changed.
+     */
+    event EIP712DomainChanged();
+
+    /**
+     * @dev returns the fields and values that describe the domain separator used by this contract for EIP-712
+     * signature.
+     */
+    function eip712Domain()
+        external
+        view
+        returns (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        );
+}
+
+// File: @openzeppelin/contracts/utils/cryptography/EIP712.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/cryptography/EIP712.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev https://eips.ethereum.org/EIPS/eip-712[EIP 712] is a standard for hashing and signing of typed structured data.
+ *
+ * The encoding scheme specified in the EIP requires a domain separator and a hash of the typed structured data, whose
+ * encoding is very generic and therefore its implementation in Solidity is not feasible, thus this contract
+ * does not implement the encoding itself. Protocols need to implement the type-specific encoding they need in order to
+ * produce the hash of their typed data using a combination of `abi.encode` and `keccak256`.
+ *
+ * This contract implements the EIP 712 domain separator ({_domainSeparatorV4}) that is used as part of the encoding
+ * scheme, and the final step of the encoding to obtain the message digest that is then signed via ECDSA
+ * ({_hashTypedDataV4}).
+ *
+ * The implementation of the domain separator was designed to be as efficient as possible while still properly updating
+ * the chain id to protect against replay attacks on an eventual fork of the chain.
+ *
+ * NOTE: This contract implements the version of the encoding known as "v4", as implemented by the JSON RPC method
+ * https://docs.metamask.io/guide/signing-data.html[`eth_signTypedDataV4` in MetaMask].
+ *
+ * NOTE: In the upgradeable version of this contract, the cached values will correspond to the address, and the domain
+ * separator of the implementation contract. This will cause the {_domainSeparatorV4} function to always rebuild the
+ * separator from the immutable values, which is cheaper than accessing a cached version in cold storage.
+ *
+ * @custom:oz-upgrades-unsafe-allow state-variable-immutable
+ */
+abstract contract EIP712 is IERC5267 {
+    using ShortStrings for *;
+
+    bytes32 private constant TYPE_HASH =
+        keccak256(
+            "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+        );
+
+    // Cache the domain separator as an immutable value, but also store the chain id that it corresponds to, in order to
+    // invalidate the cached domain separator if the chain id changes.
+    bytes32 private immutable _cachedDomainSeparator;
+    uint256 private immutable _cachedChainId;
+    address private immutable _cachedThis;
+
+    bytes32 private immutable _hashedName;
+    bytes32 private immutable _hashedVersion;
+
+    ShortString private immutable _name;
+    ShortString private immutable _version;
+    string private _nameFallback;
+    string private _versionFallback;
+
+    /**
+     * @dev Initializes the domain separator and parameter caches.
+     *
+     * The meaning of `name` and `version` is specified in
+     * https://eips.ethereum.org/EIPS/eip-712#definition-of-domainseparator[EIP 712]:
+     *
+     * - `name`: the user readable name of the signing domain, i.e. the name of the DApp or the protocol.
+     * - `version`: the current major version of the signing domain.
+     *
+     * NOTE: These parameters cannot be changed except through a xref:learn::upgrading-smart-contracts.adoc[smart
+     * contract upgrade].
+     */
+    constructor(string memory name, string memory version) {
+        _name = name.toShortStringWithFallback(_nameFallback);
+        _version = version.toShortStringWithFallback(_versionFallback);
+        _hashedName = keccak256(bytes(name));
+        _hashedVersion = keccak256(bytes(version));
+
+        _cachedChainId = block.chainid;
+        _cachedDomainSeparator = _buildDomainSeparator();
+        _cachedThis = address(this);
+    }
+
+    /**
+     * @dev Returns the domain separator for the current chain.
+     */
+    function _domainSeparatorV4() internal view returns (bytes32) {
+        if (address(this) == _cachedThis && block.chainid == _cachedChainId) {
+            return _cachedDomainSeparator;
+        } else {
+            return _buildDomainSeparator();
+        }
+    }
+
+    function _buildDomainSeparator() private view returns (bytes32) {
+        return
+            keccak256(
+                abi.encode(
+                    TYPE_HASH,
+                    _hashedName,
+                    _hashedVersion,
+                    block.chainid,
+                    address(this)
+                )
+            );
+    }
+
+    /**
+     * @dev Given an already https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct[hashed struct], this
+     * function returns the hash of the fully encoded EIP712 message for this domain.
+     *
+     * This hash can be used together with {ECDSA-recover} to obtain the signer of a message. For example:
+     *
+     * ```solidity
+     * bytes32 digest = _hashTypedDataV4(keccak256(abi.encode(
+     *     keccak256("Mail(address to,string contents)"),
+     *     mailTo,
+     *     keccak256(bytes(mailContents))
+     * )));
+     * address signer = ECDSA.recover(digest, signature);
+     * ```
+     */
+    function _hashTypedDataV4(
+        bytes32 structHash
+    ) internal view virtual returns (bytes32) {
+        return
+            MessageHashUtils.toTypedDataHash(_domainSeparatorV4(), structHash);
+    }
+
+    /**
+     * @dev See {IERC-5267}.
+     */
+    function eip712Domain()
+        public
+        view
+        virtual
+        returns (
+            bytes1 fields,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        )
+    {
+        return (
+            hex"0f", // 01111
+            _EIP712Name(),
+            _EIP712Version(),
+            block.chainid,
+            address(this),
+            bytes32(0),
+            new uint256[](0)
+        );
+    }
+
+    /**
+     * @dev The name parameter for the EIP712 domain.
+     *
+     * NOTE: By default this function reads _name which is an immutable value.
+     * It only reads from storage if necessary (in case the value is too large to fit in a ShortString).
+     */
+    // solhint-disable-next-line func-name-mixedcase
+    function _EIP712Name() internal view returns (string memory) {
+        return _name.toStringWithFallback(_nameFallback);
+    }
+
+    /**
+     * @dev The version parameter for the EIP712 domain.
+     *
+     * NOTE: By default this function reads _version which is an immutable value.
+     * It only reads from storage if necessary (in case the value is too large to fit in a ShortString).
+     */
+    // solhint-disable-next-line func-name-mixedcase
+    function _EIP712Version() internal view returns (string memory) {
+        return _version.toStringWithFallback(_versionFallback);
+    }
+}
+
+// File: @openzeppelin/contracts/utils/cryptography/ECDSA.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/cryptography/ECDSA.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Elliptic Curve Digital Signature Algorithm (ECDSA) operations.
+ *
+ * These functions can be used to verify that a message was signed by the holder
+ * of the private keys of a given address.
+ */
+library ECDSA {
+    enum RecoverError {
+        NoError,
+        InvalidSignature,
+        InvalidSignatureLength,
+        InvalidSignatureS
+    }
+
+    /**
+     * @dev The signature derives the `address(0)`.
+     */
+    error ECDSAInvalidSignature();
+
+    /**
+     * @dev The signature has an invalid length.
+     */
+    error ECDSAInvalidSignatureLength(uint256 length);
+
+    /**
+     * @dev The signature has an S value that is in the upper half order.
+     */
+    error ECDSAInvalidSignatureS(bytes32 s);
+
+    /**
+     * @dev Returns the address that signed a hashed message (`hash`) with `signature` or an error. This will not
+     * return address(0) without also returning an error description. Errors are documented using an enum (error type)
+     * and a bytes32 providing additional information about the error.
+     *
+     * If no error is returned, then the address can be used for verification purposes.
+     *
+     * The `ecrecover` EVM precompile allows for malleable (non-unique) signatures:
+     * this function rejects them by requiring the `s` value to be in the lower
+     * half order, and the `v` value to be either 27 or 28.
+     *
+     * IMPORTANT: `hash` _must_ be the result of a hash operation for the
+     * verification to be secure: it is possible to craft signatures that
+     * recover to arbitrary addresses for non-hashed data. A safe way to ensure
+     * this is by receiving a hash of the original message (which may otherwise
+     * be too long), and then calling {MessageHashUtils-toEthSignedMessageHash} on it.
+     *
+     * Documentation for signature generation:
+     * - with https://web3js.readthedocs.io/en/v1.3.4/web3-eth-accounts.html#sign[Web3.js]
+     * - with https://docs.ethers.io/v5/api/signer/#Signer-signMessage[ethers]
+     */
+    function tryRecover(
+        bytes32 hash,
+        bytes memory signature
+    ) internal pure returns (address, RecoverError, bytes32) {
+        if (signature.length == 65) {
+            bytes32 r;
+            bytes32 s;
+            uint8 v;
+            // ecrecover takes the signature parameters, and the only way to get them
+            // currently is to use assembly.
+            /// @solidity memory-safe-assembly
+            assembly {
+                r := mload(add(signature, 0x20))
+                s := mload(add(signature, 0x40))
+                v := byte(0, mload(add(signature, 0x60)))
+            }
+            return tryRecover(hash, v, r, s);
+        } else {
+            return (
+                address(0),
+                RecoverError.InvalidSignatureLength,
+                bytes32(signature.length)
+            );
+        }
+    }
+
+    /**
+     * @dev Returns the address that signed a hashed message (`hash`) with
+     * `signature`. This address can then be used for verification purposes.
+     *
+     * The `ecrecover` EVM precompile allows for malleable (non-unique) signatures:
+     * this function rejects them by requiring the `s` value to be in the lower
+     * half order, and the `v` value to be either 27 or 28.
+     *
+     * IMPORTANT: `hash` _must_ be the result of a hash operation for the
+     * verification to be secure: it is possible to craft signatures that
+     * recover to arbitrary addresses for non-hashed data. A safe way to ensure
+     * this is by receiving a hash of the original message (which may otherwise
+     * be too long), and then calling {MessageHashUtils-toEthSignedMessageHash} on it.
+     */
+    function recover(
+        bytes32 hash,
+        bytes memory signature
+    ) internal pure returns (address) {
+        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(
+            hash,
+            signature
+        );
+        _throwError(error, errorArg);
+        return recovered;
+    }
+
+    /**
+     * @dev Overload of {ECDSA-tryRecover} that receives the `r` and `vs` short-signature fields separately.
+     *
+     * See https://eips.ethereum.org/EIPS/eip-2098[EIP-2098 short signatures]
+     */
+    function tryRecover(
+        bytes32 hash,
+        bytes32 r,
+        bytes32 vs
+    ) internal pure returns (address, RecoverError, bytes32) {
+        unchecked {
+            bytes32 s = vs &
+                bytes32(
+                    0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+                );
+            // We do not check for an overflow here since the shift operation results in 0 or 1.
+            uint8 v = uint8((uint256(vs) >> 255) + 27);
+            return tryRecover(hash, v, r, s);
+        }
+    }
+
+    /**
+     * @dev Overload of {ECDSA-recover} that receives the `r and `vs` short-signature fields separately.
+     */
+    function recover(
+        bytes32 hash,
+        bytes32 r,
+        bytes32 vs
+    ) internal pure returns (address) {
+        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(
+            hash,
+            r,
+            vs
+        );
+        _throwError(error, errorArg);
+        return recovered;
+    }
+
+    /**
+     * @dev Overload of {ECDSA-tryRecover} that receives the `v`,
+     * `r` and `s` signature fields separately.
+     */
+    function tryRecover(
+        bytes32 hash,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal pure returns (address, RecoverError, bytes32) {
+        // EIP-2 still allows signature malleability for ecrecover(). Remove this possibility and make the signature
+        // unique. Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines
+        // the valid range for s in (301): 0 < s < secp256k1n ÷ 2 + 1, and for v in (302): v ∈ {27, 28}. Most
+        // signatures from current libraries generate a unique signature with an s-value in the lower half order.
+        //
+        // If your library generates malleable signatures, such as s-values in the upper range, calculate a new s-value
+        // with 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 - s1 and flip v from 27 to 28 or
+        // vice versa. If your library also generates signatures with 0/1 for v instead 27/28, add 27 to v to accept
+        // these malleable signatures as well.
+        if (
+            uint256(s) >
+            0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
+        ) {
+            return (address(0), RecoverError.InvalidSignatureS, s);
+        }
+
+        // If the signature is valid (and not malleable), return the signer address
+        address signer = ecrecover(hash, v, r, s);
+        if (signer == address(0)) {
+            return (address(0), RecoverError.InvalidSignature, bytes32(0));
+        }
+
+        return (signer, RecoverError.NoError, bytes32(0));
+    }
+
+    /**
+     * @dev Overload of {ECDSA-recover} that receives the `v`,
+     * `r` and `s` signature fields separately.
+     */
+    function recover(
+        bytes32 hash,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal pure returns (address) {
+        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(
+            hash,
+            v,
+            r,
+            s
+        );
+        _throwError(error, errorArg);
+        return recovered;
+    }
+
+    /**
+     * @dev Optionally reverts with the corresponding custom error according to the `error` argument provided.
+     */
+    function _throwError(RecoverError error, bytes32 errorArg) private pure {
+        if (error == RecoverError.NoError) {
+            return; // no error: do nothing
+        } else if (error == RecoverError.InvalidSignature) {
+            revert ECDSAInvalidSignature();
+        } else if (error == RecoverError.InvalidSignatureLength) {
+            revert ECDSAInvalidSignatureLength(uint256(errorArg));
+        } else if (error == RecoverError.InvalidSignatureS) {
+            revert ECDSAInvalidSignatureS(errorArg);
+        }
+    }
+}
+
+// File: @openzeppelin/contracts/interfaces/IERC1271.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC1271.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Interface of the ERC1271 standard signature validation method for
+ * contracts as defined in https://eips.ethereum.org/EIPS/eip-1271[ERC-1271].
+ */
+interface IERC1271 {
+    /**
+     * @dev Should return whether the signature provided is valid for the provided data
+     * @param hash      Hash of the data to be signed
+     * @param signature Signature byte array associated with _data
+     */
+    function isValidSignature(
+        bytes32 hash,
+        bytes memory signature
+    ) external view returns (bytes4 magicValue);
+}
+
+// File: @openzeppelin/contracts/utils/cryptography/SignatureChecker.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/cryptography/SignatureChecker.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Signature verification helper that can be used instead of `ECDSA.recover` to seamlessly support both ECDSA
+ * signatures from externally owned accounts (EOAs) as well as ERC1271 signatures from smart contract wallets like
+ * Argent and Safe Wallet (previously Gnosis Safe).
+ */
+library SignatureChecker {
+    /**
+     * @dev Checks if a signature is valid for a given signer and data hash. If the signer is a smart contract, the
+     * signature is validated against that smart contract using ERC1271, otherwise it's validated using `ECDSA.recover`.
+     *
+     * NOTE: Unlike ECDSA signatures, contract signatures are revocable, and the outcome of this function can thus
+     * change through time. It could return true at block N and false at block N+1 (or the opposite).
+     */
+    function isValidSignatureNow(
+        address signer,
+        bytes32 hash,
+        bytes memory signature
+    ) internal view returns (bool) {
+        (address recovered, ECDSA.RecoverError error, ) = ECDSA.tryRecover(
+            hash,
+            signature
+        );
+        return
+            (error == ECDSA.RecoverError.NoError && recovered == signer) ||
+            isValidERC1271SignatureNow(signer, hash, signature);
+    }
+
+    /**
+     * @dev Checks if a signature is valid for a given signer and data hash. The signature is validated
+     * against the signer smart contract using ERC1271.
+     *
+     * NOTE: Unlike ECDSA signatures, contract signatures are revocable, and the outcome of this function can thus
+     * change through time. It could return true at block N and false at block N+1 (or the opposite).
+     */
+    function isValidERC1271SignatureNow(
+        address signer,
+        bytes32 hash,
+        bytes memory signature
+    ) internal view returns (bool) {
+        (bool success, bytes memory result) = signer.staticcall(
+            abi.encodeCall(IERC1271.isValidSignature, (hash, signature))
+        );
+        return (success &&
+            result.length >= 32 &&
+            abi.decode(result, (bytes32)) ==
+            bytes32(IERC1271.isValidSignature.selector));
+    }
+}
+
+// File: @openzeppelin/contracts/utils/introspection/ERC165.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/introspection/ERC165.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Implementation of the {IERC165} interface.
+ *
+ * Contracts that want to implement ERC165 should inherit from this contract and override {supportsInterface} to check
+ * for the additional interface id that will be supported. For example:
+ *
+ * ```solidity
+ * function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+ *     return interfaceId == type(MyInterface).interfaceId || super.supportsInterface(interfaceId);
+ * }
+ * ```
+ */
+abstract contract ERC165 is IERC165 {
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual returns (bool) {
+        return interfaceId == type(IERC165).interfaceId;
     }
 }
 
 // File: @openzeppelin/contracts/utils/math/SafeCast.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/math/SafeCast.sol)
 // This file was procedurally generated from scripts/generate/templates/SafeCast.js.
@@ -1763,2138 +2801,477 @@ library SafeCast {
     }
 }
 
-// File: @openzeppelin/contracts/interfaces/IERC1271.sol
+// File: @openzeppelin/contracts/utils/structs/DoubleEndedQueue.sol
 
-
-// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC1271.sol)
-
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/structs/DoubleEndedQueue.sol)
 pragma solidity ^0.8.20;
 
 /**
- * @dev Interface of the ERC1271 standard signature validation method for
- * contracts as defined in https://eips.ethereum.org/EIPS/eip-1271[ERC-1271].
- */
-interface IERC1271 {
-    /**
-     * @dev Should return whether the signature provided is valid for the provided data
-     * @param hash      Hash of the data to be signed
-     * @param signature Signature byte array associated with _data
-     */
-    function isValidSignature(bytes32 hash, bytes memory signature) external view returns (bytes4 magicValue);
-}
-
-// File: @openzeppelin/contracts/utils/cryptography/ECDSA.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/cryptography/ECDSA.sol)
-
-pragma solidity ^0.8.20;
-
-/**
- * @dev Elliptic Curve Digital Signature Algorithm (ECDSA) operations.
+ * @dev A sequence of items with the ability to efficiently push and pop items (i.e. insert and remove) on both ends of
+ * the sequence (called front and back). Among other access patterns, it can be used to implement efficient LIFO and
+ * FIFO queues. Storage use is optimized, and all operations are O(1) constant time. This includes {clear}, given that
+ * the existing queue contents are left in storage.
  *
- * These functions can be used to verify that a message was signed by the holder
- * of the private keys of a given address.
- */
-library ECDSA {
-    enum RecoverError {
-        NoError,
-        InvalidSignature,
-        InvalidSignatureLength,
-        InvalidSignatureS
-    }
-
-    /**
-     * @dev The signature derives the `address(0)`.
-     */
-    error ECDSAInvalidSignature();
-
-    /**
-     * @dev The signature has an invalid length.
-     */
-    error ECDSAInvalidSignatureLength(uint256 length);
-
-    /**
-     * @dev The signature has an S value that is in the upper half order.
-     */
-    error ECDSAInvalidSignatureS(bytes32 s);
-
-    /**
-     * @dev Returns the address that signed a hashed message (`hash`) with `signature` or an error. This will not
-     * return address(0) without also returning an error description. Errors are documented using an enum (error type)
-     * and a bytes32 providing additional information about the error.
-     *
-     * If no error is returned, then the address can be used for verification purposes.
-     *
-     * The `ecrecover` EVM precompile allows for malleable (non-unique) signatures:
-     * this function rejects them by requiring the `s` value to be in the lower
-     * half order, and the `v` value to be either 27 or 28.
-     *
-     * IMPORTANT: `hash` _must_ be the result of a hash operation for the
-     * verification to be secure: it is possible to craft signatures that
-     * recover to arbitrary addresses for non-hashed data. A safe way to ensure
-     * this is by receiving a hash of the original message (which may otherwise
-     * be too long), and then calling {MessageHashUtils-toEthSignedMessageHash} on it.
-     *
-     * Documentation for signature generation:
-     * - with https://web3js.readthedocs.io/en/v1.3.4/web3-eth-accounts.html#sign[Web3.js]
-     * - with https://docs.ethers.io/v5/api/signer/#Signer-signMessage[ethers]
-     */
-    function tryRecover(bytes32 hash, bytes memory signature) internal pure returns (address, RecoverError, bytes32) {
-        if (signature.length == 65) {
-            bytes32 r;
-            bytes32 s;
-            uint8 v;
-            // ecrecover takes the signature parameters, and the only way to get them
-            // currently is to use assembly.
-            /// @solidity memory-safe-assembly
-            assembly {
-                r := mload(add(signature, 0x20))
-                s := mload(add(signature, 0x40))
-                v := byte(0, mload(add(signature, 0x60)))
-            }
-            return tryRecover(hash, v, r, s);
-        } else {
-            return (address(0), RecoverError.InvalidSignatureLength, bytes32(signature.length));
-        }
-    }
-
-    /**
-     * @dev Returns the address that signed a hashed message (`hash`) with
-     * `signature`. This address can then be used for verification purposes.
-     *
-     * The `ecrecover` EVM precompile allows for malleable (non-unique) signatures:
-     * this function rejects them by requiring the `s` value to be in the lower
-     * half order, and the `v` value to be either 27 or 28.
-     *
-     * IMPORTANT: `hash` _must_ be the result of a hash operation for the
-     * verification to be secure: it is possible to craft signatures that
-     * recover to arbitrary addresses for non-hashed data. A safe way to ensure
-     * this is by receiving a hash of the original message (which may otherwise
-     * be too long), and then calling {MessageHashUtils-toEthSignedMessageHash} on it.
-     */
-    function recover(bytes32 hash, bytes memory signature) internal pure returns (address) {
-        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, signature);
-        _throwError(error, errorArg);
-        return recovered;
-    }
-
-    /**
-     * @dev Overload of {ECDSA-tryRecover} that receives the `r` and `vs` short-signature fields separately.
-     *
-     * See https://eips.ethereum.org/EIPS/eip-2098[EIP-2098 short signatures]
-     */
-    function tryRecover(bytes32 hash, bytes32 r, bytes32 vs) internal pure returns (address, RecoverError, bytes32) {
-        unchecked {
-            bytes32 s = vs & bytes32(0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff);
-            // We do not check for an overflow here since the shift operation results in 0 or 1.
-            uint8 v = uint8((uint256(vs) >> 255) + 27);
-            return tryRecover(hash, v, r, s);
-        }
-    }
-
-    /**
-     * @dev Overload of {ECDSA-recover} that receives the `r and `vs` short-signature fields separately.
-     */
-    function recover(bytes32 hash, bytes32 r, bytes32 vs) internal pure returns (address) {
-        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, r, vs);
-        _throwError(error, errorArg);
-        return recovered;
-    }
-
-    /**
-     * @dev Overload of {ECDSA-tryRecover} that receives the `v`,
-     * `r` and `s` signature fields separately.
-     */
-    function tryRecover(
-        bytes32 hash,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) internal pure returns (address, RecoverError, bytes32) {
-        // EIP-2 still allows signature malleability for ecrecover(). Remove this possibility and make the signature
-        // unique. Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines
-        // the valid range for s in (301): 0 < s < secp256k1n ÷ 2 + 1, and for v in (302): v ∈ {27, 28}. Most
-        // signatures from current libraries generate a unique signature with an s-value in the lower half order.
-        //
-        // If your library generates malleable signatures, such as s-values in the upper range, calculate a new s-value
-        // with 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 - s1 and flip v from 27 to 28 or
-        // vice versa. If your library also generates signatures with 0/1 for v instead 27/28, add 27 to v to accept
-        // these malleable signatures as well.
-        if (uint256(s) > 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0) {
-            return (address(0), RecoverError.InvalidSignatureS, s);
-        }
-
-        // If the signature is valid (and not malleable), return the signer address
-        address signer = ecrecover(hash, v, r, s);
-        if (signer == address(0)) {
-            return (address(0), RecoverError.InvalidSignature, bytes32(0));
-        }
-
-        return (signer, RecoverError.NoError, bytes32(0));
-    }
-
-    /**
-     * @dev Overload of {ECDSA-recover} that receives the `v`,
-     * `r` and `s` signature fields separately.
-     */
-    function recover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal pure returns (address) {
-        (address recovered, RecoverError error, bytes32 errorArg) = tryRecover(hash, v, r, s);
-        _throwError(error, errorArg);
-        return recovered;
-    }
-
-    /**
-     * @dev Optionally reverts with the corresponding custom error according to the `error` argument provided.
-     */
-    function _throwError(RecoverError error, bytes32 errorArg) private pure {
-        if (error == RecoverError.NoError) {
-            return; // no error: do nothing
-        } else if (error == RecoverError.InvalidSignature) {
-            revert ECDSAInvalidSignature();
-        } else if (error == RecoverError.InvalidSignatureLength) {
-            revert ECDSAInvalidSignatureLength(uint256(errorArg));
-        } else if (error == RecoverError.InvalidSignatureS) {
-            revert ECDSAInvalidSignatureS(errorArg);
-        }
-    }
-}
-
-// File: @openzeppelin/contracts/utils/cryptography/SignatureChecker.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/cryptography/SignatureChecker.sol)
-
-pragma solidity ^0.8.20;
-
-
-
-/**
- * @dev Signature verification helper that can be used instead of `ECDSA.recover` to seamlessly support both ECDSA
- * signatures from externally owned accounts (EOAs) as well as ERC1271 signatures from smart contract wallets like
- * Argent and Safe Wallet (previously Gnosis Safe).
- */
-library SignatureChecker {
-    /**
-     * @dev Checks if a signature is valid for a given signer and data hash. If the signer is a smart contract, the
-     * signature is validated against that smart contract using ERC1271, otherwise it's validated using `ECDSA.recover`.
-     *
-     * NOTE: Unlike ECDSA signatures, contract signatures are revocable, and the outcome of this function can thus
-     * change through time. It could return true at block N and false at block N+1 (or the opposite).
-     */
-    function isValidSignatureNow(address signer, bytes32 hash, bytes memory signature) internal view returns (bool) {
-        (address recovered, ECDSA.RecoverError error, ) = ECDSA.tryRecover(hash, signature);
-        return
-            (error == ECDSA.RecoverError.NoError && recovered == signer) ||
-            isValidERC1271SignatureNow(signer, hash, signature);
-    }
-
-    /**
-     * @dev Checks if a signature is valid for a given signer and data hash. The signature is validated
-     * against the signer smart contract using ERC1271.
-     *
-     * NOTE: Unlike ECDSA signatures, contract signatures are revocable, and the outcome of this function can thus
-     * change through time. It could return true at block N and false at block N+1 (or the opposite).
-     */
-    function isValidERC1271SignatureNow(
-        address signer,
-        bytes32 hash,
-        bytes memory signature
-    ) internal view returns (bool) {
-        (bool success, bytes memory result) = signer.staticcall(
-            abi.encodeCall(IERC1271.isValidSignature, (hash, signature))
-        );
-        return (success &&
-            result.length >= 32 &&
-            abi.decode(result, (bytes32)) == bytes32(IERC1271.isValidSignature.selector));
-    }
-}
-
-// File: @openzeppelin/contracts/interfaces/IERC5267.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC5267.sol)
-
-pragma solidity ^0.8.20;
-
-interface IERC5267 {
-    /**
-     * @dev MAY be emitted to signal that the domain could have changed.
-     */
-    event EIP712DomainChanged();
-
-    /**
-     * @dev returns the fields and values that describe the domain separator used by this contract for EIP-712
-     * signature.
-     */
-    function eip712Domain()
-        external
-        view
-        returns (
-            bytes1 fields,
-            string memory name,
-            string memory version,
-            uint256 chainId,
-            address verifyingContract,
-            bytes32 salt,
-            uint256[] memory extensions
-        );
-}
-
-// File: @openzeppelin/contracts/utils/StorageSlot.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/StorageSlot.sol)
-// This file was procedurally generated from scripts/generate/templates/StorageSlot.js.
-
-pragma solidity ^0.8.20;
-
-/**
- * @dev Library for reading and writing primitive types to specific storage slots.
- *
- * Storage slots are often used to avoid storage conflict when dealing with upgradeable contracts.
- * This library helps with reading and writing to such slots without the need for inline assembly.
- *
- * The functions in this library return Slot structs that contain a `value` member that can be used to read or write.
- *
- * Example usage to set ERC1967 implementation slot:
+ * The struct is called `Bytes32Deque`. Other types can be cast to and from `bytes32`. This data structure can only be
+ * used in storage, and not in memory.
  * ```solidity
- * contract ERC1967 {
- *     bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
- *
- *     function _getImplementation() internal view returns (address) {
- *         return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
- *     }
- *
- *     function _setImplementation(address newImplementation) internal {
- *         require(newImplementation.code.length > 0);
- *         StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = newImplementation;
- *     }
- * }
+ * DoubleEndedQueue.Bytes32Deque queue;
  * ```
  */
-library StorageSlot {
-    struct AddressSlot {
-        address value;
-    }
+library DoubleEndedQueue {
+    /**
+     * @dev An operation (e.g. {front}) couldn't be completed due to the queue being empty.
+     */
+    error QueueEmpty();
 
-    struct BooleanSlot {
-        bool value;
-    }
+    /**
+     * @dev A push operation couldn't be completed due to the queue being full.
+     */
+    error QueueFull();
 
-    struct Bytes32Slot {
-        bytes32 value;
-    }
+    /**
+     * @dev An operation (e.g. {at}) couldn't be completed due to an index being out of bounds.
+     */
+    error QueueOutOfBounds();
 
-    struct Uint256Slot {
-        uint256 value;
-    }
-
-    struct StringSlot {
-        string value;
-    }
-
-    struct BytesSlot {
-        bytes value;
+    /**
+     * @dev Indices are 128 bits so begin and end are packed in a single storage slot for efficient access.
+     *
+     * Struct members have an underscore prefix indicating that they are "private" and should not be read or written to
+     * directly. Use the functions provided below instead. Modifying the struct manually may violate assumptions and
+     * lead to unexpected behavior.
+     *
+     * The first item is at data[begin] and the last item is at data[end - 1]. This range can wrap around.
+     */
+    struct Bytes32Deque {
+        uint128 _begin;
+        uint128 _end;
+        mapping(uint128 index => bytes32) _data;
     }
 
     /**
-     * @dev Returns an `AddressSlot` with member `value` located at `slot`.
+     * @dev Inserts an item at the end of the queue.
+     *
+     * Reverts with {QueueFull} if the queue is full.
      */
-    function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r) {
-        /// @solidity memory-safe-assembly
-        assembly {
-            r.slot := slot
+    function pushBack(Bytes32Deque storage deque, bytes32 value) internal {
+        unchecked {
+            uint128 backIndex = deque._end;
+            if (backIndex + 1 == deque._begin) revert QueueFull();
+            deque._data[backIndex] = value;
+            deque._end = backIndex + 1;
         }
     }
 
     /**
-     * @dev Returns an `BooleanSlot` with member `value` located at `slot`.
+     * @dev Removes the item at the end of the queue and returns it.
+     *
+     * Reverts with {QueueEmpty} if the queue is empty.
      */
-    function getBooleanSlot(bytes32 slot) internal pure returns (BooleanSlot storage r) {
-        /// @solidity memory-safe-assembly
-        assembly {
-            r.slot := slot
+    function popBack(
+        Bytes32Deque storage deque
+    ) internal returns (bytes32 value) {
+        unchecked {
+            uint128 backIndex = deque._end;
+            if (backIndex == deque._begin) revert QueueEmpty();
+            --backIndex;
+            value = deque._data[backIndex];
+            delete deque._data[backIndex];
+            deque._end = backIndex;
         }
     }
 
     /**
-     * @dev Returns an `Bytes32Slot` with member `value` located at `slot`.
+     * @dev Inserts an item at the beginning of the queue.
+     *
+     * Reverts with {QueueFull} if the queue is full.
      */
-    function getBytes32Slot(bytes32 slot) internal pure returns (Bytes32Slot storage r) {
-        /// @solidity memory-safe-assembly
-        assembly {
-            r.slot := slot
+    function pushFront(Bytes32Deque storage deque, bytes32 value) internal {
+        unchecked {
+            uint128 frontIndex = deque._begin - 1;
+            if (frontIndex == deque._end) revert QueueFull();
+            deque._data[frontIndex] = value;
+            deque._begin = frontIndex;
         }
     }
 
     /**
-     * @dev Returns an `Uint256Slot` with member `value` located at `slot`.
+     * @dev Removes the item at the beginning of the queue and returns it.
+     *
+     * Reverts with `QueueEmpty` if the queue is empty.
      */
-    function getUint256Slot(bytes32 slot) internal pure returns (Uint256Slot storage r) {
-        /// @solidity memory-safe-assembly
-        assembly {
-            r.slot := slot
+    function popFront(
+        Bytes32Deque storage deque
+    ) internal returns (bytes32 value) {
+        unchecked {
+            uint128 frontIndex = deque._begin;
+            if (frontIndex == deque._end) revert QueueEmpty();
+            value = deque._data[frontIndex];
+            delete deque._data[frontIndex];
+            deque._begin = frontIndex + 1;
         }
     }
 
     /**
-     * @dev Returns an `StringSlot` with member `value` located at `slot`.
+     * @dev Returns the item at the beginning of the queue.
+     *
+     * Reverts with `QueueEmpty` if the queue is empty.
      */
-    function getStringSlot(bytes32 slot) internal pure returns (StringSlot storage r) {
-        /// @solidity memory-safe-assembly
-        assembly {
-            r.slot := slot
+    function front(
+        Bytes32Deque storage deque
+    ) internal view returns (bytes32 value) {
+        if (empty(deque)) revert QueueEmpty();
+        return deque._data[deque._begin];
+    }
+
+    /**
+     * @dev Returns the item at the end of the queue.
+     *
+     * Reverts with `QueueEmpty` if the queue is empty.
+     */
+    function back(
+        Bytes32Deque storage deque
+    ) internal view returns (bytes32 value) {
+        if (empty(deque)) revert QueueEmpty();
+        unchecked {
+            return deque._data[deque._end - 1];
         }
     }
 
     /**
-     * @dev Returns an `StringSlot` representation of the string storage pointer `store`.
+     * @dev Return the item at a position in the queue given by `index`, with the first item at 0 and last item at
+     * `length(deque) - 1`.
+     *
+     * Reverts with `QueueOutOfBounds` if the index is out of bounds.
      */
-    function getStringSlot(string storage store) internal pure returns (StringSlot storage r) {
-        /// @solidity memory-safe-assembly
-        assembly {
-            r.slot := store.slot
+    function at(
+        Bytes32Deque storage deque,
+        uint256 index
+    ) internal view returns (bytes32 value) {
+        if (index >= length(deque)) revert QueueOutOfBounds();
+        // By construction, length is a uint128, so the check above ensures that index can be safely downcast to uint128
+        unchecked {
+            return deque._data[deque._begin + uint128(index)];
         }
     }
 
     /**
-     * @dev Returns an `BytesSlot` with member `value` located at `slot`.
+     * @dev Resets the queue back to being empty.
+     *
+     * NOTE: The current items are left behind in storage. This does not affect the functioning of the queue, but misses
+     * out on potential gas refunds.
      */
-    function getBytesSlot(bytes32 slot) internal pure returns (BytesSlot storage r) {
-        /// @solidity memory-safe-assembly
-        assembly {
-            r.slot := slot
+    function clear(Bytes32Deque storage deque) internal {
+        deque._begin = 0;
+        deque._end = 0;
+    }
+
+    /**
+     * @dev Returns the number of items in the queue.
+     */
+    function length(
+        Bytes32Deque storage deque
+    ) internal view returns (uint256) {
+        unchecked {
+            return uint256(deque._end - deque._begin);
         }
     }
 
     /**
-     * @dev Returns an `BytesSlot` representation of the bytes storage pointer `store`.
+     * @dev Returns true if the queue is empty.
      */
-    function getBytesSlot(bytes storage store) internal pure returns (BytesSlot storage r) {
-        /// @solidity memory-safe-assembly
-        assembly {
-            r.slot := store.slot
-        }
+    function empty(Bytes32Deque storage deque) internal view returns (bool) {
+        return deque._end == deque._begin;
     }
 }
 
-// File: @openzeppelin/contracts/utils/ShortStrings.sol
+// File: @openzeppelin/contracts/utils/Address.sol
 
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/ShortStrings.sol)
-
-pragma solidity ^0.8.20;
-
-
-// | string  | 0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA   |
-// | length  | 0x                                                              BB |
-type ShortString is bytes32;
-
-/**
- * @dev This library provides functions to convert short memory strings
- * into a `ShortString` type that can be used as an immutable variable.
- *
- * Strings of arbitrary length can be optimized using this library if
- * they are short enough (up to 31 bytes) by packing them with their
- * length (1 byte) in a single EVM word (32 bytes). Additionally, a
- * fallback mechanism can be used for every other case.
- *
- * Usage example:
- *
- * ```solidity
- * contract Named {
- *     using ShortStrings for *;
- *
- *     ShortString private immutable _name;
- *     string private _nameFallback;
- *
- *     constructor(string memory contractName) {
- *         _name = contractName.toShortStringWithFallback(_nameFallback);
- *     }
- *
- *     function name() external view returns (string memory) {
- *         return _name.toStringWithFallback(_nameFallback);
- *     }
- * }
- * ```
- */
-library ShortStrings {
-    // Used as an identifier for strings longer than 31 bytes.
-    bytes32 private constant FALLBACK_SENTINEL = 0x00000000000000000000000000000000000000000000000000000000000000FF;
-
-    error StringTooLong(string str);
-    error InvalidShortString();
-
-    /**
-     * @dev Encode a string of at most 31 chars into a `ShortString`.
-     *
-     * This will trigger a `StringTooLong` error is the input string is too long.
-     */
-    function toShortString(string memory str) internal pure returns (ShortString) {
-        bytes memory bstr = bytes(str);
-        if (bstr.length > 31) {
-            revert StringTooLong(str);
-        }
-        return ShortString.wrap(bytes32(uint256(bytes32(bstr)) | bstr.length));
-    }
-
-    /**
-     * @dev Decode a `ShortString` back to a "normal" string.
-     */
-    function toString(ShortString sstr) internal pure returns (string memory) {
-        uint256 len = byteLength(sstr);
-        // using `new string(len)` would work locally but is not memory safe.
-        string memory str = new string(32);
-        /// @solidity memory-safe-assembly
-        assembly {
-            mstore(str, len)
-            mstore(add(str, 0x20), sstr)
-        }
-        return str;
-    }
-
-    /**
-     * @dev Return the length of a `ShortString`.
-     */
-    function byteLength(ShortString sstr) internal pure returns (uint256) {
-        uint256 result = uint256(ShortString.unwrap(sstr)) & 0xFF;
-        if (result > 31) {
-            revert InvalidShortString();
-        }
-        return result;
-    }
-
-    /**
-     * @dev Encode a string into a `ShortString`, or write it to storage if it is too long.
-     */
-    function toShortStringWithFallback(string memory value, string storage store) internal returns (ShortString) {
-        if (bytes(value).length < 32) {
-            return toShortString(value);
-        } else {
-            StorageSlot.getStringSlot(store).value = value;
-            return ShortString.wrap(FALLBACK_SENTINEL);
-        }
-    }
-
-    /**
-     * @dev Decode a string that was encoded to `ShortString` or written to storage using {setWithFallback}.
-     */
-    function toStringWithFallback(ShortString value, string storage store) internal pure returns (string memory) {
-        if (ShortString.unwrap(value) != FALLBACK_SENTINEL) {
-            return toString(value);
-        } else {
-            return store;
-        }
-    }
-
-    /**
-     * @dev Return the length of a string that was encoded to `ShortString` or written to storage using
-     * {setWithFallback}.
-     *
-     * WARNING: This will return the "byte length" of the string. This may not reflect the actual length in terms of
-     * actual characters as the UTF-8 encoding of a single character can span over multiple bytes.
-     */
-    function byteLengthWithFallback(ShortString value, string storage store) internal view returns (uint256) {
-        if (ShortString.unwrap(value) != FALLBACK_SENTINEL) {
-            return byteLength(value);
-        } else {
-            return bytes(store).length;
-        }
-    }
-}
-
-// File: @openzeppelin/contracts/utils/math/SignedMath.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/math/SignedMath.sol)
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/Address.sol)
 
 pragma solidity ^0.8.20;
 
 /**
- * @dev Standard signed math utilities missing in the Solidity language.
+ * @dev Collection of functions related to the address type
  */
-library SignedMath {
+library Address {
     /**
-     * @dev Returns the largest of two signed numbers.
+     * @dev The ETH balance of the account is not enough to perform the operation.
      */
-    function max(int256 a, int256 b) internal pure returns (int256) {
-        return a > b ? a : b;
-    }
+    error AddressInsufficientBalance(address account);
 
     /**
-     * @dev Returns the smallest of two signed numbers.
+     * @dev There's no code at `target` (it is not a contract).
      */
-    function min(int256 a, int256 b) internal pure returns (int256) {
-        return a < b ? a : b;
-    }
+    error AddressEmptyCode(address target);
 
     /**
-     * @dev Returns the average of two signed numbers without overflow.
-     * The result is rounded towards zero.
+     * @dev A call to an address target failed. The target may have reverted.
      */
-    function average(int256 a, int256 b) internal pure returns (int256) {
-        // Formula from the book "Hacker's Delight"
-        int256 x = (a & b) + ((a ^ b) >> 1);
-        return x + (int256(uint256(x) >> 255) & (a ^ b));
-    }
+    error FailedInnerCall();
 
     /**
-     * @dev Returns the absolute unsigned value of a signed value.
-     */
-    function abs(int256 n) internal pure returns (uint256) {
-        unchecked {
-            // must be unchecked in order to support `n = type(int256).min`
-            return uint256(n >= 0 ? n : -n);
-        }
-    }
-}
-
-// File: @openzeppelin/contracts/utils/math/Math.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/math/Math.sol)
-
-pragma solidity ^0.8.20;
-
-/**
- * @dev Standard math utilities missing in the Solidity language.
- */
-library Math {
-    /**
-     * @dev Muldiv operation overflow.
-     */
-    error MathOverflowedMulDiv();
-
-    enum Rounding {
-        Floor, // Toward negative infinity
-        Ceil, // Toward positive infinity
-        Trunc, // Toward zero
-        Expand // Away from zero
-    }
-
-    /**
-     * @dev Returns the addition of two unsigned integers, with an overflow flag.
-     */
-    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            uint256 c = a + b;
-            if (c < a) return (false, 0);
-            return (true, c);
-        }
-    }
-
-    /**
-     * @dev Returns the subtraction of two unsigned integers, with an overflow flag.
-     */
-    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            if (b > a) return (false, 0);
-            return (true, a - b);
-        }
-    }
-
-    /**
-     * @dev Returns the multiplication of two unsigned integers, with an overflow flag.
-     */
-    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
-            // benefit is lost if 'b' is also tested.
-            // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
-            if (a == 0) return (true, 0);
-            uint256 c = a * b;
-            if (c / a != b) return (false, 0);
-            return (true, c);
-        }
-    }
-
-    /**
-     * @dev Returns the division of two unsigned integers, with a division by zero flag.
-     */
-    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            if (b == 0) return (false, 0);
-            return (true, a / b);
-        }
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers, with a division by zero flag.
-     */
-    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            if (b == 0) return (false, 0);
-            return (true, a % b);
-        }
-    }
-
-    /**
-     * @dev Returns the largest of two numbers.
-     */
-    function max(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a > b ? a : b;
-    }
-
-    /**
-     * @dev Returns the smallest of two numbers.
-     */
-    function min(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a < b ? a : b;
-    }
-
-    /**
-     * @dev Returns the average of two numbers. The result is rounded towards
-     * zero.
-     */
-    function average(uint256 a, uint256 b) internal pure returns (uint256) {
-        // (a + b) / 2 can overflow.
-        return (a & b) + (a ^ b) / 2;
-    }
-
-    /**
-     * @dev Returns the ceiling of the division of two numbers.
+     * @dev Replacement for Solidity's `transfer`: sends `amount` wei to
+     * `recipient`, forwarding all available gas and reverting on errors.
      *
-     * This differs from standard division with `/` in that it rounds towards infinity instead
-     * of rounding towards zero.
-     */
-    function ceilDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (b == 0) {
-            // Guarantee the same behavior as in a regular Solidity division.
-            return a / b;
-        }
-
-        // (a + b - 1) / b can overflow on addition, so we distribute.
-        return a == 0 ? 0 : (a - 1) / b + 1;
-    }
-
-    /**
-     * @notice Calculates floor(x * y / denominator) with full precision. Throws if result overflows a uint256 or
-     * denominator == 0.
-     * @dev Original credit to Remco Bloemen under MIT license (https://xn--2-umb.com/21/muldiv) with further edits by
-     * Uniswap Labs also under MIT license.
-     */
-    function mulDiv(uint256 x, uint256 y, uint256 denominator) internal pure returns (uint256 result) {
-        unchecked {
-            // 512-bit multiply [prod1 prod0] = x * y. Compute the product mod 2^256 and mod 2^256 - 1, then use
-            // use the Chinese Remainder Theorem to reconstruct the 512 bit result. The result is stored in two 256
-            // variables such that product = prod1 * 2^256 + prod0.
-            uint256 prod0 = x * y; // Least significant 256 bits of the product
-            uint256 prod1; // Most significant 256 bits of the product
-            assembly {
-                let mm := mulmod(x, y, not(0))
-                prod1 := sub(sub(mm, prod0), lt(mm, prod0))
-            }
-
-            // Handle non-overflow cases, 256 by 256 division.
-            if (prod1 == 0) {
-                // Solidity will revert if denominator == 0, unlike the div opcode on its own.
-                // The surrounding unchecked block does not change this fact.
-                // See https://docs.soliditylang.org/en/latest/control-structures.html#checked-or-unchecked-arithmetic.
-                return prod0 / denominator;
-            }
-
-            // Make sure the result is less than 2^256. Also prevents denominator == 0.
-            if (denominator <= prod1) {
-                revert MathOverflowedMulDiv();
-            }
-
-            ///////////////////////////////////////////////
-            // 512 by 256 division.
-            ///////////////////////////////////////////////
-
-            // Make division exact by subtracting the remainder from [prod1 prod0].
-            uint256 remainder;
-            assembly {
-                // Compute remainder using mulmod.
-                remainder := mulmod(x, y, denominator)
-
-                // Subtract 256 bit number from 512 bit number.
-                prod1 := sub(prod1, gt(remainder, prod0))
-                prod0 := sub(prod0, remainder)
-            }
-
-            // Factor powers of two out of denominator and compute largest power of two divisor of denominator.
-            // Always >= 1. See https://cs.stackexchange.com/q/138556/92363.
-
-            uint256 twos = denominator & (0 - denominator);
-            assembly {
-                // Divide denominator by twos.
-                denominator := div(denominator, twos)
-
-                // Divide [prod1 prod0] by twos.
-                prod0 := div(prod0, twos)
-
-                // Flip twos such that it is 2^256 / twos. If twos is zero, then it becomes one.
-                twos := add(div(sub(0, twos), twos), 1)
-            }
-
-            // Shift in bits from prod1 into prod0.
-            prod0 |= prod1 * twos;
-
-            // Invert denominator mod 2^256. Now that denominator is an odd number, it has an inverse modulo 2^256 such
-            // that denominator * inv = 1 mod 2^256. Compute the inverse by starting with a seed that is correct for
-            // four bits. That is, denominator * inv = 1 mod 2^4.
-            uint256 inverse = (3 * denominator) ^ 2;
-
-            // Use the Newton-Raphson iteration to improve the precision. Thanks to Hensel's lifting lemma, this also
-            // works in modular arithmetic, doubling the correct bits in each step.
-            inverse *= 2 - denominator * inverse; // inverse mod 2^8
-            inverse *= 2 - denominator * inverse; // inverse mod 2^16
-            inverse *= 2 - denominator * inverse; // inverse mod 2^32
-            inverse *= 2 - denominator * inverse; // inverse mod 2^64
-            inverse *= 2 - denominator * inverse; // inverse mod 2^128
-            inverse *= 2 - denominator * inverse; // inverse mod 2^256
-
-            // Because the division is now exact we can divide by multiplying with the modular inverse of denominator.
-            // This will give us the correct result modulo 2^256. Since the preconditions guarantee that the outcome is
-            // less than 2^256, this is the final result. We don't need to compute the high bits of the result and prod1
-            // is no longer required.
-            result = prod0 * inverse;
-            return result;
-        }
-    }
-
-    /**
-     * @notice Calculates x * y / denominator with full precision, following the selected rounding direction.
-     */
-    function mulDiv(uint256 x, uint256 y, uint256 denominator, Rounding rounding) internal pure returns (uint256) {
-        uint256 result = mulDiv(x, y, denominator);
-        if (unsignedRoundsUp(rounding) && mulmod(x, y, denominator) > 0) {
-            result += 1;
-        }
-        return result;
-    }
-
-    /**
-     * @dev Returns the square root of a number. If the number is not a perfect square, the value is rounded
-     * towards zero.
+     * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost
+     * of certain opcodes, possibly making contracts go over the 2300 gas limit
+     * imposed by `transfer`, making them unable to receive funds via
+     * `transfer`. {sendValue} removes this limitation.
      *
-     * Inspired by Henry S. Warren, Jr.'s "Hacker's Delight" (Chapter 11).
-     */
-    function sqrt(uint256 a) internal pure returns (uint256) {
-        if (a == 0) {
-            return 0;
-        }
-
-        // For our first guess, we get the biggest power of 2 which is smaller than the square root of the target.
-        //
-        // We know that the "msb" (most significant bit) of our target number `a` is a power of 2 such that we have
-        // `msb(a) <= a < 2*msb(a)`. This value can be written `msb(a)=2**k` with `k=log2(a)`.
-        //
-        // This can be rewritten `2**log2(a) <= a < 2**(log2(a) + 1)`
-        // → `sqrt(2**k) <= sqrt(a) < sqrt(2**(k+1))`
-        // → `2**(k/2) <= sqrt(a) < 2**((k+1)/2) <= 2**(k/2 + 1)`
-        //
-        // Consequently, `2**(log2(a) / 2)` is a good first approximation of `sqrt(a)` with at least 1 correct bit.
-        uint256 result = 1 << (log2(a) >> 1);
-
-        // At this point `result` is an estimation with one bit of precision. We know the true value is a uint128,
-        // since it is the square root of a uint256. Newton's method converges quadratically (precision doubles at
-        // every iteration). We thus need at most 7 iteration to turn our partial result with one bit of precision
-        // into the expected uint128 result.
-        unchecked {
-            result = (result + a / result) >> 1;
-            result = (result + a / result) >> 1;
-            result = (result + a / result) >> 1;
-            result = (result + a / result) >> 1;
-            result = (result + a / result) >> 1;
-            result = (result + a / result) >> 1;
-            result = (result + a / result) >> 1;
-            return min(result, a / result);
-        }
-    }
-
-    /**
-     * @notice Calculates sqrt(a), following the selected rounding direction.
-     */
-    function sqrt(uint256 a, Rounding rounding) internal pure returns (uint256) {
-        unchecked {
-            uint256 result = sqrt(a);
-            return result + (unsignedRoundsUp(rounding) && result * result < a ? 1 : 0);
-        }
-    }
-
-    /**
-     * @dev Return the log in base 2 of a positive value rounded towards zero.
-     * Returns 0 if given 0.
-     */
-    function log2(uint256 value) internal pure returns (uint256) {
-        uint256 result = 0;
-        unchecked {
-            if (value >> 128 > 0) {
-                value >>= 128;
-                result += 128;
-            }
-            if (value >> 64 > 0) {
-                value >>= 64;
-                result += 64;
-            }
-            if (value >> 32 > 0) {
-                value >>= 32;
-                result += 32;
-            }
-            if (value >> 16 > 0) {
-                value >>= 16;
-                result += 16;
-            }
-            if (value >> 8 > 0) {
-                value >>= 8;
-                result += 8;
-            }
-            if (value >> 4 > 0) {
-                value >>= 4;
-                result += 4;
-            }
-            if (value >> 2 > 0) {
-                value >>= 2;
-                result += 2;
-            }
-            if (value >> 1 > 0) {
-                result += 1;
-            }
-        }
-        return result;
-    }
-
-    /**
-     * @dev Return the log in base 2, following the selected rounding direction, of a positive value.
-     * Returns 0 if given 0.
-     */
-    function log2(uint256 value, Rounding rounding) internal pure returns (uint256) {
-        unchecked {
-            uint256 result = log2(value);
-            return result + (unsignedRoundsUp(rounding) && 1 << result < value ? 1 : 0);
-        }
-    }
-
-    /**
-     * @dev Return the log in base 10 of a positive value rounded towards zero.
-     * Returns 0 if given 0.
-     */
-    function log10(uint256 value) internal pure returns (uint256) {
-        uint256 result = 0;
-        unchecked {
-            if (value >= 10 ** 64) {
-                value /= 10 ** 64;
-                result += 64;
-            }
-            if (value >= 10 ** 32) {
-                value /= 10 ** 32;
-                result += 32;
-            }
-            if (value >= 10 ** 16) {
-                value /= 10 ** 16;
-                result += 16;
-            }
-            if (value >= 10 ** 8) {
-                value /= 10 ** 8;
-                result += 8;
-            }
-            if (value >= 10 ** 4) {
-                value /= 10 ** 4;
-                result += 4;
-            }
-            if (value >= 10 ** 2) {
-                value /= 10 ** 2;
-                result += 2;
-            }
-            if (value >= 10 ** 1) {
-                result += 1;
-            }
-        }
-        return result;
-    }
-
-    /**
-     * @dev Return the log in base 10, following the selected rounding direction, of a positive value.
-     * Returns 0 if given 0.
-     */
-    function log10(uint256 value, Rounding rounding) internal pure returns (uint256) {
-        unchecked {
-            uint256 result = log10(value);
-            return result + (unsignedRoundsUp(rounding) && 10 ** result < value ? 1 : 0);
-        }
-    }
-
-    /**
-     * @dev Return the log in base 256 of a positive value rounded towards zero.
-     * Returns 0 if given 0.
+     * https://consensys.net/diligence/blog/2019/09/stop-using-soliditys-transfer-now/[Learn more].
      *
-     * Adding one to the result gives the number of pairs of hex symbols needed to represent `value` as a hex string.
+     * IMPORTANT: because control is transferred to `recipient`, care must be
+     * taken to not create reentrancy vulnerabilities. Consider using
+     * {ReentrancyGuard} or the
+     * https://solidity.readthedocs.io/en/v0.8.20/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
      */
-    function log256(uint256 value) internal pure returns (uint256) {
-        uint256 result = 0;
-        unchecked {
-            if (value >> 128 > 0) {
-                value >>= 128;
-                result += 16;
-            }
-            if (value >> 64 > 0) {
-                value >>= 64;
-                result += 8;
-            }
-            if (value >> 32 > 0) {
-                value >>= 32;
-                result += 4;
-            }
-            if (value >> 16 > 0) {
-                value >>= 16;
-                result += 2;
-            }
-            if (value >> 8 > 0) {
-                result += 1;
-            }
+    function sendValue(address payable recipient, uint256 amount) internal {
+        if (address(this).balance < amount) {
+            revert AddressInsufficientBalance(address(this));
         }
-        return result;
-    }
 
-    /**
-     * @dev Return the log in base 256, following the selected rounding direction, of a positive value.
-     * Returns 0 if given 0.
-     */
-    function log256(uint256 value, Rounding rounding) internal pure returns (uint256) {
-        unchecked {
-            uint256 result = log256(value);
-            return result + (unsignedRoundsUp(rounding) && 1 << (result << 3) < value ? 1 : 0);
+        (bool success, ) = recipient.call{value: amount}("");
+        if (!success) {
+            revert FailedInnerCall();
         }
     }
 
     /**
-     * @dev Returns whether a provided rounding mode is considered rounding up for unsigned integers.
-     */
-    function unsignedRoundsUp(Rounding rounding) internal pure returns (bool) {
-        return uint8(rounding) % 2 == 1;
-    }
-}
-
-// File: @openzeppelin/contracts/utils/structs/Checkpoints.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/structs/Checkpoints.sol)
-// This file was procedurally generated from scripts/generate/templates/Checkpoints.js.
-
-pragma solidity ^0.8.20;
-
-
-/**
- * @dev This library defines the `Trace*` struct, for checkpointing values as they change at different points in
- * time, and later looking up past values by block number. See {Votes} as an example.
- *
- * To create a history of checkpoints define a variable type `Checkpoints.Trace*` in your contract, and store a new
- * checkpoint for the current transaction block using the {push} function.
- */
-library Checkpoints {
-    /**
-     * @dev A value was attempted to be inserted on a past checkpoint.
-     */
-    error CheckpointUnorderedInsertion();
-
-    struct Trace224 {
-        Checkpoint224[] _checkpoints;
-    }
-
-    struct Checkpoint224 {
-        uint32 _key;
-        uint224 _value;
-    }
-
-    /**
-     * @dev Pushes a (`key`, `value`) pair into a Trace224 so that it is stored as the checkpoint.
+     * @dev Performs a Solidity function call using a low level `call`. A
+     * plain `call` is an unsafe replacement for a function call: use this
+     * function instead.
      *
-     * Returns previous value and new value.
+     * If `target` reverts with a revert reason or custom error, it is bubbled
+     * up by this function (like regular Solidity function calls). However, if
+     * the call reverted with no returned reason, this function reverts with a
+     * {FailedInnerCall} error.
      *
-     * IMPORTANT: Never accept `key` as a user input, since an arbitrary `type(uint32).max` key set will disable the
-     * library.
-     */
-    function push(Trace224 storage self, uint32 key, uint224 value) internal returns (uint224, uint224) {
-        return _insert(self._checkpoints, key, value);
-    }
-
-    /**
-     * @dev Returns the value in the first (oldest) checkpoint with key greater or equal than the search key, or zero if
-     * there is none.
-     */
-    function lowerLookup(Trace224 storage self, uint32 key) internal view returns (uint224) {
-        uint256 len = self._checkpoints.length;
-        uint256 pos = _lowerBinaryLookup(self._checkpoints, key, 0, len);
-        return pos == len ? 0 : _unsafeAccess(self._checkpoints, pos)._value;
-    }
-
-    /**
-     * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
-     * if there is none.
-     */
-    function upperLookup(Trace224 storage self, uint32 key) internal view returns (uint224) {
-        uint256 len = self._checkpoints.length;
-        uint256 pos = _upperBinaryLookup(self._checkpoints, key, 0, len);
-        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
-    }
-
-    /**
-     * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
-     * if there is none.
+     * Returns the raw returned data. To convert to the expected return value,
+     * use https://solidity.readthedocs.io/en/latest/units-and-global-variables.html?highlight=abi.decode#abi-encoding-and-decoding-functions[`abi.decode`].
      *
-     * NOTE: This is a variant of {upperLookup} that is optimised to find "recent" checkpoint (checkpoints with high
-     * keys).
+     * Requirements:
+     *
+     * - `target` must be a contract.
+     * - calling `target` with `data` must not revert.
      */
-    function upperLookupRecent(Trace224 storage self, uint32 key) internal view returns (uint224) {
-        uint256 len = self._checkpoints.length;
+    function functionCall(
+        address target,
+        bytes memory data
+    ) internal returns (bytes memory) {
+        return functionCallWithValue(target, data, 0);
+    }
 
-        uint256 low = 0;
-        uint256 high = len;
-
-        if (len > 5) {
-            uint256 mid = len - Math.sqrt(len);
-            if (key < _unsafeAccess(self._checkpoints, mid)._key) {
-                high = mid;
-            } else {
-                low = mid + 1;
-            }
+    /**
+     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+     * but also transferring `value` wei to `target`.
+     *
+     * Requirements:
+     *
+     * - the calling contract must have an ETH balance of at least `value`.
+     * - the called Solidity function must be `payable`.
+     */
+    function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value
+    ) internal returns (bytes memory) {
+        if (address(this).balance < value) {
+            revert AddressInsufficientBalance(address(this));
         }
-
-        uint256 pos = _upperBinaryLookup(self._checkpoints, key, low, high);
-
-        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
+        (bool success, bytes memory returndata) = target.call{value: value}(
+            data
+        );
+        return verifyCallResultFromTarget(target, success, returndata);
     }
 
     /**
-     * @dev Returns the value in the most recent checkpoint, or zero if there are no checkpoints.
+     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+     * but performing a static call.
      */
-    function latest(Trace224 storage self) internal view returns (uint224) {
-        uint256 pos = self._checkpoints.length;
-        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
+    function functionStaticCall(
+        address target,
+        bytes memory data
+    ) internal view returns (bytes memory) {
+        (bool success, bytes memory returndata) = target.staticcall(data);
+        return verifyCallResultFromTarget(target, success, returndata);
     }
 
     /**
-     * @dev Returns whether there is a checkpoint in the structure (i.e. it is not empty), and if so the key and value
-     * in the most recent checkpoint.
+     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+     * but performing a delegate call.
      */
-    function latestCheckpoint(Trace224 storage self) internal view returns (bool exists, uint32 _key, uint224 _value) {
-        uint256 pos = self._checkpoints.length;
-        if (pos == 0) {
-            return (false, 0, 0);
+    function functionDelegateCall(
+        address target,
+        bytes memory data
+    ) internal returns (bytes memory) {
+        (bool success, bytes memory returndata) = target.delegatecall(data);
+        return verifyCallResultFromTarget(target, success, returndata);
+    }
+
+    /**
+     * @dev Tool to verify that a low level call to smart-contract was successful, and reverts if the target
+     * was not a contract or bubbling up the revert reason (falling back to {FailedInnerCall}) in case of an
+     * unsuccessful call.
+     */
+    function verifyCallResultFromTarget(
+        address target,
+        bool success,
+        bytes memory returndata
+    ) internal view returns (bytes memory) {
+        if (!success) {
+            _revert(returndata);
         } else {
-            Checkpoint224 memory ckpt = _unsafeAccess(self._checkpoints, pos - 1);
-            return (true, ckpt._key, ckpt._value);
+            // only check if target is a contract if the call was successful and the return data is empty
+            // otherwise we already know that it was a contract
+            if (returndata.length == 0 && target.code.length == 0) {
+                revert AddressEmptyCode(target);
+            }
+            return returndata;
         }
     }
 
     /**
-     * @dev Returns the number of checkpoint.
+     * @dev Tool to verify that a low level call was successful, and reverts if it wasn't, either by bubbling the
+     * revert reason or with a default {FailedInnerCall} error.
      */
-    function length(Trace224 storage self) internal view returns (uint256) {
-        return self._checkpoints.length;
-    }
-
-    /**
-     * @dev Returns checkpoint at given position.
-     */
-    function at(Trace224 storage self, uint32 pos) internal view returns (Checkpoint224 memory) {
-        return self._checkpoints[pos];
-    }
-
-    /**
-     * @dev Pushes a (`key`, `value`) pair into an ordered list of checkpoints, either by inserting a new checkpoint,
-     * or by updating the last one.
-     */
-    function _insert(Checkpoint224[] storage self, uint32 key, uint224 value) private returns (uint224, uint224) {
-        uint256 pos = self.length;
-
-        if (pos > 0) {
-            // Copying to memory is important here.
-            Checkpoint224 memory last = _unsafeAccess(self, pos - 1);
-
-            // Checkpoint keys must be non-decreasing.
-            if (last._key > key) {
-                revert CheckpointUnorderedInsertion();
-            }
-
-            // Update or push new checkpoint
-            if (last._key == key) {
-                _unsafeAccess(self, pos - 1)._value = value;
-            } else {
-                self.push(Checkpoint224({_key: key, _value: value}));
-            }
-            return (last._value, value);
+    function verifyCallResult(
+        bool success,
+        bytes memory returndata
+    ) internal pure returns (bytes memory) {
+        if (!success) {
+            _revert(returndata);
         } else {
-            self.push(Checkpoint224({_key: key, _value: value}));
-            return (0, value);
+            return returndata;
         }
     }
 
     /**
-     * @dev Return the index of the last (most recent) checkpoint with key lower or equal than the search key, or `high`
-     * if there is none. `low` and `high` define a section where to do the search, with inclusive `low` and exclusive
-     * `high`.
-     *
-     * WARNING: `high` should not be greater than the array's length.
+     * @dev Reverts with returndata if present. Otherwise reverts with {FailedInnerCall}.
      */
-    function _upperBinaryLookup(
-        Checkpoint224[] storage self,
-        uint32 key,
-        uint256 low,
-        uint256 high
-    ) private view returns (uint256) {
-        while (low < high) {
-            uint256 mid = Math.average(low, high);
-            if (_unsafeAccess(self, mid)._key > key) {
-                high = mid;
-            } else {
-                low = mid + 1;
-            }
-        }
-        return high;
-    }
-
-    /**
-     * @dev Return the index of the first (oldest) checkpoint with key is greater or equal than the search key, or
-     * `high` if there is none. `low` and `high` define a section where to do the search, with inclusive `low` and
-     * exclusive `high`.
-     *
-     * WARNING: `high` should not be greater than the array's length.
-     */
-    function _lowerBinaryLookup(
-        Checkpoint224[] storage self,
-        uint32 key,
-        uint256 low,
-        uint256 high
-    ) private view returns (uint256) {
-        while (low < high) {
-            uint256 mid = Math.average(low, high);
-            if (_unsafeAccess(self, mid)._key < key) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return high;
-    }
-
-    /**
-     * @dev Access an element of the array without performing bounds check. The position is assumed to be within bounds.
-     */
-    function _unsafeAccess(
-        Checkpoint224[] storage self,
-        uint256 pos
-    ) private pure returns (Checkpoint224 storage result) {
-        assembly {
-            mstore(0, self.slot)
-            result.slot := add(keccak256(0, 0x20), pos)
-        }
-    }
-
-    struct Trace208 {
-        Checkpoint208[] _checkpoints;
-    }
-
-    struct Checkpoint208 {
-        uint48 _key;
-        uint208 _value;
-    }
-
-    /**
-     * @dev Pushes a (`key`, `value`) pair into a Trace208 so that it is stored as the checkpoint.
-     *
-     * Returns previous value and new value.
-     *
-     * IMPORTANT: Never accept `key` as a user input, since an arbitrary `type(uint48).max` key set will disable the
-     * library.
-     */
-    function push(Trace208 storage self, uint48 key, uint208 value) internal returns (uint208, uint208) {
-        return _insert(self._checkpoints, key, value);
-    }
-
-    /**
-     * @dev Returns the value in the first (oldest) checkpoint with key greater or equal than the search key, or zero if
-     * there is none.
-     */
-    function lowerLookup(Trace208 storage self, uint48 key) internal view returns (uint208) {
-        uint256 len = self._checkpoints.length;
-        uint256 pos = _lowerBinaryLookup(self._checkpoints, key, 0, len);
-        return pos == len ? 0 : _unsafeAccess(self._checkpoints, pos)._value;
-    }
-
-    /**
-     * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
-     * if there is none.
-     */
-    function upperLookup(Trace208 storage self, uint48 key) internal view returns (uint208) {
-        uint256 len = self._checkpoints.length;
-        uint256 pos = _upperBinaryLookup(self._checkpoints, key, 0, len);
-        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
-    }
-
-    /**
-     * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
-     * if there is none.
-     *
-     * NOTE: This is a variant of {upperLookup} that is optimised to find "recent" checkpoint (checkpoints with high
-     * keys).
-     */
-    function upperLookupRecent(Trace208 storage self, uint48 key) internal view returns (uint208) {
-        uint256 len = self._checkpoints.length;
-
-        uint256 low = 0;
-        uint256 high = len;
-
-        if (len > 5) {
-            uint256 mid = len - Math.sqrt(len);
-            if (key < _unsafeAccess(self._checkpoints, mid)._key) {
-                high = mid;
-            } else {
-                low = mid + 1;
-            }
-        }
-
-        uint256 pos = _upperBinaryLookup(self._checkpoints, key, low, high);
-
-        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
-    }
-
-    /**
-     * @dev Returns the value in the most recent checkpoint, or zero if there are no checkpoints.
-     */
-    function latest(Trace208 storage self) internal view returns (uint208) {
-        uint256 pos = self._checkpoints.length;
-        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
-    }
-
-    /**
-     * @dev Returns whether there is a checkpoint in the structure (i.e. it is not empty), and if so the key and value
-     * in the most recent checkpoint.
-     */
-    function latestCheckpoint(Trace208 storage self) internal view returns (bool exists, uint48 _key, uint208 _value) {
-        uint256 pos = self._checkpoints.length;
-        if (pos == 0) {
-            return (false, 0, 0);
-        } else {
-            Checkpoint208 memory ckpt = _unsafeAccess(self._checkpoints, pos - 1);
-            return (true, ckpt._key, ckpt._value);
-        }
-    }
-
-    /**
-     * @dev Returns the number of checkpoint.
-     */
-    function length(Trace208 storage self) internal view returns (uint256) {
-        return self._checkpoints.length;
-    }
-
-    /**
-     * @dev Returns checkpoint at given position.
-     */
-    function at(Trace208 storage self, uint32 pos) internal view returns (Checkpoint208 memory) {
-        return self._checkpoints[pos];
-    }
-
-    /**
-     * @dev Pushes a (`key`, `value`) pair into an ordered list of checkpoints, either by inserting a new checkpoint,
-     * or by updating the last one.
-     */
-    function _insert(Checkpoint208[] storage self, uint48 key, uint208 value) private returns (uint208, uint208) {
-        uint256 pos = self.length;
-
-        if (pos > 0) {
-            // Copying to memory is important here.
-            Checkpoint208 memory last = _unsafeAccess(self, pos - 1);
-
-            // Checkpoint keys must be non-decreasing.
-            if (last._key > key) {
-                revert CheckpointUnorderedInsertion();
-            }
-
-            // Update or push new checkpoint
-            if (last._key == key) {
-                _unsafeAccess(self, pos - 1)._value = value;
-            } else {
-                self.push(Checkpoint208({_key: key, _value: value}));
-            }
-            return (last._value, value);
-        } else {
-            self.push(Checkpoint208({_key: key, _value: value}));
-            return (0, value);
-        }
-    }
-
-    /**
-     * @dev Return the index of the last (most recent) checkpoint with key lower or equal than the search key, or `high`
-     * if there is none. `low` and `high` define a section where to do the search, with inclusive `low` and exclusive
-     * `high`.
-     *
-     * WARNING: `high` should not be greater than the array's length.
-     */
-    function _upperBinaryLookup(
-        Checkpoint208[] storage self,
-        uint48 key,
-        uint256 low,
-        uint256 high
-    ) private view returns (uint256) {
-        while (low < high) {
-            uint256 mid = Math.average(low, high);
-            if (_unsafeAccess(self, mid)._key > key) {
-                high = mid;
-            } else {
-                low = mid + 1;
-            }
-        }
-        return high;
-    }
-
-    /**
-     * @dev Return the index of the first (oldest) checkpoint with key is greater or equal than the search key, or
-     * `high` if there is none. `low` and `high` define a section where to do the search, with inclusive `low` and
-     * exclusive `high`.
-     *
-     * WARNING: `high` should not be greater than the array's length.
-     */
-    function _lowerBinaryLookup(
-        Checkpoint208[] storage self,
-        uint48 key,
-        uint256 low,
-        uint256 high
-    ) private view returns (uint256) {
-        while (low < high) {
-            uint256 mid = Math.average(low, high);
-            if (_unsafeAccess(self, mid)._key < key) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return high;
-    }
-
-    /**
-     * @dev Access an element of the array without performing bounds check. The position is assumed to be within bounds.
-     */
-    function _unsafeAccess(
-        Checkpoint208[] storage self,
-        uint256 pos
-    ) private pure returns (Checkpoint208 storage result) {
-        assembly {
-            mstore(0, self.slot)
-            result.slot := add(keccak256(0, 0x20), pos)
-        }
-    }
-
-    struct Trace160 {
-        Checkpoint160[] _checkpoints;
-    }
-
-    struct Checkpoint160 {
-        uint96 _key;
-        uint160 _value;
-    }
-
-    /**
-     * @dev Pushes a (`key`, `value`) pair into a Trace160 so that it is stored as the checkpoint.
-     *
-     * Returns previous value and new value.
-     *
-     * IMPORTANT: Never accept `key` as a user input, since an arbitrary `type(uint96).max` key set will disable the
-     * library.
-     */
-    function push(Trace160 storage self, uint96 key, uint160 value) internal returns (uint160, uint160) {
-        return _insert(self._checkpoints, key, value);
-    }
-
-    /**
-     * @dev Returns the value in the first (oldest) checkpoint with key greater or equal than the search key, or zero if
-     * there is none.
-     */
-    function lowerLookup(Trace160 storage self, uint96 key) internal view returns (uint160) {
-        uint256 len = self._checkpoints.length;
-        uint256 pos = _lowerBinaryLookup(self._checkpoints, key, 0, len);
-        return pos == len ? 0 : _unsafeAccess(self._checkpoints, pos)._value;
-    }
-
-    /**
-     * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
-     * if there is none.
-     */
-    function upperLookup(Trace160 storage self, uint96 key) internal view returns (uint160) {
-        uint256 len = self._checkpoints.length;
-        uint256 pos = _upperBinaryLookup(self._checkpoints, key, 0, len);
-        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
-    }
-
-    /**
-     * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
-     * if there is none.
-     *
-     * NOTE: This is a variant of {upperLookup} that is optimised to find "recent" checkpoint (checkpoints with high
-     * keys).
-     */
-    function upperLookupRecent(Trace160 storage self, uint96 key) internal view returns (uint160) {
-        uint256 len = self._checkpoints.length;
-
-        uint256 low = 0;
-        uint256 high = len;
-
-        if (len > 5) {
-            uint256 mid = len - Math.sqrt(len);
-            if (key < _unsafeAccess(self._checkpoints, mid)._key) {
-                high = mid;
-            } else {
-                low = mid + 1;
-            }
-        }
-
-        uint256 pos = _upperBinaryLookup(self._checkpoints, key, low, high);
-
-        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
-    }
-
-    /**
-     * @dev Returns the value in the most recent checkpoint, or zero if there are no checkpoints.
-     */
-    function latest(Trace160 storage self) internal view returns (uint160) {
-        uint256 pos = self._checkpoints.length;
-        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
-    }
-
-    /**
-     * @dev Returns whether there is a checkpoint in the structure (i.e. it is not empty), and if so the key and value
-     * in the most recent checkpoint.
-     */
-    function latestCheckpoint(Trace160 storage self) internal view returns (bool exists, uint96 _key, uint160 _value) {
-        uint256 pos = self._checkpoints.length;
-        if (pos == 0) {
-            return (false, 0, 0);
-        } else {
-            Checkpoint160 memory ckpt = _unsafeAccess(self._checkpoints, pos - 1);
-            return (true, ckpt._key, ckpt._value);
-        }
-    }
-
-    /**
-     * @dev Returns the number of checkpoint.
-     */
-    function length(Trace160 storage self) internal view returns (uint256) {
-        return self._checkpoints.length;
-    }
-
-    /**
-     * @dev Returns checkpoint at given position.
-     */
-    function at(Trace160 storage self, uint32 pos) internal view returns (Checkpoint160 memory) {
-        return self._checkpoints[pos];
-    }
-
-    /**
-     * @dev Pushes a (`key`, `value`) pair into an ordered list of checkpoints, either by inserting a new checkpoint,
-     * or by updating the last one.
-     */
-    function _insert(Checkpoint160[] storage self, uint96 key, uint160 value) private returns (uint160, uint160) {
-        uint256 pos = self.length;
-
-        if (pos > 0) {
-            // Copying to memory is important here.
-            Checkpoint160 memory last = _unsafeAccess(self, pos - 1);
-
-            // Checkpoint keys must be non-decreasing.
-            if (last._key > key) {
-                revert CheckpointUnorderedInsertion();
-            }
-
-            // Update or push new checkpoint
-            if (last._key == key) {
-                _unsafeAccess(self, pos - 1)._value = value;
-            } else {
-                self.push(Checkpoint160({_key: key, _value: value}));
-            }
-            return (last._value, value);
-        } else {
-            self.push(Checkpoint160({_key: key, _value: value}));
-            return (0, value);
-        }
-    }
-
-    /**
-     * @dev Return the index of the last (most recent) checkpoint with key lower or equal than the search key, or `high`
-     * if there is none. `low` and `high` define a section where to do the search, with inclusive `low` and exclusive
-     * `high`.
-     *
-     * WARNING: `high` should not be greater than the array's length.
-     */
-    function _upperBinaryLookup(
-        Checkpoint160[] storage self,
-        uint96 key,
-        uint256 low,
-        uint256 high
-    ) private view returns (uint256) {
-        while (low < high) {
-            uint256 mid = Math.average(low, high);
-            if (_unsafeAccess(self, mid)._key > key) {
-                high = mid;
-            } else {
-                low = mid + 1;
-            }
-        }
-        return high;
-    }
-
-    /**
-     * @dev Return the index of the first (oldest) checkpoint with key is greater or equal than the search key, or
-     * `high` if there is none. `low` and `high` define a section where to do the search, with inclusive `low` and
-     * exclusive `high`.
-     *
-     * WARNING: `high` should not be greater than the array's length.
-     */
-    function _lowerBinaryLookup(
-        Checkpoint160[] storage self,
-        uint96 key,
-        uint256 low,
-        uint256 high
-    ) private view returns (uint256) {
-        while (low < high) {
-            uint256 mid = Math.average(low, high);
-            if (_unsafeAccess(self, mid)._key < key) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return high;
-    }
-
-    /**
-     * @dev Access an element of the array without performing bounds check. The position is assumed to be within bounds.
-     */
-    function _unsafeAccess(
-        Checkpoint160[] storage self,
-        uint256 pos
-    ) private pure returns (Checkpoint160 storage result) {
-        assembly {
-            mstore(0, self.slot)
-            result.slot := add(keccak256(0, 0x20), pos)
-        }
-    }
-}
-
-// File: @openzeppelin/contracts/utils/types/Time.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/types/Time.sol)
-
-pragma solidity ^0.8.20;
-
-
-
-/**
- * @dev This library provides helpers for manipulating time-related objects.
- *
- * It uses the following types:
- * - `uint48` for timepoints
- * - `uint32` for durations
- *
- * While the library doesn't provide specific types for timepoints and duration, it does provide:
- * - a `Delay` type to represent duration that can be programmed to change value automatically at a given point
- * - additional helper functions
- */
-library Time {
-    using Time for *;
-
-    /**
-     * @dev Get the block timestamp as a Timepoint.
-     */
-    function timestamp() internal view returns (uint48) {
-        return SafeCast.toUint48(block.timestamp);
-    }
-
-    /**
-     * @dev Get the block number as a Timepoint.
-     */
-    function blockNumber() internal view returns (uint48) {
-        return SafeCast.toUint48(block.number);
-    }
-
-    // ==================================================== Delay =====================================================
-    /**
-     * @dev A `Delay` is a uint32 duration that can be programmed to change value automatically at a given point in the
-     * future. The "effect" timepoint describes when the transitions happens from the "old" value to the "new" value.
-     * This allows updating the delay applied to some operation while keeping some guarantees.
-     *
-     * In particular, the {update} function guarantees that if the delay is reduced, the old delay still applies for
-     * some time. For example if the delay is currently 7 days to do an upgrade, the admin should not be able to set
-     * the delay to 0 and upgrade immediately. If the admin wants to reduce the delay, the old delay (7 days) should
-     * still apply for some time.
-     *
-     *
-     * The `Delay` type is 112 bits long, and packs the following:
-     *
-     * ```
-     *   | [uint48]: effect date (timepoint)
-     *   |           | [uint32]: value before (duration)
-     *   ↓           ↓       ↓ [uint32]: value after (duration)
-     * 0xAAAAAAAAAAAABBBBBBBBCCCCCCCC
-     * ```
-     *
-     * NOTE: The {get} and {withUpdate} functions operate using timestamps. Block number based delays are not currently
-     * supported.
-     */
-    type Delay is uint112;
-
-    /**
-     * @dev Wrap a duration into a Delay to add the one-step "update in the future" feature
-     */
-    function toDelay(uint32 duration) internal pure returns (Delay) {
-        return Delay.wrap(duration);
-    }
-
-    /**
-     * @dev Get the value at a given timepoint plus the pending value and effect timepoint if there is a scheduled
-     * change after this timepoint. If the effect timepoint is 0, then the pending value should not be considered.
-     */
-    function _getFullAt(Delay self, uint48 timepoint) private pure returns (uint32, uint32, uint48) {
-        (uint32 valueBefore, uint32 valueAfter, uint48 effect) = self.unpack();
-        return effect <= timepoint ? (valueAfter, 0, 0) : (valueBefore, valueAfter, effect);
-    }
-
-    /**
-     * @dev Get the current value plus the pending value and effect timepoint if there is a scheduled change. If the
-     * effect timepoint is 0, then the pending value should not be considered.
-     */
-    function getFull(Delay self) internal view returns (uint32, uint32, uint48) {
-        return _getFullAt(self, timestamp());
-    }
-
-    /**
-     * @dev Get the current value.
-     */
-    function get(Delay self) internal view returns (uint32) {
-        (uint32 delay, , ) = self.getFull();
-        return delay;
-    }
-
-    /**
-     * @dev Update a Delay object so that it takes a new duration after a timepoint that is automatically computed to
-     * enforce the old delay at the moment of the update. Returns the updated Delay object and the timestamp when the
-     * new delay becomes effective.
-     */
-    function withUpdate(
-        Delay self,
-        uint32 newValue,
-        uint32 minSetback
-    ) internal view returns (Delay updatedDelay, uint48 effect) {
-        uint32 value = self.get();
-        uint32 setback = uint32(Math.max(minSetback, value > newValue ? value - newValue : 0));
-        effect = timestamp() + setback;
-        return (pack(value, newValue, effect), effect);
-    }
-
-    /**
-     * @dev Split a delay into its components: valueBefore, valueAfter and effect (transition timepoint).
-     */
-    function unpack(Delay self) internal pure returns (uint32 valueBefore, uint32 valueAfter, uint48 effect) {
-        uint112 raw = Delay.unwrap(self);
-
-        valueAfter = uint32(raw);
-        valueBefore = uint32(raw >> 32);
-        effect = uint48(raw >> 64);
-
-        return (valueBefore, valueAfter, effect);
-    }
-
-    /**
-     * @dev pack the components into a Delay object.
-     */
-    function pack(uint32 valueBefore, uint32 valueAfter, uint48 effect) internal pure returns (Delay) {
-        return Delay.wrap((uint112(effect) << 64) | (uint112(valueBefore) << 32) | uint112(valueAfter));
-    }
-}
-
-// File: @openzeppelin/contracts/utils/Strings.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/Strings.sol)
-
-pragma solidity ^0.8.20;
-
-
-
-/**
- * @dev String operations.
- */
-library Strings {
-    bytes16 private constant HEX_DIGITS = "0123456789abcdef";
-    uint8 private constant ADDRESS_LENGTH = 20;
-
-    /**
-     * @dev The `value` string doesn't fit in the specified `length`.
-     */
-    error StringsInsufficientHexLength(uint256 value, uint256 length);
-
-    /**
-     * @dev Converts a `uint256` to its ASCII `string` decimal representation.
-     */
-    function toString(uint256 value) internal pure returns (string memory) {
-        unchecked {
-            uint256 length = Math.log10(value) + 1;
-            string memory buffer = new string(length);
-            uint256 ptr;
+    function _revert(bytes memory returndata) private pure {
+        // Look for revert reason and bubble it up if present
+        if (returndata.length > 0) {
+            // The easiest way to bubble the revert reason is using memory via assembly
             /// @solidity memory-safe-assembly
             assembly {
-                ptr := add(buffer, add(32, length))
+                let returndata_size := mload(returndata)
+                revert(add(32, returndata), returndata_size)
             }
-            while (true) {
-                ptr--;
-                /// @solidity memory-safe-assembly
-                assembly {
-                    mstore8(ptr, byte(mod(value, 10), HEX_DIGITS))
-                }
-                value /= 10;
-                if (value == 0) break;
-            }
-            return buffer;
-        }
-    }
-
-    /**
-     * @dev Converts a `int256` to its ASCII `string` decimal representation.
-     */
-    function toStringSigned(int256 value) internal pure returns (string memory) {
-        return string.concat(value < 0 ? "-" : "", toString(SignedMath.abs(value)));
-    }
-
-    /**
-     * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation.
-     */
-    function toHexString(uint256 value) internal pure returns (string memory) {
-        unchecked {
-            return toHexString(value, Math.log256(value) + 1);
-        }
-    }
-
-    /**
-     * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation with fixed length.
-     */
-    function toHexString(uint256 value, uint256 length) internal pure returns (string memory) {
-        uint256 localValue = value;
-        bytes memory buffer = new bytes(2 * length + 2);
-        buffer[0] = "0";
-        buffer[1] = "x";
-        for (uint256 i = 2 * length + 1; i > 1; --i) {
-            buffer[i] = HEX_DIGITS[localValue & 0xf];
-            localValue >>= 4;
-        }
-        if (localValue != 0) {
-            revert StringsInsufficientHexLength(value, length);
-        }
-        return string(buffer);
-    }
-
-    /**
-     * @dev Converts an `address` with fixed length of 20 bytes to its not checksummed ASCII `string` hexadecimal
-     * representation.
-     */
-    function toHexString(address addr) internal pure returns (string memory) {
-        return toHexString(uint256(uint160(addr)), ADDRESS_LENGTH);
-    }
-
-    /**
-     * @dev Returns true if the two strings are equal.
-     */
-    function equal(string memory a, string memory b) internal pure returns (bool) {
-        return bytes(a).length == bytes(b).length && keccak256(bytes(a)) == keccak256(bytes(b));
-    }
-}
-
-// File: @openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/cryptography/MessageHashUtils.sol)
-
-pragma solidity ^0.8.20;
-
-
-/**
- * @dev Signature message hash utilities for producing digests to be consumed by {ECDSA} recovery or signing.
- *
- * The library provides methods for generating a hash of a message that conforms to the
- * https://eips.ethereum.org/EIPS/eip-191[EIP 191] and https://eips.ethereum.org/EIPS/eip-712[EIP 712]
- * specifications.
- */
-library MessageHashUtils {
-    /**
-     * @dev Returns the keccak256 digest of an EIP-191 signed data with version
-     * `0x45` (`personal_sign` messages).
-     *
-     * The digest is calculated by prefixing a bytes32 `messageHash` with
-     * `"\x19Ethereum Signed Message:\n32"` and hashing the result. It corresponds with the
-     * hash signed when using the https://eth.wiki/json-rpc/API#eth_sign[`eth_sign`] JSON-RPC method.
-     *
-     * NOTE: The `messageHash` parameter is intended to be the result of hashing a raw message with
-     * keccak256, although any bytes32 value can be safely used because the final digest will
-     * be re-hashed.
-     *
-     * See {ECDSA-recover}.
-     */
-    function toEthSignedMessageHash(bytes32 messageHash) internal pure returns (bytes32 digest) {
-        /// @solidity memory-safe-assembly
-        assembly {
-            mstore(0x00, "\x19Ethereum Signed Message:\n32") // 32 is the bytes-length of messageHash
-            mstore(0x1c, messageHash) // 0x1c (28) is the length of the prefix
-            digest := keccak256(0x00, 0x3c) // 0x3c is the length of the prefix (0x1c) + messageHash (0x20)
-        }
-    }
-
-    /**
-     * @dev Returns the keccak256 digest of an EIP-191 signed data with version
-     * `0x45` (`personal_sign` messages).
-     *
-     * The digest is calculated by prefixing an arbitrary `message` with
-     * `"\x19Ethereum Signed Message:\n" + len(message)` and hashing the result. It corresponds with the
-     * hash signed when using the https://eth.wiki/json-rpc/API#eth_sign[`eth_sign`] JSON-RPC method.
-     *
-     * See {ECDSA-recover}.
-     */
-    function toEthSignedMessageHash(bytes memory message) internal pure returns (bytes32) {
-        return
-            keccak256(bytes.concat("\x19Ethereum Signed Message:\n", bytes(Strings.toString(message.length)), message));
-    }
-
-    /**
-     * @dev Returns the keccak256 digest of an EIP-191 signed data with version
-     * `0x00` (data with intended validator).
-     *
-     * The digest is calculated by prefixing an arbitrary `data` with `"\x19\x00"` and the intended
-     * `validator` address. Then hashing the result.
-     *
-     * See {ECDSA-recover}.
-     */
-    function toDataWithIntendedValidatorHash(address validator, bytes memory data) internal pure returns (bytes32) {
-        return keccak256(abi.encodePacked(hex"19_00", validator, data));
-    }
-
-    /**
-     * @dev Returns the keccak256 digest of an EIP-712 typed data (EIP-191 version `0x01`).
-     *
-     * The digest is calculated from a `domainSeparator` and a `structHash`, by prefixing them with
-     * `\x19\x01` and hashing the result. It corresponds to the hash signed by the
-     * https://eips.ethereum.org/EIPS/eip-712[`eth_signTypedData`] JSON-RPC method as part of EIP-712.
-     *
-     * See {ECDSA-recover}.
-     */
-    function toTypedDataHash(bytes32 domainSeparator, bytes32 structHash) internal pure returns (bytes32 digest) {
-        /// @solidity memory-safe-assembly
-        assembly {
-            let ptr := mload(0x40)
-            mstore(ptr, hex"19_01")
-            mstore(add(ptr, 0x02), domainSeparator)
-            mstore(add(ptr, 0x22), structHash)
-            digest := keccak256(ptr, 0x42)
-        }
-    }
-}
-
-// File: @openzeppelin/contracts/utils/cryptography/EIP712.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/cryptography/EIP712.sol)
-
-pragma solidity ^0.8.20;
-
-
-
-
-/**
- * @dev https://eips.ethereum.org/EIPS/eip-712[EIP 712] is a standard for hashing and signing of typed structured data.
- *
- * The encoding scheme specified in the EIP requires a domain separator and a hash of the typed structured data, whose
- * encoding is very generic and therefore its implementation in Solidity is not feasible, thus this contract
- * does not implement the encoding itself. Protocols need to implement the type-specific encoding they need in order to
- * produce the hash of their typed data using a combination of `abi.encode` and `keccak256`.
- *
- * This contract implements the EIP 712 domain separator ({_domainSeparatorV4}) that is used as part of the encoding
- * scheme, and the final step of the encoding to obtain the message digest that is then signed via ECDSA
- * ({_hashTypedDataV4}).
- *
- * The implementation of the domain separator was designed to be as efficient as possible while still properly updating
- * the chain id to protect against replay attacks on an eventual fork of the chain.
- *
- * NOTE: This contract implements the version of the encoding known as "v4", as implemented by the JSON RPC method
- * https://docs.metamask.io/guide/signing-data.html[`eth_signTypedDataV4` in MetaMask].
- *
- * NOTE: In the upgradeable version of this contract, the cached values will correspond to the address, and the domain
- * separator of the implementation contract. This will cause the {_domainSeparatorV4} function to always rebuild the
- * separator from the immutable values, which is cheaper than accessing a cached version in cold storage.
- *
- * @custom:oz-upgrades-unsafe-allow state-variable-immutable
- */
-abstract contract EIP712 is IERC5267 {
-    using ShortStrings for *;
-
-    bytes32 private constant TYPE_HASH =
-        keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
-
-    // Cache the domain separator as an immutable value, but also store the chain id that it corresponds to, in order to
-    // invalidate the cached domain separator if the chain id changes.
-    bytes32 private immutable _cachedDomainSeparator;
-    uint256 private immutable _cachedChainId;
-    address private immutable _cachedThis;
-
-    bytes32 private immutable _hashedName;
-    bytes32 private immutable _hashedVersion;
-
-    ShortString private immutable _name;
-    ShortString private immutable _version;
-    string private _nameFallback;
-    string private _versionFallback;
-
-    /**
-     * @dev Initializes the domain separator and parameter caches.
-     *
-     * The meaning of `name` and `version` is specified in
-     * https://eips.ethereum.org/EIPS/eip-712#definition-of-domainseparator[EIP 712]:
-     *
-     * - `name`: the user readable name of the signing domain, i.e. the name of the DApp or the protocol.
-     * - `version`: the current major version of the signing domain.
-     *
-     * NOTE: These parameters cannot be changed except through a xref:learn::upgrading-smart-contracts.adoc[smart
-     * contract upgrade].
-     */
-    constructor(string memory name, string memory version) {
-        _name = name.toShortStringWithFallback(_nameFallback);
-        _version = version.toShortStringWithFallback(_versionFallback);
-        _hashedName = keccak256(bytes(name));
-        _hashedVersion = keccak256(bytes(version));
-
-        _cachedChainId = block.chainid;
-        _cachedDomainSeparator = _buildDomainSeparator();
-        _cachedThis = address(this);
-    }
-
-    /**
-     * @dev Returns the domain separator for the current chain.
-     */
-    function _domainSeparatorV4() internal view returns (bytes32) {
-        if (address(this) == _cachedThis && block.chainid == _cachedChainId) {
-            return _cachedDomainSeparator;
         } else {
-            return _buildDomainSeparator();
+            revert FailedInnerCall();
         }
-    }
-
-    function _buildDomainSeparator() private view returns (bytes32) {
-        return keccak256(abi.encode(TYPE_HASH, _hashedName, _hashedVersion, block.chainid, address(this)));
-    }
-
-    /**
-     * @dev Given an already https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct[hashed struct], this
-     * function returns the hash of the fully encoded EIP712 message for this domain.
-     *
-     * This hash can be used together with {ECDSA-recover} to obtain the signer of a message. For example:
-     *
-     * ```solidity
-     * bytes32 digest = _hashTypedDataV4(keccak256(abi.encode(
-     *     keccak256("Mail(address to,string contents)"),
-     *     mailTo,
-     *     keccak256(bytes(mailContents))
-     * )));
-     * address signer = ECDSA.recover(digest, signature);
-     * ```
-     */
-    function _hashTypedDataV4(bytes32 structHash) internal view virtual returns (bytes32) {
-        return MessageHashUtils.toTypedDataHash(_domainSeparatorV4(), structHash);
-    }
-
-    /**
-     * @dev See {IERC-5267}.
-     */
-    function eip712Domain()
-        public
-        view
-        virtual
-        returns (
-            bytes1 fields,
-            string memory name,
-            string memory version,
-            uint256 chainId,
-            address verifyingContract,
-            bytes32 salt,
-            uint256[] memory extensions
-        )
-    {
-        return (
-            hex"0f", // 01111
-            _EIP712Name(),
-            _EIP712Version(),
-            block.chainid,
-            address(this),
-            bytes32(0),
-            new uint256[](0)
-        );
-    }
-
-    /**
-     * @dev The name parameter for the EIP712 domain.
-     *
-     * NOTE: By default this function reads _name which is an immutable value.
-     * It only reads from storage if necessary (in case the value is too large to fit in a ShortString).
-     */
-    // solhint-disable-next-line func-name-mixedcase
-    function _EIP712Name() internal view returns (string memory) {
-        return _name.toStringWithFallback(_nameFallback);
-    }
-
-    /**
-     * @dev The version parameter for the EIP712 domain.
-     *
-     * NOTE: By default this function reads _version which is an immutable value.
-     * It only reads from storage if necessary (in case the value is too large to fit in a ShortString).
-     */
-    // solhint-disable-next-line func-name-mixedcase
-    function _EIP712Version() internal view returns (string memory) {
-        return _version.toStringWithFallback(_versionFallback);
     }
 }
 
-// File: @openzeppelin/contracts/utils/introspection/IERC165.sol
+// File: @openzeppelin/contracts/utils/Context.sol
 
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/introspection/IERC165.sol)
+// OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)
 
 pragma solidity ^0.8.20;
 
 /**
- * @dev Interface of the ERC165 standard, as defined in the
- * https://eips.ethereum.org/EIPS/eip-165[EIP].
+ * @dev Provides information about the current execution context, including the
+ * sender of the transaction and its data. While these are generally available
+ * via msg.sender and msg.data, they should not be accessed in such a direct
+ * manner, since when dealing with meta-transactions the account sending and
+ * paying for execution may not be the actual sender (as far as an application
+ * is concerned).
  *
- * Implementers can declare support of contract interfaces, which can then be
- * queried by others ({ERC165Checker}).
- *
- * For an implementation, see {ERC165}.
+ * This contract is only required for intermediate, library-like contracts.
  */
-interface IERC165 {
+abstract contract Context {
+    function _msgSender() internal view virtual returns (address) {
+        return msg.sender;
+    }
+
+    function _msgData() internal view virtual returns (bytes calldata) {
+        return msg.data;
+    }
+
+    function _contextSuffixLength() internal view virtual returns (uint256) {
+        return 0;
+    }
+}
+
+// File: @openzeppelin/contracts/utils/Nonces.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/Nonces.sol)
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Provides tracking nonces for addresses. Nonces will only increment.
+ */
+abstract contract Nonces {
     /**
-     * @dev Returns true if this contract implements the interface defined by
-     * `interfaceId`. See the corresponding
-     * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]
-     * to learn more about how these ids are created.
-     *
-     * This function call must use less than 30 000 gas.
+     * @dev The nonce used for an `account` is not the expected current nonce.
      */
-    function supportsInterface(bytes4 interfaceId) external view returns (bool);
+    error InvalidAccountNonce(address account, uint256 currentNonce);
+
+    mapping(address account => uint256) private _nonces;
+
+    /**
+     * @dev Returns the next unused nonce for an address.
+     */
+    function nonces(address owner) public view virtual returns (uint256) {
+        return _nonces[owner];
+    }
+
+    /**
+     * @dev Consumes a nonce.
+     *
+     * Returns the current value and increments nonce.
+     */
+    function _useNonce(address owner) internal virtual returns (uint256) {
+        // For each account, the nonce has an initial value of 0, can only be incremented by one, and cannot be
+        // decremented or reset. This guarantees that the nonce never overflows.
+        unchecked {
+            // It is important to do x++ and not ++x here.
+            return _nonces[owner]++;
+        }
+    }
+
+    /**
+     * @dev Same as {_useNonce} but checking that `nonce` is the next valid for `owner`.
+     */
+    function _useCheckedNonce(address owner, uint256 nonce) internal virtual {
+        uint256 current = _useNonce(owner);
+        if (nonce != current) {
+            revert InvalidAccountNonce(owner, current);
+        }
+    }
 }
 
 // File: @openzeppelin/contracts/interfaces/IERC165.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC165.sol)
 
 pragma solidity ^0.8.20;
 
+// File: @openzeppelin/contracts/interfaces/IERC6372.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC6372.sol)
+
+pragma solidity ^0.8.20;
+
+interface IERC6372 {
+    /**
+     * @dev Clock used for flagging checkpoints. Can be overridden to implement timestamp based checkpoints (and voting).
+     */
+    function clock() external view returns (uint48);
+
+    /**
+     * @dev Description of the clock
+     */
+    // solhint-disable-next-line func-name-mixedcase
+    function CLOCK_MODE() external view returns (string memory);
+}
 
 // File: @openzeppelin/contracts/governance/IGovernor.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (governance/IGovernor.sol)
 
 pragma solidity ^0.8.20;
-
-
 
 /**
  * @dev Interface of the {Governor} core.
@@ -3914,7 +3291,11 @@ interface IGovernor is IERC165, IERC6372 {
     /**
      * @dev Empty proposal or a mismatch between the parameters length for a proposal call.
      */
-    error GovernorInvalidProposalLength(uint256 targets, uint256 calldatas, uint256 values);
+    error GovernorInvalidProposalLength(
+        uint256 targets,
+        uint256 calldatas,
+        uint256 values
+    );
 
     /**
      * @dev The vote was already cast.
@@ -3951,7 +3332,11 @@ interface IGovernor is IERC165, IERC6372 {
      *
      * See {Governor-_encodeStateBitmap}.
      */
-    error GovernorUnexpectedProposalState(uint256 proposalId, ProposalState current, bytes32 expectedStates);
+    error GovernorUnexpectedProposalState(
+        uint256 proposalId,
+        ProposalState current,
+        bytes32 expectedStates
+    );
 
     /**
      * @dev The voting period set is not a valid period.
@@ -3961,7 +3346,11 @@ interface IGovernor is IERC165, IERC6372 {
     /**
      * @dev The `proposer` does not have the required votes to create a proposal.
      */
-    error GovernorInsufficientProposerVotes(address proposer, uint256 votes, uint256 threshold);
+    error GovernorInsufficientProposerVotes(
+        address proposer,
+        uint256 votes,
+        uint256 threshold
+    );
 
     /**
      * @dev The `proposer` is not allowed to create a proposal.
@@ -4029,7 +3418,13 @@ interface IGovernor is IERC165, IERC6372 {
      *
      * Note: `support` values should be seen as buckets. Their interpretation depends on the voting module used.
      */
-    event VoteCast(address indexed voter, uint256 proposalId, uint8 support, uint256 weight, string reason);
+    event VoteCast(
+        address indexed voter,
+        uint256 proposalId,
+        uint8 support,
+        uint256 weight,
+        string reason
+    );
 
     /**
      * @dev Emitted when a vote is cast with params.
@@ -4112,20 +3507,26 @@ interface IGovernor is IERC165, IERC6372 {
      * snapshot is performed at the end of this block. Hence, voting for this proposal starts at the beginning of the
      * following block.
      */
-    function proposalSnapshot(uint256 proposalId) external view returns (uint256);
+    function proposalSnapshot(
+        uint256 proposalId
+    ) external view returns (uint256);
 
     /**
      * @notice module:core
      * @dev Timepoint at which votes close. If using block number, votes close at the end of this block, so it is
      * possible to cast a vote during this block.
      */
-    function proposalDeadline(uint256 proposalId) external view returns (uint256);
+    function proposalDeadline(
+        uint256 proposalId
+    ) external view returns (uint256);
 
     /**
      * @notice module:core
      * @dev The account that created a proposal.
      */
-    function proposalProposer(uint256 proposalId) external view returns (address);
+    function proposalProposer(
+        uint256 proposalId
+    ) external view returns (address);
 
     /**
      * @notice module:core
@@ -4139,7 +3540,9 @@ interface IGovernor is IERC165, IERC6372 {
      * @notice module:core
      * @dev Whether a proposal needs to be queued before execution.
      */
-    function proposalNeedsQueuing(uint256 proposalId) external view returns (bool);
+    function proposalNeedsQueuing(
+        uint256 proposalId
+    ) external view returns (bool);
 
     /**
      * @notice module:user-config
@@ -4184,7 +3587,10 @@ interface IGovernor is IERC165, IERC6372 {
      * Note: this can be implemented in a number of ways, for example by reading the delegated balance from one (or
      * multiple), {ERC20Votes} tokens.
      */
-    function getVotes(address account, uint256 timepoint) external view returns (uint256);
+    function getVotes(
+        address account,
+        uint256 timepoint
+    ) external view returns (uint256);
 
     /**
      * @notice module:reputation
@@ -4200,7 +3606,10 @@ interface IGovernor is IERC165, IERC6372 {
      * @notice module:voting
      * @dev Returns whether `account` has cast a vote on `proposalId`.
      */
-    function hasVoted(uint256 proposalId, address account) external view returns (bool);
+    function hasVoted(
+        uint256 proposalId,
+        address account
+    ) external view returns (bool);
 
     /**
      * @dev Create a new proposal. Vote start after a delay specified by {IGovernor-votingDelay} and lasts for a
@@ -4263,7 +3672,10 @@ interface IGovernor is IERC165, IERC6372 {
      *
      * Emits a {VoteCast} event.
      */
-    function castVote(uint256 proposalId, uint8 support) external returns (uint256 balance);
+    function castVote(
+        uint256 proposalId,
+        uint8 support
+    ) external returns (uint256 balance);
 
     /**
      * @dev Cast a vote with a reason
@@ -4316,899 +3728,11 @@ interface IGovernor is IERC165, IERC6372 {
     ) external returns (uint256 balance);
 }
 
-// File: @openzeppelin/contracts/utils/introspection/ERC165.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/introspection/ERC165.sol)
-
-pragma solidity ^0.8.20;
-
-
-/**
- * @dev Implementation of the {IERC165} interface.
- *
- * Contracts that want to implement ERC165 should inherit from this contract and override {supportsInterface} to check
- * for the additional interface id that will be supported. For example:
- *
- * ```solidity
- * function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
- *     return interfaceId == type(MyInterface).interfaceId || super.supportsInterface(interfaceId);
- * }
- * ```
- */
-abstract contract ERC165 is IERC165 {
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {
-        return interfaceId == type(IERC165).interfaceId;
-    }
-}
-
-// File: @openzeppelin/contracts/access/AccessControl.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (access/AccessControl.sol)
-
-pragma solidity ^0.8.20;
-
-
-
-
-/**
- * @dev Contract module that allows children to implement role-based access
- * control mechanisms. This is a lightweight version that doesn't allow enumerating role
- * members except through off-chain means by accessing the contract event logs. Some
- * applications may benefit from on-chain enumerability, for those cases see
- * {AccessControlEnumerable}.
- *
- * Roles are referred to by their `bytes32` identifier. These should be exposed
- * in the external API and be unique. The best way to achieve this is by
- * using `public constant` hash digests:
- *
- * ```solidity
- * bytes32 public constant MY_ROLE = keccak256("MY_ROLE");
- * ```
- *
- * Roles can be used to represent a set of permissions. To restrict access to a
- * function call, use {hasRole}:
- *
- * ```solidity
- * function foo() public {
- *     require(hasRole(MY_ROLE, msg.sender));
- *     ...
- * }
- * ```
- *
- * Roles can be granted and revoked dynamically via the {grantRole} and
- * {revokeRole} functions. Each role has an associated admin role, and only
- * accounts that have a role's admin role can call {grantRole} and {revokeRole}.
- *
- * By default, the admin role for all roles is `DEFAULT_ADMIN_ROLE`, which means
- * that only accounts with this role will be able to grant or revoke other
- * roles. More complex role relationships can be created by using
- * {_setRoleAdmin}.
- *
- * WARNING: The `DEFAULT_ADMIN_ROLE` is also its own admin: it has permission to
- * grant and revoke this role. Extra precautions should be taken to secure
- * accounts that have been granted it. We recommend using {AccessControlDefaultAdminRules}
- * to enforce additional security measures for this role.
- */
-abstract contract AccessControl is Context, IAccessControl, ERC165 {
-    struct RoleData {
-        mapping(address account => bool) hasRole;
-        bytes32 adminRole;
-    }
-
-    mapping(bytes32 role => RoleData) private _roles;
-
-    bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
-
-    /**
-     * @dev Modifier that checks that an account has a specific role. Reverts
-     * with an {AccessControlUnauthorizedAccount} error including the required role.
-     */
-    modifier onlyRole(bytes32 role) {
-        _checkRole(role);
-        _;
-    }
-
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IAccessControl).interfaceId || super.supportsInterface(interfaceId);
-    }
-
-    /**
-     * @dev Returns `true` if `account` has been granted `role`.
-     */
-    function hasRole(bytes32 role, address account) public view virtual returns (bool) {
-        return _roles[role].hasRole[account];
-    }
-
-    /**
-     * @dev Reverts with an {AccessControlUnauthorizedAccount} error if `_msgSender()`
-     * is missing `role`. Overriding this function changes the behavior of the {onlyRole} modifier.
-     */
-    function _checkRole(bytes32 role) internal view virtual {
-        _checkRole(role, _msgSender());
-    }
-
-    /**
-     * @dev Reverts with an {AccessControlUnauthorizedAccount} error if `account`
-     * is missing `role`.
-     */
-    function _checkRole(bytes32 role, address account) internal view virtual {
-        if (!hasRole(role, account)) {
-            revert AccessControlUnauthorizedAccount(account, role);
-        }
-    }
-
-    /**
-     * @dev Returns the admin role that controls `role`. See {grantRole} and
-     * {revokeRole}.
-     *
-     * To change a role's admin, use {_setRoleAdmin}.
-     */
-    function getRoleAdmin(bytes32 role) public view virtual returns (bytes32) {
-        return _roles[role].adminRole;
-    }
-
-    /**
-     * @dev Grants `role` to `account`.
-     *
-     * If `account` had not been already granted `role`, emits a {RoleGranted}
-     * event.
-     *
-     * Requirements:
-     *
-     * - the caller must have ``role``'s admin role.
-     *
-     * May emit a {RoleGranted} event.
-     */
-    function grantRole(bytes32 role, address account) public virtual onlyRole(getRoleAdmin(role)) {
-        _grantRole(role, account);
-    }
-
-    /**
-     * @dev Revokes `role` from `account`.
-     *
-     * If `account` had been granted `role`, emits a {RoleRevoked} event.
-     *
-     * Requirements:
-     *
-     * - the caller must have ``role``'s admin role.
-     *
-     * May emit a {RoleRevoked} event.
-     */
-    function revokeRole(bytes32 role, address account) public virtual onlyRole(getRoleAdmin(role)) {
-        _revokeRole(role, account);
-    }
-
-    /**
-     * @dev Revokes `role` from the calling account.
-     *
-     * Roles are often managed via {grantRole} and {revokeRole}: this function's
-     * purpose is to provide a mechanism for accounts to lose their privileges
-     * if they are compromised (such as when a trusted device is misplaced).
-     *
-     * If the calling account had been revoked `role`, emits a {RoleRevoked}
-     * event.
-     *
-     * Requirements:
-     *
-     * - the caller must be `callerConfirmation`.
-     *
-     * May emit a {RoleRevoked} event.
-     */
-    function renounceRole(bytes32 role, address callerConfirmation) public virtual {
-        if (callerConfirmation != _msgSender()) {
-            revert AccessControlBadConfirmation();
-        }
-
-        _revokeRole(role, callerConfirmation);
-    }
-
-    /**
-     * @dev Sets `adminRole` as ``role``'s admin role.
-     *
-     * Emits a {RoleAdminChanged} event.
-     */
-    function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
-        bytes32 previousAdminRole = getRoleAdmin(role);
-        _roles[role].adminRole = adminRole;
-        emit RoleAdminChanged(role, previousAdminRole, adminRole);
-    }
-
-    /**
-     * @dev Attempts to grant `role` to `account` and returns a boolean indicating if `role` was granted.
-     *
-     * Internal function without access restriction.
-     *
-     * May emit a {RoleGranted} event.
-     */
-    function _grantRole(bytes32 role, address account) internal virtual returns (bool) {
-        if (!hasRole(role, account)) {
-            _roles[role].hasRole[account] = true;
-            emit RoleGranted(role, account, _msgSender());
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @dev Attempts to revoke `role` to `account` and returns a boolean indicating if `role` was revoked.
-     *
-     * Internal function without access restriction.
-     *
-     * May emit a {RoleRevoked} event.
-     */
-    function _revokeRole(bytes32 role, address account) internal virtual returns (bool) {
-        if (hasRole(role, account)) {
-            _roles[role].hasRole[account] = false;
-            emit RoleRevoked(role, account, _msgSender());
-            return true;
-        } else {
-            return false;
-        }
-    }
-}
-
-// File: @openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (token/ERC1155/IERC1155Receiver.sol)
-
-pragma solidity ^0.8.20;
-
-
-/**
- * @dev Interface that must be implemented by smart contracts in order to receive
- * ERC-1155 token transfers.
- */
-interface IERC1155Receiver is IERC165 {
-    /**
-     * @dev Handles the receipt of a single ERC1155 token type. This function is
-     * called at the end of a `safeTransferFrom` after the balance has been updated.
-     *
-     * NOTE: To accept the transfer, this must return
-     * `bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"))`
-     * (i.e. 0xf23a6e61, or its own function selector).
-     *
-     * @param operator The address which initiated the transfer (i.e. msg.sender)
-     * @param from The address which previously owned the token
-     * @param id The ID of the token being transferred
-     * @param value The amount of tokens being transferred
-     * @param data Additional data with no specified format
-     * @return `bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"))` if transfer is allowed
-     */
-    function onERC1155Received(
-        address operator,
-        address from,
-        uint256 id,
-        uint256 value,
-        bytes calldata data
-    ) external returns (bytes4);
-
-    /**
-     * @dev Handles the receipt of a multiple ERC1155 token types. This function
-     * is called at the end of a `safeBatchTransferFrom` after the balances have
-     * been updated.
-     *
-     * NOTE: To accept the transfer(s), this must return
-     * `bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"))`
-     * (i.e. 0xbc197c81, or its own function selector).
-     *
-     * @param operator The address which initiated the batch transfer (i.e. msg.sender)
-     * @param from The address which previously owned the token
-     * @param ids An array containing ids of each token being transferred (order and length must match values array)
-     * @param values An array containing amounts of each token being transferred (order and length must match ids array)
-     * @param data Additional data with no specified format
-     * @return `bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"))` if transfer is allowed
-     */
-    function onERC1155BatchReceived(
-        address operator,
-        address from,
-        uint256[] calldata ids,
-        uint256[] calldata values,
-        bytes calldata data
-    ) external returns (bytes4);
-}
-
-// File: @openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (token/ERC1155/utils/ERC1155Holder.sol)
-
-pragma solidity ^0.8.20;
-
-
-
-/**
- * @dev Simple implementation of `IERC1155Receiver` that will allow a contract to hold ERC1155 tokens.
- *
- * IMPORTANT: When inheriting this contract, you must include a way to use the received tokens, otherwise they will be
- * stuck.
- */
-abstract contract ERC1155Holder is ERC165, IERC1155Receiver {
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
-        return interfaceId == type(IERC1155Receiver).interfaceId || super.supportsInterface(interfaceId);
-    }
-
-    function onERC1155Received(
-        address,
-        address,
-        uint256,
-        uint256,
-        bytes memory
-    ) public virtual override returns (bytes4) {
-        return this.onERC1155Received.selector;
-    }
-
-    function onERC1155BatchReceived(
-        address,
-        address,
-        uint256[] memory,
-        uint256[] memory,
-        bytes memory
-    ) public virtual override returns (bytes4) {
-        return this.onERC1155BatchReceived.selector;
-    }
-}
-
-// File: @openzeppelin/contracts/token/ERC721/IERC721Receiver.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (token/ERC721/IERC721Receiver.sol)
-
-pragma solidity ^0.8.20;
-
-/**
- * @title ERC721 token receiver interface
- * @dev Interface for any contract that wants to support safeTransfers
- * from ERC721 asset contracts.
- */
-interface IERC721Receiver {
-    /**
-     * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}
-     * by `operator` from `from`, this function is called.
-     *
-     * It must return its Solidity selector to confirm the token transfer.
-     * If any other value is returned or the interface is not implemented by the recipient, the transfer will be
-     * reverted.
-     *
-     * The selector can be obtained in Solidity with `IERC721Receiver.onERC721Received.selector`.
-     */
-    function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes calldata data
-    ) external returns (bytes4);
-}
-
-// File: @openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (token/ERC721/utils/ERC721Holder.sol)
-
-pragma solidity ^0.8.20;
-
-
-/**
- * @dev Implementation of the {IERC721Receiver} interface.
- *
- * Accepts all token transfers.
- * Make sure the contract is able to use its token with {IERC721-safeTransferFrom}, {IERC721-approve} or
- * {IERC721-setApprovalForAll}.
- */
-abstract contract ERC721Holder is IERC721Receiver {
-    /**
-     * @dev See {IERC721Receiver-onERC721Received}.
-     *
-     * Always returns `IERC721Receiver.onERC721Received.selector`.
-     */
-    function onERC721Received(address, address, uint256, bytes memory) public virtual returns (bytes4) {
-        return this.onERC721Received.selector;
-    }
-}
-
-// File: @openzeppelin/contracts/governance/TimelockController.sol
-
-
-// OpenZeppelin Contracts (last updated v5.0.0) (governance/TimelockController.sol)
-
-pragma solidity ^0.8.20;
-
-
-
-
-
-/**
- * @dev Contract module which acts as a timelocked controller. When set as the
- * owner of an `Ownable` smart contract, it enforces a timelock on all
- * `onlyOwner` maintenance operations. This gives time for users of the
- * controlled contract to exit before a potentially dangerous maintenance
- * operation is applied.
- *
- * By default, this contract is self administered, meaning administration tasks
- * have to go through the timelock process. The proposer (resp executor) role
- * is in charge of proposing (resp executing) operations. A common use case is
- * to position this {TimelockController} as the owner of a smart contract, with
- * a multisig or a DAO as the sole proposer.
- */
-contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
-    bytes32 public constant PROPOSER_ROLE = keccak256("PROPOSER_ROLE");
-    bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
-    bytes32 public constant CANCELLER_ROLE = keccak256("CANCELLER_ROLE");
-    uint256 internal constant _DONE_TIMESTAMP = uint256(1);
-
-    mapping(bytes32 id => uint256) private _timestamps;
-    uint256 private _minDelay;
-
-    enum OperationState {
-        Unset,
-        Waiting,
-        Ready,
-        Done
-    }
-
-    /**
-     * @dev Mismatch between the parameters length for an operation call.
-     */
-    error TimelockInvalidOperationLength(uint256 targets, uint256 payloads, uint256 values);
-
-    /**
-     * @dev The schedule operation doesn't meet the minimum delay.
-     */
-    error TimelockInsufficientDelay(uint256 delay, uint256 minDelay);
-
-    /**
-     * @dev The current state of an operation is not as required.
-     * The `expectedStates` is a bitmap with the bits enabled for each OperationState enum position
-     * counting from right to left.
-     *
-     * See {_encodeStateBitmap}.
-     */
-    error TimelockUnexpectedOperationState(bytes32 operationId, bytes32 expectedStates);
-
-    /**
-     * @dev The predecessor to an operation not yet done.
-     */
-    error TimelockUnexecutedPredecessor(bytes32 predecessorId);
-
-    /**
-     * @dev The caller account is not authorized.
-     */
-    error TimelockUnauthorizedCaller(address caller);
-
-    /**
-     * @dev Emitted when a call is scheduled as part of operation `id`.
-     */
-    event CallScheduled(
-        bytes32 indexed id,
-        uint256 indexed index,
-        address target,
-        uint256 value,
-        bytes data,
-        bytes32 predecessor,
-        uint256 delay
-    );
-
-    /**
-     * @dev Emitted when a call is performed as part of operation `id`.
-     */
-    event CallExecuted(bytes32 indexed id, uint256 indexed index, address target, uint256 value, bytes data);
-
-    /**
-     * @dev Emitted when new proposal is scheduled with non-zero salt.
-     */
-    event CallSalt(bytes32 indexed id, bytes32 salt);
-
-    /**
-     * @dev Emitted when operation `id` is cancelled.
-     */
-    event Cancelled(bytes32 indexed id);
-
-    /**
-     * @dev Emitted when the minimum delay for future operations is modified.
-     */
-    event MinDelayChange(uint256 oldDuration, uint256 newDuration);
-
-    /**
-     * @dev Initializes the contract with the following parameters:
-     *
-     * - `minDelay`: initial minimum delay in seconds for operations
-     * - `proposers`: accounts to be granted proposer and canceller roles
-     * - `executors`: accounts to be granted executor role
-     * - `admin`: optional account to be granted admin role; disable with zero address
-     *
-     * IMPORTANT: The optional admin can aid with initial configuration of roles after deployment
-     * without being subject to delay, but this role should be subsequently renounced in favor of
-     * administration through timelocked proposals. Previous versions of this contract would assign
-     * this admin to the deployer automatically and should be renounced as well.
-     */
-    constructor(uint256 minDelay, address[] memory proposers, address[] memory executors, address admin) {
-        // self administration
-        _grantRole(DEFAULT_ADMIN_ROLE, address(this));
-
-        // optional admin
-        if (admin != address(0)) {
-            _grantRole(DEFAULT_ADMIN_ROLE, admin);
-        }
-
-        // register proposers and cancellers
-        for (uint256 i = 0; i < proposers.length; ++i) {
-            _grantRole(PROPOSER_ROLE, proposers[i]);
-            _grantRole(CANCELLER_ROLE, proposers[i]);
-        }
-
-        // register executors
-        for (uint256 i = 0; i < executors.length; ++i) {
-            _grantRole(EXECUTOR_ROLE, executors[i]);
-        }
-
-        _minDelay = minDelay;
-        emit MinDelayChange(0, minDelay);
-    }
-
-    /**
-     * @dev Modifier to make a function callable only by a certain role. In
-     * addition to checking the sender's role, `address(0)` 's role is also
-     * considered. Granting a role to `address(0)` is equivalent to enabling
-     * this role for everyone.
-     */
-    modifier onlyRoleOrOpenRole(bytes32 role) {
-        if (!hasRole(role, address(0))) {
-            _checkRole(role, _msgSender());
-        }
-        _;
-    }
-
-    /**
-     * @dev Contract might receive/hold ETH as part of the maintenance process.
-     */
-    receive() external payable {}
-
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view virtual override(AccessControl, ERC1155Holder) returns (bool) {
-        return super.supportsInterface(interfaceId);
-    }
-
-    /**
-     * @dev Returns whether an id corresponds to a registered operation. This
-     * includes both Waiting, Ready, and Done operations.
-     */
-    function isOperation(bytes32 id) public view returns (bool) {
-        return getOperationState(id) != OperationState.Unset;
-    }
-
-    /**
-     * @dev Returns whether an operation is pending or not. Note that a "pending" operation may also be "ready".
-     */
-    function isOperationPending(bytes32 id) public view returns (bool) {
-        OperationState state = getOperationState(id);
-        return state == OperationState.Waiting || state == OperationState.Ready;
-    }
-
-    /**
-     * @dev Returns whether an operation is ready for execution. Note that a "ready" operation is also "pending".
-     */
-    function isOperationReady(bytes32 id) public view returns (bool) {
-        return getOperationState(id) == OperationState.Ready;
-    }
-
-    /**
-     * @dev Returns whether an operation is done or not.
-     */
-    function isOperationDone(bytes32 id) public view returns (bool) {
-        return getOperationState(id) == OperationState.Done;
-    }
-
-    /**
-     * @dev Returns the timestamp at which an operation becomes ready (0 for
-     * unset operations, 1 for done operations).
-     */
-    function getTimestamp(bytes32 id) public view virtual returns (uint256) {
-        return _timestamps[id];
-    }
-
-    /**
-     * @dev Returns operation state.
-     */
-    function getOperationState(bytes32 id) public view virtual returns (OperationState) {
-        uint256 timestamp = getTimestamp(id);
-        if (timestamp == 0) {
-            return OperationState.Unset;
-        } else if (timestamp == _DONE_TIMESTAMP) {
-            return OperationState.Done;
-        } else if (timestamp > block.timestamp) {
-            return OperationState.Waiting;
-        } else {
-            return OperationState.Ready;
-        }
-    }
-
-    /**
-     * @dev Returns the minimum delay in seconds for an operation to become valid.
-     *
-     * This value can be changed by executing an operation that calls `updateDelay`.
-     */
-    function getMinDelay() public view virtual returns (uint256) {
-        return _minDelay;
-    }
-
-    /**
-     * @dev Returns the identifier of an operation containing a single
-     * transaction.
-     */
-    function hashOperation(
-        address target,
-        uint256 value,
-        bytes calldata data,
-        bytes32 predecessor,
-        bytes32 salt
-    ) public pure virtual returns (bytes32) {
-        return keccak256(abi.encode(target, value, data, predecessor, salt));
-    }
-
-    /**
-     * @dev Returns the identifier of an operation containing a batch of
-     * transactions.
-     */
-    function hashOperationBatch(
-        address[] calldata targets,
-        uint256[] calldata values,
-        bytes[] calldata payloads,
-        bytes32 predecessor,
-        bytes32 salt
-    ) public pure virtual returns (bytes32) {
-        return keccak256(abi.encode(targets, values, payloads, predecessor, salt));
-    }
-
-    /**
-     * @dev Schedule an operation containing a single transaction.
-     *
-     * Emits {CallSalt} if salt is nonzero, and {CallScheduled}.
-     *
-     * Requirements:
-     *
-     * - the caller must have the 'proposer' role.
-     */
-    function schedule(
-        address target,
-        uint256 value,
-        bytes calldata data,
-        bytes32 predecessor,
-        bytes32 salt,
-        uint256 delay
-    ) public virtual onlyRole(PROPOSER_ROLE) {
-        bytes32 id = hashOperation(target, value, data, predecessor, salt);
-        _schedule(id, delay);
-        emit CallScheduled(id, 0, target, value, data, predecessor, delay);
-        if (salt != bytes32(0)) {
-            emit CallSalt(id, salt);
-        }
-    }
-
-    /**
-     * @dev Schedule an operation containing a batch of transactions.
-     *
-     * Emits {CallSalt} if salt is nonzero, and one {CallScheduled} event per transaction in the batch.
-     *
-     * Requirements:
-     *
-     * - the caller must have the 'proposer' role.
-     */
-    function scheduleBatch(
-        address[] calldata targets,
-        uint256[] calldata values,
-        bytes[] calldata payloads,
-        bytes32 predecessor,
-        bytes32 salt,
-        uint256 delay
-    ) public virtual onlyRole(PROPOSER_ROLE) {
-        if (targets.length != values.length || targets.length != payloads.length) {
-            revert TimelockInvalidOperationLength(targets.length, payloads.length, values.length);
-        }
-
-        bytes32 id = hashOperationBatch(targets, values, payloads, predecessor, salt);
-        _schedule(id, delay);
-        for (uint256 i = 0; i < targets.length; ++i) {
-            emit CallScheduled(id, i, targets[i], values[i], payloads[i], predecessor, delay);
-        }
-        if (salt != bytes32(0)) {
-            emit CallSalt(id, salt);
-        }
-    }
-
-    /**
-     * @dev Schedule an operation that is to become valid after a given delay.
-     */
-    function _schedule(bytes32 id, uint256 delay) private {
-        if (isOperation(id)) {
-            revert TimelockUnexpectedOperationState(id, _encodeStateBitmap(OperationState.Unset));
-        }
-        uint256 minDelay = getMinDelay();
-        if (delay < minDelay) {
-            revert TimelockInsufficientDelay(delay, minDelay);
-        }
-        _timestamps[id] = block.timestamp + delay;
-    }
-
-    /**
-     * @dev Cancel an operation.
-     *
-     * Requirements:
-     *
-     * - the caller must have the 'canceller' role.
-     */
-    function cancel(bytes32 id) public virtual onlyRole(CANCELLER_ROLE) {
-        if (!isOperationPending(id)) {
-            revert TimelockUnexpectedOperationState(
-                id,
-                _encodeStateBitmap(OperationState.Waiting) | _encodeStateBitmap(OperationState.Ready)
-            );
-        }
-        delete _timestamps[id];
-
-        emit Cancelled(id);
-    }
-
-    /**
-     * @dev Execute an (ready) operation containing a single transaction.
-     *
-     * Emits a {CallExecuted} event.
-     *
-     * Requirements:
-     *
-     * - the caller must have the 'executor' role.
-     */
-    // This function can reenter, but it doesn't pose a risk because _afterCall checks that the proposal is pending,
-    // thus any modifications to the operation during reentrancy should be caught.
-    // slither-disable-next-line reentrancy-eth
-    function execute(
-        address target,
-        uint256 value,
-        bytes calldata payload,
-        bytes32 predecessor,
-        bytes32 salt
-    ) public payable virtual onlyRoleOrOpenRole(EXECUTOR_ROLE) {
-        bytes32 id = hashOperation(target, value, payload, predecessor, salt);
-
-        _beforeCall(id, predecessor);
-        _execute(target, value, payload);
-        emit CallExecuted(id, 0, target, value, payload);
-        _afterCall(id);
-    }
-
-    /**
-     * @dev Execute an (ready) operation containing a batch of transactions.
-     *
-     * Emits one {CallExecuted} event per transaction in the batch.
-     *
-     * Requirements:
-     *
-     * - the caller must have the 'executor' role.
-     */
-    // This function can reenter, but it doesn't pose a risk because _afterCall checks that the proposal is pending,
-    // thus any modifications to the operation during reentrancy should be caught.
-    // slither-disable-next-line reentrancy-eth
-    function executeBatch(
-        address[] calldata targets,
-        uint256[] calldata values,
-        bytes[] calldata payloads,
-        bytes32 predecessor,
-        bytes32 salt
-    ) public payable virtual onlyRoleOrOpenRole(EXECUTOR_ROLE) {
-        if (targets.length != values.length || targets.length != payloads.length) {
-            revert TimelockInvalidOperationLength(targets.length, payloads.length, values.length);
-        }
-
-        bytes32 id = hashOperationBatch(targets, values, payloads, predecessor, salt);
-
-        _beforeCall(id, predecessor);
-        for (uint256 i = 0; i < targets.length; ++i) {
-            address target = targets[i];
-            uint256 value = values[i];
-            bytes calldata payload = payloads[i];
-            _execute(target, value, payload);
-            emit CallExecuted(id, i, target, value, payload);
-        }
-        _afterCall(id);
-    }
-
-    /**
-     * @dev Execute an operation's call.
-     */
-    function _execute(address target, uint256 value, bytes calldata data) internal virtual {
-        (bool success, bytes memory returndata) = target.call{value: value}(data);
-        Address.verifyCallResult(success, returndata);
-    }
-
-    /**
-     * @dev Checks before execution of an operation's calls.
-     */
-    function _beforeCall(bytes32 id, bytes32 predecessor) private view {
-        if (!isOperationReady(id)) {
-            revert TimelockUnexpectedOperationState(id, _encodeStateBitmap(OperationState.Ready));
-        }
-        if (predecessor != bytes32(0) && !isOperationDone(predecessor)) {
-            revert TimelockUnexecutedPredecessor(predecessor);
-        }
-    }
-
-    /**
-     * @dev Checks after execution of an operation's calls.
-     */
-    function _afterCall(bytes32 id) private {
-        if (!isOperationReady(id)) {
-            revert TimelockUnexpectedOperationState(id, _encodeStateBitmap(OperationState.Ready));
-        }
-        _timestamps[id] = _DONE_TIMESTAMP;
-    }
-
-    /**
-     * @dev Changes the minimum timelock duration for future operations.
-     *
-     * Emits a {MinDelayChange} event.
-     *
-     * Requirements:
-     *
-     * - the caller must be the timelock itself. This can only be achieved by scheduling and later executing
-     * an operation where the timelock is the target and the data is the ABI-encoded call to this function.
-     */
-    function updateDelay(uint256 newDelay) external virtual {
-        address sender = _msgSender();
-        if (sender != address(this)) {
-            revert TimelockUnauthorizedCaller(sender);
-        }
-        emit MinDelayChange(_minDelay, newDelay);
-        _minDelay = newDelay;
-    }
-
-    /**
-     * @dev Encodes a `OperationState` into a `bytes32` representation where each bit enabled corresponds to
-     * the underlying position in the `OperationState` enum. For example:
-     *
-     * 0x000...1000
-     *   ^^^^^^----- ...
-     *         ^---- Done
-     *          ^--- Ready
-     *           ^-- Waiting
-     *            ^- Unset
-     */
-    function _encodeStateBitmap(OperationState operationState) internal pure returns (bytes32) {
-        return bytes32(1 << uint8(operationState));
-    }
-}
-
 // File: @openzeppelin/contracts/governance/Governor.sol
-
 
 // OpenZeppelin Contracts (last updated v5.0.0) (governance/Governor.sol)
 
 pragma solidity ^0.8.20;
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * @dev Core of the governance system, designed to be extended through various modules.
@@ -5219,11 +3743,21 @@ pragma solidity ^0.8.20;
  * - A voting module must implement {_getVotes}
  * - Additionally, {votingPeriod} must also be implemented
  */
-abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC721Receiver, IERC1155Receiver {
+abstract contract Governor is
+    Context,
+    ERC165,
+    EIP712,
+    Nonces,
+    IGovernor,
+    IERC721Receiver,
+    IERC1155Receiver
+{
     using DoubleEndedQueue for DoubleEndedQueue.Bytes32Deque;
 
     bytes32 public constant BALLOT_TYPEHASH =
-        keccak256("Ballot(uint256 proposalId,uint8 support,address voter,uint256 nonce)");
+        keccak256(
+            "Ballot(uint256 proposalId,uint8 support,address voter,uint256 nonce)"
+        );
     bytes32 public constant EXTENDED_BALLOT_TYPEHASH =
         keccak256(
             "ExtendedBallot(uint256 proposalId,uint8 support,address voter,uint256 nonce,string reason,bytes params)"
@@ -5238,7 +3772,8 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         uint48 etaSeconds;
     }
 
-    bytes32 private constant ALL_PROPOSAL_STATES_BITMAP = bytes32((2 ** (uint8(type(ProposalState).max) + 1)) - 1);
+    bytes32 private constant ALL_PROPOSAL_STATES_BITMAP =
+        bytes32((2 ** (uint8(type(ProposalState).max) + 1)) - 1);
     string private _name;
 
     mapping(uint256 proposalId => ProposalCore) private _proposals;
@@ -5283,7 +3818,9 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165, ERC165) returns (bool) {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(IERC165, ERC165) returns (bool) {
         return
             interfaceId == type(IGovernor).interfaceId ||
             interfaceId == type(IERC1155Receiver).interfaceId ||
@@ -5323,13 +3860,20 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         bytes[] memory calldatas,
         bytes32 descriptionHash
     ) public pure virtual returns (uint256) {
-        return uint256(keccak256(abi.encode(targets, values, calldatas, descriptionHash)));
+        return
+            uint256(
+                keccak256(
+                    abi.encode(targets, values, calldatas, descriptionHash)
+                )
+            );
     }
 
     /**
      * @dev See {IGovernor-state}.
      */
-    function state(uint256 proposalId) public view virtual returns (ProposalState) {
+    function state(
+        uint256 proposalId
+    ) public view virtual returns (ProposalState) {
         // We read the struct fields into the stack at once so Solidity emits a single SLOAD
         ProposalCore storage proposal = _proposals[proposalId];
         bool proposalExecuted = proposal.executed;
@@ -5378,28 +3922,38 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
     /**
      * @dev See {IGovernor-proposalSnapshot}.
      */
-    function proposalSnapshot(uint256 proposalId) public view virtual returns (uint256) {
+    function proposalSnapshot(
+        uint256 proposalId
+    ) public view virtual returns (uint256) {
         return _proposals[proposalId].voteStart;
     }
 
     /**
      * @dev See {IGovernor-proposalDeadline}.
      */
-    function proposalDeadline(uint256 proposalId) public view virtual returns (uint256) {
-        return _proposals[proposalId].voteStart + _proposals[proposalId].voteDuration;
+    function proposalDeadline(
+        uint256 proposalId
+    ) public view virtual returns (uint256) {
+        return
+            _proposals[proposalId].voteStart +
+            _proposals[proposalId].voteDuration;
     }
 
     /**
      * @dev See {IGovernor-proposalProposer}.
      */
-    function proposalProposer(uint256 proposalId) public view virtual returns (address) {
+    function proposalProposer(
+        uint256 proposalId
+    ) public view virtual returns (address) {
         return _proposals[proposalId].proposer;
     }
 
     /**
      * @dev See {IGovernor-proposalEta}.
      */
-    function proposalEta(uint256 proposalId) public view virtual returns (uint256) {
+    function proposalEta(
+        uint256 proposalId
+    ) public view virtual returns (uint256) {
         return _proposals[proposalId].etaSeconds;
     }
 
@@ -5429,17 +3983,25 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
     /**
      * @dev Amount of votes already cast passes the threshold limit.
      */
-    function _quorumReached(uint256 proposalId) internal view virtual returns (bool);
+    function _quorumReached(
+        uint256 proposalId
+    ) internal view virtual returns (bool);
 
     /**
      * @dev Is the proposal successful or not.
      */
-    function _voteSucceeded(uint256 proposalId) internal view virtual returns (bool);
+    function _voteSucceeded(
+        uint256 proposalId
+    ) internal view virtual returns (bool);
 
     /**
      * @dev Get the voting weight of `account` at a specific `timepoint`, for a vote as described by `params`.
      */
-    function _getVotes(address account, uint256 timepoint, bytes memory params) internal view virtual returns (uint256);
+    function _getVotes(
+        address account,
+        uint256 timepoint,
+        bytes memory params
+    ) internal view virtual returns (uint256);
 
     /**
      * @dev Register a vote for `proposalId` by `account` with a given `support`, voting `weight` and voting `params`.
@@ -5484,7 +4046,11 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         uint256 proposerVotes = getVotes(proposer, clock() - 1);
         uint256 votesThreshold = proposalThreshold();
         if (proposerVotes < votesThreshold) {
-            revert GovernorInsufficientProposerVotes(proposer, proposerVotes, votesThreshold);
+            revert GovernorInsufficientProposerVotes(
+                proposer,
+                proposerVotes,
+                votesThreshold
+            );
         }
 
         return _propose(targets, values, calldatas, description, proposer);
@@ -5502,13 +4068,30 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         string memory description,
         address proposer
     ) internal virtual returns (uint256 proposalId) {
-        proposalId = hashProposal(targets, values, calldatas, keccak256(bytes(description)));
+        proposalId = hashProposal(
+            targets,
+            values,
+            calldatas,
+            keccak256(bytes(description))
+        );
 
-        if (targets.length != values.length || targets.length != calldatas.length || targets.length == 0) {
-            revert GovernorInvalidProposalLength(targets.length, calldatas.length, values.length);
+        if (
+            targets.length != values.length ||
+            targets.length != calldatas.length ||
+            targets.length == 0
+        ) {
+            revert GovernorInvalidProposalLength(
+                targets.length,
+                calldatas.length,
+                values.length
+            );
         }
         if (_proposals[proposalId].voteStart != 0) {
-            revert GovernorUnexpectedProposalState(proposalId, state(proposalId), bytes32(0));
+            revert GovernorUnexpectedProposalState(
+                proposalId,
+                state(proposalId),
+                bytes32(0)
+            );
         }
 
         uint256 snapshot = clock() + votingDelay();
@@ -5543,11 +4126,25 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         bytes[] memory calldatas,
         bytes32 descriptionHash
     ) public virtual returns (uint256) {
-        uint256 proposalId = hashProposal(targets, values, calldatas, descriptionHash);
+        uint256 proposalId = hashProposal(
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
 
-        _validateStateBitmap(proposalId, _encodeStateBitmap(ProposalState.Succeeded));
+        _validateStateBitmap(
+            proposalId,
+            _encodeStateBitmap(ProposalState.Succeeded)
+        );
 
-        uint48 etaSeconds = _queueOperations(proposalId, targets, values, calldatas, descriptionHash);
+        uint48 etaSeconds = _queueOperations(
+            proposalId,
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
 
         if (etaSeconds != 0) {
             _proposals[proposalId].etaSeconds = etaSeconds;
@@ -5591,11 +4188,17 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         bytes[] memory calldatas,
         bytes32 descriptionHash
     ) public payable virtual returns (uint256) {
-        uint256 proposalId = hashProposal(targets, values, calldatas, descriptionHash);
+        uint256 proposalId = hashProposal(
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
 
         _validateStateBitmap(
             proposalId,
-            _encodeStateBitmap(ProposalState.Succeeded) | _encodeStateBitmap(ProposalState.Queued)
+            _encodeStateBitmap(ProposalState.Succeeded) |
+                _encodeStateBitmap(ProposalState.Queued)
         );
 
         // mark as executed before calls to avoid reentrancy
@@ -5610,7 +4213,13 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
             }
         }
 
-        _executeOperations(proposalId, targets, values, calldatas, descriptionHash);
+        _executeOperations(
+            proposalId,
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
 
         // after execute: cleanup governance call queue.
         if (_executor() != address(this) && !_governanceCall.empty()) {
@@ -5637,7 +4246,9 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         bytes32 /*descriptionHash*/
     ) internal virtual {
         for (uint256 i = 0; i < targets.length; ++i) {
-            (bool success, bytes memory returndata) = targets[i].call{value: values[i]}(calldatas[i]);
+            (bool success, bytes memory returndata) = targets[i].call{
+                value: values[i]
+            }(calldatas[i]);
             Address.verifyCallResult(success, returndata);
         }
     }
@@ -5654,10 +4265,18 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         // The proposalId will be recomputed in the `_cancel` call further down. However we need the value before we
         // do the internal call, because we need to check the proposal state BEFORE the internal `_cancel` call
         // changes it. The `hashProposal` duplication has a cost that is limited, and that we accept.
-        uint256 proposalId = hashProposal(targets, values, calldatas, descriptionHash);
+        uint256 proposalId = hashProposal(
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
 
         // public cancel restrictions (on top of existing _cancel restrictions).
-        _validateStateBitmap(proposalId, _encodeStateBitmap(ProposalState.Pending));
+        _validateStateBitmap(
+            proposalId,
+            _encodeStateBitmap(ProposalState.Pending)
+        );
         if (_msgSender() != proposalProposer(proposalId)) {
             revert GovernorOnlyProposer(_msgSender());
         }
@@ -5677,7 +4296,12 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         bytes[] memory calldatas,
         bytes32 descriptionHash
     ) internal virtual returns (uint256) {
-        uint256 proposalId = hashProposal(targets, values, calldatas, descriptionHash);
+        uint256 proposalId = hashProposal(
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
 
         _validateStateBitmap(
             proposalId,
@@ -5696,7 +4320,10 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
     /**
      * @dev See {IGovernor-getVotes}.
      */
-    function getVotes(address account, uint256 timepoint) public view virtual returns (uint256) {
+    function getVotes(
+        address account,
+        uint256 timepoint
+    ) public view virtual returns (uint256) {
         return _getVotes(account, timepoint, _defaultParams());
     }
 
@@ -5714,7 +4341,10 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
     /**
      * @dev See {IGovernor-castVote}.
      */
-    function castVote(uint256 proposalId, uint8 support) public virtual returns (uint256) {
+    function castVote(
+        uint256 proposalId,
+        uint8 support
+    ) public virtual returns (uint256) {
         address voter = _msgSender();
         return _castVote(proposalId, voter, support, "");
     }
@@ -5755,7 +4385,17 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
     ) public virtual returns (uint256) {
         bool valid = SignatureChecker.isValidSignatureNow(
             voter,
-            _hashTypedDataV4(keccak256(abi.encode(BALLOT_TYPEHASH, proposalId, support, voter, _useNonce(voter)))),
+            _hashTypedDataV4(
+                keccak256(
+                    abi.encode(
+                        BALLOT_TYPEHASH,
+                        proposalId,
+                        support,
+                        voter,
+                        _useNonce(voter)
+                    )
+                )
+            ),
             signature
         );
 
@@ -5814,7 +4454,8 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         uint8 support,
         string memory reason
     ) internal virtual returns (uint256) {
-        return _castVote(proposalId, account, support, reason, _defaultParams());
+        return
+            _castVote(proposalId, account, support, reason, _defaultParams());
     }
 
     /**
@@ -5830,15 +4471,29 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
         string memory reason,
         bytes memory params
     ) internal virtual returns (uint256) {
-        _validateStateBitmap(proposalId, _encodeStateBitmap(ProposalState.Active));
+        _validateStateBitmap(
+            proposalId,
+            _encodeStateBitmap(ProposalState.Active)
+        );
 
-        uint256 weight = _getVotes(account, proposalSnapshot(proposalId), params);
+        uint256 weight = _getVotes(
+            account,
+            proposalSnapshot(proposalId),
+            params
+        );
         _countVote(proposalId, account, support, weight, params);
 
         if (params.length == 0) {
             emit VoteCast(account, proposalId, support, weight, reason);
         } else {
-            emit VoteCastWithParams(account, proposalId, support, weight, reason, params);
+            emit VoteCastWithParams(
+                account,
+                proposalId,
+                support,
+                weight,
+                reason,
+                params
+            );
         }
 
         return weight;
@@ -5850,8 +4505,14 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
      * in a governance proposal to recover tokens or Ether that was sent to the governor contract by mistake.
      * Note that if the executor is simply the governor itself, use of `relay` is redundant.
      */
-    function relay(address target, uint256 value, bytes calldata data) external payable virtual onlyGovernance {
-        (bool success, bytes memory returndata) = target.call{value: value}(data);
+    function relay(
+        address target,
+        uint256 value,
+        bytes calldata data
+    ) external payable virtual onlyGovernance {
+        (bool success, bytes memory returndata) = target.call{value: value}(
+            data
+        );
         Address.verifyCallResult(success, returndata);
     }
 
@@ -5867,7 +4528,12 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
      * @dev See {IERC721Receiver-onERC721Received}.
      * Receiving tokens is disabled if the governance executor is other than the governor itself (eg. when using with a timelock).
      */
-    function onERC721Received(address, address, uint256, bytes memory) public virtual returns (bytes4) {
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) public virtual returns (bytes4) {
         if (_executor() != address(this)) {
             revert GovernorDisabledDeposit();
         }
@@ -5878,7 +4544,13 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
      * @dev See {IERC1155Receiver-onERC1155Received}.
      * Receiving tokens is disabled if the governance executor is other than the governor itself (eg. when using with a timelock).
      */
-    function onERC1155Received(address, address, uint256, uint256, bytes memory) public virtual returns (bytes4) {
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
+    ) public virtual returns (bytes4) {
         if (_executor() != address(this)) {
             revert GovernorDisabledDeposit();
         }
@@ -5914,7 +4586,9 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
      *            ^-- Active
      *             ^- Pending
      */
-    function _encodeStateBitmap(ProposalState proposalState) internal pure returns (bytes32) {
+    function _encodeStateBitmap(
+        ProposalState proposalState
+    ) internal pure returns (bytes32) {
         return bytes32(1 << uint8(proposalState));
     }
 
@@ -5924,10 +4598,17 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
      *
      * If requirements are not met, reverts with a {GovernorUnexpectedProposalState} error.
      */
-    function _validateStateBitmap(uint256 proposalId, bytes32 allowedStates) private view returns (ProposalState) {
+    function _validateStateBitmap(
+        uint256 proposalId,
+        bytes32 allowedStates
+    ) private view returns (ProposalState) {
         ProposalState currentState = state(proposalId);
         if (_encodeStateBitmap(currentState) & allowedStates == bytes32(0)) {
-            revert GovernorUnexpectedProposalState(proposalId, currentState, allowedStates);
+            revert GovernorUnexpectedProposalState(
+                proposalId,
+                currentState,
+                allowedStates
+            );
         }
         return currentState;
     }
@@ -6044,192 +4725,511 @@ abstract contract Governor is Context, ERC165, EIP712, Nonces, IGovernor, IERC72
     function quorum(uint256 timepoint) public view virtual returns (uint256);
 }
 
-// File: @openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol
+// File: @openzeppelin/contracts/governance/extensions/GovernorSettings.sol
 
-
-// OpenZeppelin Contracts (last updated v5.0.0) (governance/extensions/GovernorTimelockControl.sol)
+// OpenZeppelin Contracts (last updated v5.0.0) (governance/extensions/GovernorSettings.sol)
 
 pragma solidity ^0.8.20;
 
+/**
+ * @dev Extension of {Governor} for settings updatable through governance.
+ */
+abstract contract GovernorSettings is Governor {
+    // amount of token
+    uint256 private _proposalThreshold;
+    // timepoint: limited to uint48 in core (same as clock() type)
+    uint48 private _votingDelay;
+    // duration: limited to uint32 in core
+    uint32 private _votingPeriod;
 
+    event VotingDelaySet(uint256 oldVotingDelay, uint256 newVotingDelay);
+    event VotingPeriodSet(uint256 oldVotingPeriod, uint256 newVotingPeriod);
+    event ProposalThresholdSet(
+        uint256 oldProposalThreshold,
+        uint256 newProposalThreshold
+    );
 
+    /**
+     * @dev Initialize the governance parameters.
+     */
+    constructor(
+        uint48 initialVotingDelay,
+        uint32 initialVotingPeriod,
+        uint256 initialProposalThreshold
+    ) {
+        _setVotingDelay(initialVotingDelay);
+        _setVotingPeriod(initialVotingPeriod);
+        _setProposalThreshold(initialProposalThreshold);
+    }
 
+    /**
+     * @dev See {IGovernor-votingDelay}.
+     */
+    function votingDelay() public view virtual override returns (uint256) {
+        return _votingDelay;
+    }
+
+    /**
+     * @dev See {IGovernor-votingPeriod}.
+     */
+    function votingPeriod() public view virtual override returns (uint256) {
+        return _votingPeriod;
+    }
+
+    /**
+     * @dev See {Governor-proposalThreshold}.
+     */
+    function proposalThreshold()
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
+        return _proposalThreshold;
+    }
+
+    /**
+     * @dev Update the voting delay. This operation can only be performed through a governance proposal.
+     *
+     * Emits a {VotingDelaySet} event.
+     */
+    function setVotingDelay(
+        uint48 newVotingDelay
+    ) public virtual onlyGovernance {
+        _setVotingDelay(newVotingDelay);
+    }
+
+    /**
+     * @dev Update the voting period. This operation can only be performed through a governance proposal.
+     *
+     * Emits a {VotingPeriodSet} event.
+     */
+    function setVotingPeriod(
+        uint32 newVotingPeriod
+    ) public virtual onlyGovernance {
+        _setVotingPeriod(newVotingPeriod);
+    }
+
+    /**
+     * @dev Update the proposal threshold. This operation can only be performed through a governance proposal.
+     *
+     * Emits a {ProposalThresholdSet} event.
+     */
+    function setProposalThreshold(
+        uint256 newProposalThreshold
+    ) public virtual onlyGovernance {
+        _setProposalThreshold(newProposalThreshold);
+    }
+
+    /**
+     * @dev Internal setter for the voting delay.
+     *
+     * Emits a {VotingDelaySet} event.
+     */
+    function _setVotingDelay(uint48 newVotingDelay) internal virtual {
+        emit VotingDelaySet(_votingDelay, newVotingDelay);
+        _votingDelay = newVotingDelay;
+    }
+
+    /**
+     * @dev Internal setter for the voting period.
+     *
+     * Emits a {VotingPeriodSet} event.
+     */
+    function _setVotingPeriod(uint32 newVotingPeriod) internal virtual {
+        if (newVotingPeriod == 0) {
+            revert GovernorInvalidVotingPeriod(0);
+        }
+        emit VotingPeriodSet(_votingPeriod, newVotingPeriod);
+        _votingPeriod = newVotingPeriod;
+    }
+
+    /**
+     * @dev Internal setter for the proposal threshold.
+     *
+     * Emits a {ProposalThresholdSet} event.
+     */
+    function _setProposalThreshold(
+        uint256 newProposalThreshold
+    ) internal virtual {
+        emit ProposalThresholdSet(_proposalThreshold, newProposalThreshold);
+        _proposalThreshold = newProposalThreshold;
+    }
+}
+
+// File: @openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (governance/extensions/GovernorCountingSimple.sol)
+
+pragma solidity ^0.8.20;
 
 /**
- * @dev Extension of {Governor} that binds the execution process to an instance of {TimelockController}. This adds a
- * delay, enforced by the {TimelockController} to all successful proposal (in addition to the voting duration). The
- * {Governor} needs the proposer (and ideally the executor) roles for the {Governor} to work properly.
- *
- * Using this model means the proposal will be operated by the {TimelockController} and not by the {Governor}. Thus,
- * the assets and permissions must be attached to the {TimelockController}. Any asset sent to the {Governor} will be
- * inaccessible from a proposal, unless executed via {Governor-relay}.
- *
- * WARNING: Setting up the TimelockController to have additional proposers or cancellers besides the governor is very
- * risky, as it grants them the ability to: 1) execute operations as the timelock, and thus possibly performing
- * operations or accessing funds that are expected to only be accessible through a vote, and 2) block governance
- * proposals that have been approved by the voters, effectively executing a Denial of Service attack.
- *
- * NOTE: `AccessManager` does not support scheduling more than one operation with the same target and calldata at
- * the same time. See {AccessManager-schedule} for a workaround.
+ * @dev Extension of {Governor} for simple, 3 options, vote counting.
  */
-abstract contract GovernorTimelockControl is Governor {
-    TimelockController private _timelock;
-    mapping(uint256 proposalId => bytes32) private _timelockIds;
+abstract contract GovernorCountingSimple is Governor {
+    /**
+     * @dev Supported vote types. Matches Governor Bravo ordering.
+     */
+    enum VoteType {
+        Against,
+        For,
+        Abstain
+    }
+
+    struct ProposalVote {
+        uint256 againstVotes;
+        uint256 forVotes;
+        uint256 abstainVotes;
+        mapping(address voter => bool) hasVoted;
+    }
+
+    mapping(uint256 proposalId => ProposalVote) private _proposalVotes;
 
     /**
-     * @dev Emitted when the timelock controller used for proposal execution is modified.
+     * @dev See {IGovernor-COUNTING_MODE}.
      */
-    event TimelockChange(address oldTimelock, address newTimelock);
-
-    /**
-     * @dev Set the timelock.
-     */
-    constructor(TimelockController timelockAddress) {
-        _updateTimelock(timelockAddress);
+    // solhint-disable-next-line func-name-mixedcase
+    function COUNTING_MODE()
+        public
+        pure
+        virtual
+        override
+        returns (string memory)
+    {
+        return "support=bravo&quorum=for,abstain";
     }
 
     /**
-     * @dev Overridden version of the {Governor-state} function that considers the status reported by the timelock.
+     * @dev See {IGovernor-hasVoted}.
      */
-    function state(uint256 proposalId) public view virtual override returns (ProposalState) {
-        ProposalState currentState = super.state(proposalId);
-
-        if (currentState != ProposalState.Queued) {
-            return currentState;
-        }
-
-        bytes32 queueid = _timelockIds[proposalId];
-        if (_timelock.isOperationPending(queueid)) {
-            return ProposalState.Queued;
-        } else if (_timelock.isOperationDone(queueid)) {
-            // This can happen if the proposal is executed directly on the timelock.
-            return ProposalState.Executed;
-        } else {
-            // This can happen if the proposal is canceled directly on the timelock.
-            return ProposalState.Canceled;
-        }
-    }
-
-    /**
-     * @dev Public accessor to check the address of the timelock
-     */
-    function timelock() public view virtual returns (address) {
-        return address(_timelock);
-    }
-
-    /**
-     * @dev See {IGovernor-proposalNeedsQueuing}.
-     */
-    function proposalNeedsQueuing(uint256) public view virtual override returns (bool) {
-        return true;
-    }
-
-    /**
-     * @dev Function to queue a proposal to the timelock.
-     */
-    function _queueOperations(
+    function hasVoted(
         uint256 proposalId,
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas,
-        bytes32 descriptionHash
-    ) internal virtual override returns (uint48) {
-        uint256 delay = _timelock.getMinDelay();
-
-        bytes32 salt = _timelockSalt(descriptionHash);
-        _timelockIds[proposalId] = _timelock.hashOperationBatch(targets, values, calldatas, 0, salt);
-        _timelock.scheduleBatch(targets, values, calldatas, 0, salt, delay);
-
-        return SafeCast.toUint48(block.timestamp + delay);
+        address account
+    ) public view virtual override returns (bool) {
+        return _proposalVotes[proposalId].hasVoted[account];
     }
 
     /**
-     * @dev Overridden version of the {Governor-_executeOperations} function that runs the already queued proposal
-     * through the timelock.
+     * @dev Accessor to the internal vote counts.
      */
-    function _executeOperations(
+    function proposalVotes(
+        uint256 proposalId
+    )
+        public
+        view
+        virtual
+        returns (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes)
+    {
+        ProposalVote storage proposalVote = _proposalVotes[proposalId];
+        return (
+            proposalVote.againstVotes,
+            proposalVote.forVotes,
+            proposalVote.abstainVotes
+        );
+    }
+
+    /**
+     * @dev See {Governor-_quorumReached}.
+     */
+    function _quorumReached(
+        uint256 proposalId
+    ) internal view virtual override returns (bool) {
+        ProposalVote storage proposalVote = _proposalVotes[proposalId];
+
+        return
+            quorum(proposalSnapshot(proposalId)) <=
+            proposalVote.forVotes + proposalVote.abstainVotes;
+    }
+
+    /**
+     * @dev See {Governor-_voteSucceeded}. In this module, the forVotes must be strictly over the againstVotes.
+     */
+    function _voteSucceeded(
+        uint256 proposalId
+    ) internal view virtual override returns (bool) {
+        ProposalVote storage proposalVote = _proposalVotes[proposalId];
+
+        return proposalVote.forVotes > proposalVote.againstVotes;
+    }
+
+    /**
+     * @dev See {Governor-_countVote}. In this module, the support follows the `VoteType` enum (from Governor Bravo).
+     */
+    function _countVote(
         uint256 proposalId,
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas,
-        bytes32 descriptionHash
+        address account,
+        uint8 support,
+        uint256 weight,
+        bytes memory // params
     ) internal virtual override {
-        // execute
-        _timelock.executeBatch{value: msg.value}(targets, values, calldatas, 0, _timelockSalt(descriptionHash));
-        // cleanup for refund
-        delete _timelockIds[proposalId];
-    }
+        ProposalVote storage proposalVote = _proposalVotes[proposalId];
 
-    /**
-     * @dev Overridden version of the {Governor-_cancel} function to cancel the timelocked proposal if it has already
-     * been queued.
-     */
-    // This function can reenter through the external call to the timelock, but we assume the timelock is trusted and
-    // well behaved (according to TimelockController) and this will not happen.
-    // slither-disable-next-line reentrancy-no-eth
-    function _cancel(
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas,
-        bytes32 descriptionHash
-    ) internal virtual override returns (uint256) {
-        uint256 proposalId = super._cancel(targets, values, calldatas, descriptionHash);
-
-        bytes32 timelockId = _timelockIds[proposalId];
-        if (timelockId != 0) {
-            // cancel
-            _timelock.cancel(timelockId);
-            // cleanup
-            delete _timelockIds[proposalId];
+        if (proposalVote.hasVoted[account]) {
+            revert GovernorAlreadyCastVote(account);
         }
+        proposalVote.hasVoted[account] = true;
 
-        return proposalId;
+        if (support == uint8(VoteType.Against)) {
+            proposalVote.againstVotes += weight;
+        } else if (support == uint8(VoteType.For)) {
+            proposalVote.forVotes += weight;
+        } else if (support == uint8(VoteType.Abstain)) {
+            proposalVote.abstainVotes += weight;
+        } else {
+            revert GovernorInvalidVoteType();
+        }
     }
+}
 
+// File: @openzeppelin/contracts/governance/utils/IVotes.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (governance/utils/IVotes.sol)
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Common interface for {ERC20Votes}, {ERC721Votes}, and other {Votes}-enabled contracts.
+ */
+interface IVotes {
     /**
-     * @dev Address through which the governor executes action. In this case, the timelock.
+     * @dev The signature used has expired.
      */
-    function _executor() internal view virtual override returns (address) {
-        return address(_timelock);
-    }
+    error VotesExpiredSignature(uint256 expiry);
 
     /**
-     * @dev Public endpoint to update the underlying timelock instance. Restricted to the timelock itself, so updates
-     * must be proposed, scheduled, and executed through governance proposals.
+     * @dev Emitted when an account changes their delegate.
+     */
+    event DelegateChanged(
+        address indexed delegator,
+        address indexed fromDelegate,
+        address indexed toDelegate
+    );
+
+    /**
+     * @dev Emitted when a token transfer or delegate change results in changes to a delegate's number of voting units.
+     */
+    event DelegateVotesChanged(
+        address indexed delegate,
+        uint256 previousVotes,
+        uint256 newVotes
+    );
+
+    /**
+     * @dev Returns the current amount of votes that `account` has.
+     */
+    function getVotes(address account) external view returns (uint256);
+
+    /**
+     * @dev Returns the amount of votes that `account` had at a specific moment in the past. If the `clock()` is
+     * configured to use block numbers, this will return the value at the end of the corresponding block.
+     */
+    function getPastVotes(
+        address account,
+        uint256 timepoint
+    ) external view returns (uint256);
+
+    /**
+     * @dev Returns the total supply of votes available at a specific moment in the past. If the `clock()` is
+     * configured to use block numbers, this will return the value at the end of the corresponding block.
      *
-     * CAUTION: It is not recommended to change the timelock while there are other queued governance proposals.
+     * NOTE: This value is the sum of all available votes, which is not necessarily the sum of all delegated votes.
+     * Votes that have not been delegated are still part of total supply, even though they would not participate in a
+     * vote.
      */
-    function updateTimelock(TimelockController newTimelock) external virtual onlyGovernance {
-        _updateTimelock(newTimelock);
-    }
+    function getPastTotalSupply(
+        uint256 timepoint
+    ) external view returns (uint256);
 
-    function _updateTimelock(TimelockController newTimelock) private {
-        emit TimelockChange(address(_timelock), address(newTimelock));
-        _timelock = newTimelock;
+    /**
+     * @dev Returns the delegate that `account` has chosen.
+     */
+    function delegates(address account) external view returns (address);
+
+    /**
+     * @dev Delegates votes from the sender to `delegatee`.
+     */
+    function delegate(address delegatee) external;
+
+    /**
+     * @dev Delegates votes from signer to `delegatee`.
+     */
+    function delegateBySig(
+        address delegatee,
+        uint256 nonce,
+        uint256 expiry,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
+}
+
+// File: @openzeppelin/contracts/interfaces/IERC5805.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC5805.sol)
+
+pragma solidity ^0.8.20;
+
+interface IERC5805 is IERC6372, IVotes {}
+
+// File: @openzeppelin/contracts/utils/types/Time.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/types/Time.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev This library provides helpers for manipulating time-related objects.
+ *
+ * It uses the following types:
+ * - `uint48` for timepoints
+ * - `uint32` for durations
+ *
+ * While the library doesn't provide specific types for timepoints and duration, it does provide:
+ * - a `Delay` type to represent duration that can be programmed to change value automatically at a given point
+ * - additional helper functions
+ */
+library Time {
+    using Time for *;
+
+    /**
+     * @dev Get the block timestamp as a Timepoint.
+     */
+    function timestamp() internal view returns (uint48) {
+        return SafeCast.toUint48(block.timestamp);
     }
 
     /**
-     * @dev Computes the {TimelockController} operation salt.
-     *
-     * It is computed with the governor address itself to avoid collisions across governor instances using the
-     * same timelock.
+     * @dev Get the block number as a Timepoint.
      */
-    function _timelockSalt(bytes32 descriptionHash) private view returns (bytes32) {
-        return bytes20(address(this)) ^ descriptionHash;
+    function blockNumber() internal view returns (uint48) {
+        return SafeCast.toUint48(block.number);
+    }
+
+    // ==================================================== Delay =====================================================
+    /**
+     * @dev A `Delay` is a uint32 duration that can be programmed to change value automatically at a given point in the
+     * future. The "effect" timepoint describes when the transitions happens from the "old" value to the "new" value.
+     * This allows updating the delay applied to some operation while keeping some guarantees.
+     *
+     * In particular, the {update} function guarantees that if the delay is reduced, the old delay still applies for
+     * some time. For example if the delay is currently 7 days to do an upgrade, the admin should not be able to set
+     * the delay to 0 and upgrade immediately. If the admin wants to reduce the delay, the old delay (7 days) should
+     * still apply for some time.
+     *
+     *
+     * The `Delay` type is 112 bits long, and packs the following:
+     *
+     * ```
+     *   | [uint48]: effect date (timepoint)
+     *   |           | [uint32]: value before (duration)
+     *   ↓           ↓       ↓ [uint32]: value after (duration)
+     * 0xAAAAAAAAAAAABBBBBBBBCCCCCCCC
+     * ```
+     *
+     * NOTE: The {get} and {withUpdate} functions operate using timestamps. Block number based delays are not currently
+     * supported.
+     */
+    type Delay is uint112;
+
+    /**
+     * @dev Wrap a duration into a Delay to add the one-step "update in the future" feature
+     */
+    function toDelay(uint32 duration) internal pure returns (Delay) {
+        return Delay.wrap(duration);
+    }
+
+    /**
+     * @dev Get the value at a given timepoint plus the pending value and effect timepoint if there is a scheduled
+     * change after this timepoint. If the effect timepoint is 0, then the pending value should not be considered.
+     */
+    function _getFullAt(
+        Delay self,
+        uint48 timepoint
+    ) private pure returns (uint32, uint32, uint48) {
+        (uint32 valueBefore, uint32 valueAfter, uint48 effect) = self.unpack();
+        return
+            effect <= timepoint
+                ? (valueAfter, 0, 0)
+                : (valueBefore, valueAfter, effect);
+    }
+
+    /**
+     * @dev Get the current value plus the pending value and effect timepoint if there is a scheduled change. If the
+     * effect timepoint is 0, then the pending value should not be considered.
+     */
+    function getFull(
+        Delay self
+    ) internal view returns (uint32, uint32, uint48) {
+        return _getFullAt(self, timestamp());
+    }
+
+    /**
+     * @dev Get the current value.
+     */
+    function get(Delay self) internal view returns (uint32) {
+        (uint32 delay, , ) = self.getFull();
+        return delay;
+    }
+
+    /**
+     * @dev Update a Delay object so that it takes a new duration after a timepoint that is automatically computed to
+     * enforce the old delay at the moment of the update. Returns the updated Delay object and the timestamp when the
+     * new delay becomes effective.
+     */
+    function withUpdate(
+        Delay self,
+        uint32 newValue,
+        uint32 minSetback
+    ) internal view returns (Delay updatedDelay, uint48 effect) {
+        uint32 value = self.get();
+        uint32 setback = uint32(
+            Math.max(minSetback, value > newValue ? value - newValue : 0)
+        );
+        effect = timestamp() + setback;
+        return (pack(value, newValue, effect), effect);
+    }
+
+    /**
+     * @dev Split a delay into its components: valueBefore, valueAfter and effect (transition timepoint).
+     */
+    function unpack(
+        Delay self
+    )
+        internal
+        pure
+        returns (uint32 valueBefore, uint32 valueAfter, uint48 effect)
+    {
+        uint112 raw = Delay.unwrap(self);
+
+        valueAfter = uint32(raw);
+        valueBefore = uint32(raw >> 32);
+        effect = uint48(raw >> 64);
+
+        return (valueBefore, valueAfter, effect);
+    }
+
+    /**
+     * @dev pack the components into a Delay object.
+     */
+    function pack(
+        uint32 valueBefore,
+        uint32 valueAfter,
+        uint48 effect
+    ) internal pure returns (Delay) {
+        return
+            Delay.wrap(
+                (uint112(effect) << 64) |
+                    (uint112(valueBefore) << 32) |
+                    uint112(valueAfter)
+            );
     }
 }
 
 // File: @openzeppelin/contracts/governance/extensions/GovernorVotes.sol
 
-
 // OpenZeppelin Contracts (last updated v5.0.0) (governance/extensions/GovernorVotes.sol)
 
 pragma solidity ^0.8.20;
-
-
-
-
-
 
 /**
  * @dev Extension of {Governor} for voting weight extraction from an {ERC20Votes} token, or since v4.5 an {ERC721Votes}
@@ -6285,15 +5285,689 @@ abstract contract GovernorVotes is Governor {
     }
 }
 
-// File: @openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol
+// File: @openzeppelin/contracts/utils/structs/Checkpoints.sol
 
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/structs/Checkpoints.sol)
+// This file was procedurally generated from scripts/generate/templates/Checkpoints.js.
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev This library defines the `Trace*` struct, for checkpointing values as they change at different points in
+ * time, and later looking up past values by block number. See {Votes} as an example.
+ *
+ * To create a history of checkpoints define a variable type `Checkpoints.Trace*` in your contract, and store a new
+ * checkpoint for the current transaction block using the {push} function.
+ */
+library Checkpoints {
+    /**
+     * @dev A value was attempted to be inserted on a past checkpoint.
+     */
+    error CheckpointUnorderedInsertion();
+
+    struct Trace224 {
+        Checkpoint224[] _checkpoints;
+    }
+
+    struct Checkpoint224 {
+        uint32 _key;
+        uint224 _value;
+    }
+
+    /**
+     * @dev Pushes a (`key`, `value`) pair into a Trace224 so that it is stored as the checkpoint.
+     *
+     * Returns previous value and new value.
+     *
+     * IMPORTANT: Never accept `key` as a user input, since an arbitrary `type(uint32).max` key set will disable the
+     * library.
+     */
+    function push(
+        Trace224 storage self,
+        uint32 key,
+        uint224 value
+    ) internal returns (uint224, uint224) {
+        return _insert(self._checkpoints, key, value);
+    }
+
+    /**
+     * @dev Returns the value in the first (oldest) checkpoint with key greater or equal than the search key, or zero if
+     * there is none.
+     */
+    function lowerLookup(
+        Trace224 storage self,
+        uint32 key
+    ) internal view returns (uint224) {
+        uint256 len = self._checkpoints.length;
+        uint256 pos = _lowerBinaryLookup(self._checkpoints, key, 0, len);
+        return pos == len ? 0 : _unsafeAccess(self._checkpoints, pos)._value;
+    }
+
+    /**
+     * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
+     * if there is none.
+     */
+    function upperLookup(
+        Trace224 storage self,
+        uint32 key
+    ) internal view returns (uint224) {
+        uint256 len = self._checkpoints.length;
+        uint256 pos = _upperBinaryLookup(self._checkpoints, key, 0, len);
+        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
+    }
+
+    /**
+     * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
+     * if there is none.
+     *
+     * NOTE: This is a variant of {upperLookup} that is optimised to find "recent" checkpoint (checkpoints with high
+     * keys).
+     */
+    function upperLookupRecent(
+        Trace224 storage self,
+        uint32 key
+    ) internal view returns (uint224) {
+        uint256 len = self._checkpoints.length;
+
+        uint256 low = 0;
+        uint256 high = len;
+
+        if (len > 5) {
+            uint256 mid = len - Math.sqrt(len);
+            if (key < _unsafeAccess(self._checkpoints, mid)._key) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        uint256 pos = _upperBinaryLookup(self._checkpoints, key, low, high);
+
+        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
+    }
+
+    /**
+     * @dev Returns the value in the most recent checkpoint, or zero if there are no checkpoints.
+     */
+    function latest(Trace224 storage self) internal view returns (uint224) {
+        uint256 pos = self._checkpoints.length;
+        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
+    }
+
+    /**
+     * @dev Returns whether there is a checkpoint in the structure (i.e. it is not empty), and if so the key and value
+     * in the most recent checkpoint.
+     */
+    function latestCheckpoint(
+        Trace224 storage self
+    ) internal view returns (bool exists, uint32 _key, uint224 _value) {
+        uint256 pos = self._checkpoints.length;
+        if (pos == 0) {
+            return (false, 0, 0);
+        } else {
+            Checkpoint224 memory ckpt = _unsafeAccess(
+                self._checkpoints,
+                pos - 1
+            );
+            return (true, ckpt._key, ckpt._value);
+        }
+    }
+
+    /**
+     * @dev Returns the number of checkpoint.
+     */
+    function length(Trace224 storage self) internal view returns (uint256) {
+        return self._checkpoints.length;
+    }
+
+    /**
+     * @dev Returns checkpoint at given position.
+     */
+    function at(
+        Trace224 storage self,
+        uint32 pos
+    ) internal view returns (Checkpoint224 memory) {
+        return self._checkpoints[pos];
+    }
+
+    /**
+     * @dev Pushes a (`key`, `value`) pair into an ordered list of checkpoints, either by inserting a new checkpoint,
+     * or by updating the last one.
+     */
+    function _insert(
+        Checkpoint224[] storage self,
+        uint32 key,
+        uint224 value
+    ) private returns (uint224, uint224) {
+        uint256 pos = self.length;
+
+        if (pos > 0) {
+            // Copying to memory is important here.
+            Checkpoint224 memory last = _unsafeAccess(self, pos - 1);
+
+            // Checkpoint keys must be non-decreasing.
+            if (last._key > key) {
+                revert CheckpointUnorderedInsertion();
+            }
+
+            // Update or push new checkpoint
+            if (last._key == key) {
+                _unsafeAccess(self, pos - 1)._value = value;
+            } else {
+                self.push(Checkpoint224({_key: key, _value: value}));
+            }
+            return (last._value, value);
+        } else {
+            self.push(Checkpoint224({_key: key, _value: value}));
+            return (0, value);
+        }
+    }
+
+    /**
+     * @dev Return the index of the last (most recent) checkpoint with key lower or equal than the search key, or `high`
+     * if there is none. `low` and `high` define a section where to do the search, with inclusive `low` and exclusive
+     * `high`.
+     *
+     * WARNING: `high` should not be greater than the array's length.
+     */
+    function _upperBinaryLookup(
+        Checkpoint224[] storage self,
+        uint32 key,
+        uint256 low,
+        uint256 high
+    ) private view returns (uint256) {
+        while (low < high) {
+            uint256 mid = Math.average(low, high);
+            if (_unsafeAccess(self, mid)._key > key) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return high;
+    }
+
+    /**
+     * @dev Return the index of the first (oldest) checkpoint with key is greater or equal than the search key, or
+     * `high` if there is none. `low` and `high` define a section where to do the search, with inclusive `low` and
+     * exclusive `high`.
+     *
+     * WARNING: `high` should not be greater than the array's length.
+     */
+    function _lowerBinaryLookup(
+        Checkpoint224[] storage self,
+        uint32 key,
+        uint256 low,
+        uint256 high
+    ) private view returns (uint256) {
+        while (low < high) {
+            uint256 mid = Math.average(low, high);
+            if (_unsafeAccess(self, mid)._key < key) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        return high;
+    }
+
+    /**
+     * @dev Access an element of the array without performing bounds check. The position is assumed to be within bounds.
+     */
+    function _unsafeAccess(
+        Checkpoint224[] storage self,
+        uint256 pos
+    ) private pure returns (Checkpoint224 storage result) {
+        assembly {
+            mstore(0, self.slot)
+            result.slot := add(keccak256(0, 0x20), pos)
+        }
+    }
+
+    struct Trace208 {
+        Checkpoint208[] _checkpoints;
+    }
+
+    struct Checkpoint208 {
+        uint48 _key;
+        uint208 _value;
+    }
+
+    /**
+     * @dev Pushes a (`key`, `value`) pair into a Trace208 so that it is stored as the checkpoint.
+     *
+     * Returns previous value and new value.
+     *
+     * IMPORTANT: Never accept `key` as a user input, since an arbitrary `type(uint48).max` key set will disable the
+     * library.
+     */
+    function push(
+        Trace208 storage self,
+        uint48 key,
+        uint208 value
+    ) internal returns (uint208, uint208) {
+        return _insert(self._checkpoints, key, value);
+    }
+
+    /**
+     * @dev Returns the value in the first (oldest) checkpoint with key greater or equal than the search key, or zero if
+     * there is none.
+     */
+    function lowerLookup(
+        Trace208 storage self,
+        uint48 key
+    ) internal view returns (uint208) {
+        uint256 len = self._checkpoints.length;
+        uint256 pos = _lowerBinaryLookup(self._checkpoints, key, 0, len);
+        return pos == len ? 0 : _unsafeAccess(self._checkpoints, pos)._value;
+    }
+
+    /**
+     * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
+     * if there is none.
+     */
+    function upperLookup(
+        Trace208 storage self,
+        uint48 key
+    ) internal view returns (uint208) {
+        uint256 len = self._checkpoints.length;
+        uint256 pos = _upperBinaryLookup(self._checkpoints, key, 0, len);
+        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
+    }
+
+    /**
+     * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
+     * if there is none.
+     *
+     * NOTE: This is a variant of {upperLookup} that is optimised to find "recent" checkpoint (checkpoints with high
+     * keys).
+     */
+    function upperLookupRecent(
+        Trace208 storage self,
+        uint48 key
+    ) internal view returns (uint208) {
+        uint256 len = self._checkpoints.length;
+
+        uint256 low = 0;
+        uint256 high = len;
+
+        if (len > 5) {
+            uint256 mid = len - Math.sqrt(len);
+            if (key < _unsafeAccess(self._checkpoints, mid)._key) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        uint256 pos = _upperBinaryLookup(self._checkpoints, key, low, high);
+
+        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
+    }
+
+    /**
+     * @dev Returns the value in the most recent checkpoint, or zero if there are no checkpoints.
+     */
+    function latest(Trace208 storage self) internal view returns (uint208) {
+        uint256 pos = self._checkpoints.length;
+        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
+    }
+
+    /**
+     * @dev Returns whether there is a checkpoint in the structure (i.e. it is not empty), and if so the key and value
+     * in the most recent checkpoint.
+     */
+    function latestCheckpoint(
+        Trace208 storage self
+    ) internal view returns (bool exists, uint48 _key, uint208 _value) {
+        uint256 pos = self._checkpoints.length;
+        if (pos == 0) {
+            return (false, 0, 0);
+        } else {
+            Checkpoint208 memory ckpt = _unsafeAccess(
+                self._checkpoints,
+                pos - 1
+            );
+            return (true, ckpt._key, ckpt._value);
+        }
+    }
+
+    /**
+     * @dev Returns the number of checkpoint.
+     */
+    function length(Trace208 storage self) internal view returns (uint256) {
+        return self._checkpoints.length;
+    }
+
+    /**
+     * @dev Returns checkpoint at given position.
+     */
+    function at(
+        Trace208 storage self,
+        uint32 pos
+    ) internal view returns (Checkpoint208 memory) {
+        return self._checkpoints[pos];
+    }
+
+    /**
+     * @dev Pushes a (`key`, `value`) pair into an ordered list of checkpoints, either by inserting a new checkpoint,
+     * or by updating the last one.
+     */
+    function _insert(
+        Checkpoint208[] storage self,
+        uint48 key,
+        uint208 value
+    ) private returns (uint208, uint208) {
+        uint256 pos = self.length;
+
+        if (pos > 0) {
+            // Copying to memory is important here.
+            Checkpoint208 memory last = _unsafeAccess(self, pos - 1);
+
+            // Checkpoint keys must be non-decreasing.
+            if (last._key > key) {
+                revert CheckpointUnorderedInsertion();
+            }
+
+            // Update or push new checkpoint
+            if (last._key == key) {
+                _unsafeAccess(self, pos - 1)._value = value;
+            } else {
+                self.push(Checkpoint208({_key: key, _value: value}));
+            }
+            return (last._value, value);
+        } else {
+            self.push(Checkpoint208({_key: key, _value: value}));
+            return (0, value);
+        }
+    }
+
+    /**
+     * @dev Return the index of the last (most recent) checkpoint with key lower or equal than the search key, or `high`
+     * if there is none. `low` and `high` define a section where to do the search, with inclusive `low` and exclusive
+     * `high`.
+     *
+     * WARNING: `high` should not be greater than the array's length.
+     */
+    function _upperBinaryLookup(
+        Checkpoint208[] storage self,
+        uint48 key,
+        uint256 low,
+        uint256 high
+    ) private view returns (uint256) {
+        while (low < high) {
+            uint256 mid = Math.average(low, high);
+            if (_unsafeAccess(self, mid)._key > key) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return high;
+    }
+
+    /**
+     * @dev Return the index of the first (oldest) checkpoint with key is greater or equal than the search key, or
+     * `high` if there is none. `low` and `high` define a section where to do the search, with inclusive `low` and
+     * exclusive `high`.
+     *
+     * WARNING: `high` should not be greater than the array's length.
+     */
+    function _lowerBinaryLookup(
+        Checkpoint208[] storage self,
+        uint48 key,
+        uint256 low,
+        uint256 high
+    ) private view returns (uint256) {
+        while (low < high) {
+            uint256 mid = Math.average(low, high);
+            if (_unsafeAccess(self, mid)._key < key) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        return high;
+    }
+
+    /**
+     * @dev Access an element of the array without performing bounds check. The position is assumed to be within bounds.
+     */
+    function _unsafeAccess(
+        Checkpoint208[] storage self,
+        uint256 pos
+    ) private pure returns (Checkpoint208 storage result) {
+        assembly {
+            mstore(0, self.slot)
+            result.slot := add(keccak256(0, 0x20), pos)
+        }
+    }
+
+    struct Trace160 {
+        Checkpoint160[] _checkpoints;
+    }
+
+    struct Checkpoint160 {
+        uint96 _key;
+        uint160 _value;
+    }
+
+    /**
+     * @dev Pushes a (`key`, `value`) pair into a Trace160 so that it is stored as the checkpoint.
+     *
+     * Returns previous value and new value.
+     *
+     * IMPORTANT: Never accept `key` as a user input, since an arbitrary `type(uint96).max` key set will disable the
+     * library.
+     */
+    function push(
+        Trace160 storage self,
+        uint96 key,
+        uint160 value
+    ) internal returns (uint160, uint160) {
+        return _insert(self._checkpoints, key, value);
+    }
+
+    /**
+     * @dev Returns the value in the first (oldest) checkpoint with key greater or equal than the search key, or zero if
+     * there is none.
+     */
+    function lowerLookup(
+        Trace160 storage self,
+        uint96 key
+    ) internal view returns (uint160) {
+        uint256 len = self._checkpoints.length;
+        uint256 pos = _lowerBinaryLookup(self._checkpoints, key, 0, len);
+        return pos == len ? 0 : _unsafeAccess(self._checkpoints, pos)._value;
+    }
+
+    /**
+     * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
+     * if there is none.
+     */
+    function upperLookup(
+        Trace160 storage self,
+        uint96 key
+    ) internal view returns (uint160) {
+        uint256 len = self._checkpoints.length;
+        uint256 pos = _upperBinaryLookup(self._checkpoints, key, 0, len);
+        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
+    }
+
+    /**
+     * @dev Returns the value in the last (most recent) checkpoint with key lower or equal than the search key, or zero
+     * if there is none.
+     *
+     * NOTE: This is a variant of {upperLookup} that is optimised to find "recent" checkpoint (checkpoints with high
+     * keys).
+     */
+    function upperLookupRecent(
+        Trace160 storage self,
+        uint96 key
+    ) internal view returns (uint160) {
+        uint256 len = self._checkpoints.length;
+
+        uint256 low = 0;
+        uint256 high = len;
+
+        if (len > 5) {
+            uint256 mid = len - Math.sqrt(len);
+            if (key < _unsafeAccess(self._checkpoints, mid)._key) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        uint256 pos = _upperBinaryLookup(self._checkpoints, key, low, high);
+
+        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
+    }
+
+    /**
+     * @dev Returns the value in the most recent checkpoint, or zero if there are no checkpoints.
+     */
+    function latest(Trace160 storage self) internal view returns (uint160) {
+        uint256 pos = self._checkpoints.length;
+        return pos == 0 ? 0 : _unsafeAccess(self._checkpoints, pos - 1)._value;
+    }
+
+    /**
+     * @dev Returns whether there is a checkpoint in the structure (i.e. it is not empty), and if so the key and value
+     * in the most recent checkpoint.
+     */
+    function latestCheckpoint(
+        Trace160 storage self
+    ) internal view returns (bool exists, uint96 _key, uint160 _value) {
+        uint256 pos = self._checkpoints.length;
+        if (pos == 0) {
+            return (false, 0, 0);
+        } else {
+            Checkpoint160 memory ckpt = _unsafeAccess(
+                self._checkpoints,
+                pos - 1
+            );
+            return (true, ckpt._key, ckpt._value);
+        }
+    }
+
+    /**
+     * @dev Returns the number of checkpoint.
+     */
+    function length(Trace160 storage self) internal view returns (uint256) {
+        return self._checkpoints.length;
+    }
+
+    /**
+     * @dev Returns checkpoint at given position.
+     */
+    function at(
+        Trace160 storage self,
+        uint32 pos
+    ) internal view returns (Checkpoint160 memory) {
+        return self._checkpoints[pos];
+    }
+
+    /**
+     * @dev Pushes a (`key`, `value`) pair into an ordered list of checkpoints, either by inserting a new checkpoint,
+     * or by updating the last one.
+     */
+    function _insert(
+        Checkpoint160[] storage self,
+        uint96 key,
+        uint160 value
+    ) private returns (uint160, uint160) {
+        uint256 pos = self.length;
+
+        if (pos > 0) {
+            // Copying to memory is important here.
+            Checkpoint160 memory last = _unsafeAccess(self, pos - 1);
+
+            // Checkpoint keys must be non-decreasing.
+            if (last._key > key) {
+                revert CheckpointUnorderedInsertion();
+            }
+
+            // Update or push new checkpoint
+            if (last._key == key) {
+                _unsafeAccess(self, pos - 1)._value = value;
+            } else {
+                self.push(Checkpoint160({_key: key, _value: value}));
+            }
+            return (last._value, value);
+        } else {
+            self.push(Checkpoint160({_key: key, _value: value}));
+            return (0, value);
+        }
+    }
+
+    /**
+     * @dev Return the index of the last (most recent) checkpoint with key lower or equal than the search key, or `high`
+     * if there is none. `low` and `high` define a section where to do the search, with inclusive `low` and exclusive
+     * `high`.
+     *
+     * WARNING: `high` should not be greater than the array's length.
+     */
+    function _upperBinaryLookup(
+        Checkpoint160[] storage self,
+        uint96 key,
+        uint256 low,
+        uint256 high
+    ) private view returns (uint256) {
+        while (low < high) {
+            uint256 mid = Math.average(low, high);
+            if (_unsafeAccess(self, mid)._key > key) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return high;
+    }
+
+    /**
+     * @dev Return the index of the first (oldest) checkpoint with key is greater or equal than the search key, or
+     * `high` if there is none. `low` and `high` define a section where to do the search, with inclusive `low` and
+     * exclusive `high`.
+     *
+     * WARNING: `high` should not be greater than the array's length.
+     */
+    function _lowerBinaryLookup(
+        Checkpoint160[] storage self,
+        uint96 key,
+        uint256 low,
+        uint256 high
+    ) private view returns (uint256) {
+        while (low < high) {
+            uint256 mid = Math.average(low, high);
+            if (_unsafeAccess(self, mid)._key < key) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        return high;
+    }
+
+    /**
+     * @dev Access an element of the array without performing bounds check. The position is assumed to be within bounds.
+     */
+    function _unsafeAccess(
+        Checkpoint160[] storage self,
+        uint256 pos
+    ) private pure returns (Checkpoint160 storage result) {
+        assembly {
+            mstore(0, self.slot)
+            result.slot := add(keccak256(0, 0x20), pos)
+        }
+    }
+}
+
+// File: @openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol
 
 // OpenZeppelin Contracts (last updated v5.0.0) (governance/extensions/GovernorVotesQuorumFraction.sol)
 
 pragma solidity ^0.8.20;
-
-
-
 
 /**
  * @dev Extension of {Governor} for voting weight extraction from an {ERC20Votes} token and a quorum expressed as a
@@ -6304,12 +5978,18 @@ abstract contract GovernorVotesQuorumFraction is GovernorVotes {
 
     Checkpoints.Trace208 private _quorumNumeratorHistory;
 
-    event QuorumNumeratorUpdated(uint256 oldQuorumNumerator, uint256 newQuorumNumerator);
+    event QuorumNumeratorUpdated(
+        uint256 oldQuorumNumerator,
+        uint256 newQuorumNumerator
+    );
 
     /**
      * @dev The quorum set is not a valid fraction.
      */
-    error GovernorInvalidQuorumFraction(uint256 quorumNumerator, uint256 quorumDenominator);
+    error GovernorInvalidQuorumFraction(
+        uint256 quorumNumerator,
+        uint256 quorumDenominator
+    );
 
     /**
      * @dev Initialize quorum as a fraction of the token's total supply.
@@ -6332,11 +6012,14 @@ abstract contract GovernorVotesQuorumFraction is GovernorVotes {
     /**
      * @dev Returns the quorum numerator at a specific timepoint. See {quorumDenominator}.
      */
-    function quorumNumerator(uint256 timepoint) public view virtual returns (uint256) {
+    function quorumNumerator(
+        uint256 timepoint
+    ) public view virtual returns (uint256) {
         uint256 length = _quorumNumeratorHistory._checkpoints.length;
 
         // Optimistic search, check the latest checkpoint
-        Checkpoints.Checkpoint208 storage latest = _quorumNumeratorHistory._checkpoints[length - 1];
+        Checkpoints.Checkpoint208 storage latest = _quorumNumeratorHistory
+            ._checkpoints[length - 1];
         uint48 latestKey = latest._key;
         uint208 latestValue = latest._value;
         if (latestKey <= timepoint) {
@@ -6344,7 +6027,10 @@ abstract contract GovernorVotesQuorumFraction is GovernorVotes {
         }
 
         // Otherwise, do the binary search
-        return _quorumNumeratorHistory.upperLookupRecent(SafeCast.toUint48(timepoint));
+        return
+            _quorumNumeratorHistory.upperLookupRecent(
+                SafeCast.toUint48(timepoint)
+            );
     }
 
     /**
@@ -6357,8 +6043,12 @@ abstract contract GovernorVotesQuorumFraction is GovernorVotes {
     /**
      * @dev Returns the quorum for a timepoint, in terms of number of votes: `supply * numerator / denominator`.
      */
-    function quorum(uint256 timepoint) public view virtual override returns (uint256) {
-        return (token().getPastTotalSupply(timepoint) * quorumNumerator(timepoint)) / quorumDenominator();
+    function quorum(
+        uint256 timepoint
+    ) public view virtual override returns (uint256) {
+        return
+            (token().getPastTotalSupply(timepoint) *
+                quorumNumerator(timepoint)) / quorumDenominator();
     }
 
     /**
@@ -6371,7 +6061,9 @@ abstract contract GovernorVotesQuorumFraction is GovernorVotes {
      * - Must be called through a governance proposal.
      * - New numerator must be smaller or equal to the denominator.
      */
-    function updateQuorumNumerator(uint256 newQuorumNumerator) external virtual onlyGovernance {
+    function updateQuorumNumerator(
+        uint256 newQuorumNumerator
+    ) external virtual onlyGovernance {
         _updateQuorumNumerator(newQuorumNumerator);
     }
 
@@ -6384,246 +6076,1190 @@ abstract contract GovernorVotesQuorumFraction is GovernorVotes {
      *
      * - New numerator must be smaller or equal to the denominator.
      */
-    function _updateQuorumNumerator(uint256 newQuorumNumerator) internal virtual {
+    function _updateQuorumNumerator(
+        uint256 newQuorumNumerator
+    ) internal virtual {
         uint256 denominator = quorumDenominator();
         if (newQuorumNumerator > denominator) {
-            revert GovernorInvalidQuorumFraction(newQuorumNumerator, denominator);
+            revert GovernorInvalidQuorumFraction(
+                newQuorumNumerator,
+                denominator
+            );
         }
 
         uint256 oldQuorumNumerator = quorumNumerator();
-        _quorumNumeratorHistory.push(clock(), SafeCast.toUint208(newQuorumNumerator));
+        _quorumNumeratorHistory.push(
+            clock(),
+            SafeCast.toUint208(newQuorumNumerator)
+        );
 
         emit QuorumNumeratorUpdated(oldQuorumNumerator, newQuorumNumerator);
     }
 }
 
-// File: @openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol
+// File: @openzeppelin/contracts/access/IAccessControl.sol
 
-
-// OpenZeppelin Contracts (last updated v5.0.0) (governance/extensions/GovernorCountingSimple.sol)
+// OpenZeppelin Contracts (last updated v5.0.0) (access/IAccessControl.sol)
 
 pragma solidity ^0.8.20;
 
+/**
+ * @dev External interface of AccessControl declared to support ERC165 detection.
+ */
+interface IAccessControl {
+    /**
+     * @dev The `account` is missing a role.
+     */
+    error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);
+
+    /**
+     * @dev The caller of a function is not the expected one.
+     *
+     * NOTE: Don't confuse with {AccessControlUnauthorizedAccount}.
+     */
+    error AccessControlBadConfirmation();
+
+    /**
+     * @dev Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole`
+     *
+     * `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite
+     * {RoleAdminChanged} not being emitted signaling this.
+     */
+    event RoleAdminChanged(
+        bytes32 indexed role,
+        bytes32 indexed previousAdminRole,
+        bytes32 indexed newAdminRole
+    );
+
+    /**
+     * @dev Emitted when `account` is granted `role`.
+     *
+     * `sender` is the account that originated the contract call, an admin role
+     * bearer except when using {AccessControl-_setupRole}.
+     */
+    event RoleGranted(
+        bytes32 indexed role,
+        address indexed account,
+        address indexed sender
+    );
+
+    /**
+     * @dev Emitted when `account` is revoked `role`.
+     *
+     * `sender` is the account that originated the contract call:
+     *   - if using `revokeRole`, it is the admin role bearer
+     *   - if using `renounceRole`, it is the role bearer (i.e. `account`)
+     */
+    event RoleRevoked(
+        bytes32 indexed role,
+        address indexed account,
+        address indexed sender
+    );
+
+    /**
+     * @dev Returns `true` if `account` has been granted `role`.
+     */
+    function hasRole(
+        bytes32 role,
+        address account
+    ) external view returns (bool);
+
+    /**
+     * @dev Returns the admin role that controls `role`. See {grantRole} and
+     * {revokeRole}.
+     *
+     * To change a role's admin, use {AccessControl-_setRoleAdmin}.
+     */
+    function getRoleAdmin(bytes32 role) external view returns (bytes32);
+
+    /**
+     * @dev Grants `role` to `account`.
+     *
+     * If `account` had not been already granted `role`, emits a {RoleGranted}
+     * event.
+     *
+     * Requirements:
+     *
+     * - the caller must have ``role``'s admin role.
+     */
+    function grantRole(bytes32 role, address account) external;
+
+    /**
+     * @dev Revokes `role` from `account`.
+     *
+     * If `account` had been granted `role`, emits a {RoleRevoked} event.
+     *
+     * Requirements:
+     *
+     * - the caller must have ``role``'s admin role.
+     */
+    function revokeRole(bytes32 role, address account) external;
+
+    /**
+     * @dev Revokes `role` from the calling account.
+     *
+     * Roles are often managed via {grantRole} and {revokeRole}: this function's
+     * purpose is to provide a mechanism for accounts to lose their privileges
+     * if they are compromised (such as when a trusted device is misplaced).
+     *
+     * If the calling account had been granted `role`, emits a {RoleRevoked}
+     * event.
+     *
+     * Requirements:
+     *
+     * - the caller must be `callerConfirmation`.
+     */
+    function renounceRole(bytes32 role, address callerConfirmation) external;
+}
+
+// File: @openzeppelin/contracts/access/AccessControl.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (access/AccessControl.sol)
+
+pragma solidity ^0.8.20;
 
 /**
- * @dev Extension of {Governor} for simple, 3 options, vote counting.
+ * @dev Contract module that allows children to implement role-based access
+ * control mechanisms. This is a lightweight version that doesn't allow enumerating role
+ * members except through off-chain means by accessing the contract event logs. Some
+ * applications may benefit from on-chain enumerability, for those cases see
+ * {AccessControlEnumerable}.
+ *
+ * Roles are referred to by their `bytes32` identifier. These should be exposed
+ * in the external API and be unique. The best way to achieve this is by
+ * using `public constant` hash digests:
+ *
+ * ```solidity
+ * bytes32 public constant MY_ROLE = keccak256("MY_ROLE");
+ * ```
+ *
+ * Roles can be used to represent a set of permissions. To restrict access to a
+ * function call, use {hasRole}:
+ *
+ * ```solidity
+ * function foo() public {
+ *     require(hasRole(MY_ROLE, msg.sender));
+ *     ...
+ * }
+ * ```
+ *
+ * Roles can be granted and revoked dynamically via the {grantRole} and
+ * {revokeRole} functions. Each role has an associated admin role, and only
+ * accounts that have a role's admin role can call {grantRole} and {revokeRole}.
+ *
+ * By default, the admin role for all roles is `DEFAULT_ADMIN_ROLE`, which means
+ * that only accounts with this role will be able to grant or revoke other
+ * roles. More complex role relationships can be created by using
+ * {_setRoleAdmin}.
+ *
+ * WARNING: The `DEFAULT_ADMIN_ROLE` is also its own admin: it has permission to
+ * grant and revoke this role. Extra precautions should be taken to secure
+ * accounts that have been granted it. We recommend using {AccessControlDefaultAdminRules}
+ * to enforce additional security measures for this role.
  */
-abstract contract GovernorCountingSimple is Governor {
-    /**
-     * @dev Supported vote types. Matches Governor Bravo ordering.
-     */
-    enum VoteType {
-        Against,
-        For,
-        Abstain
+abstract contract AccessControl is Context, IAccessControl, ERC165 {
+    struct RoleData {
+        mapping(address account => bool) hasRole;
+        bytes32 adminRole;
     }
 
-    struct ProposalVote {
-        uint256 againstVotes;
-        uint256 forVotes;
-        uint256 abstainVotes;
-        mapping(address voter => bool) hasVoted;
-    }
+    mapping(bytes32 role => RoleData) private _roles;
 
-    mapping(uint256 proposalId => ProposalVote) private _proposalVotes;
+    bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
     /**
-     * @dev See {IGovernor-COUNTING_MODE}.
+     * @dev Modifier that checks that an account has a specific role. Reverts
+     * with an {AccessControlUnauthorizedAccount} error including the required role.
      */
-    // solhint-disable-next-line func-name-mixedcase
-    function COUNTING_MODE() public pure virtual override returns (string memory) {
-        return "support=bravo&quorum=for,abstain";
+    modifier onlyRole(bytes32 role) {
+        _checkRole(role);
+        _;
     }
 
     /**
-     * @dev See {IGovernor-hasVoted}.
+     * @dev See {IERC165-supportsInterface}.
      */
-    function hasVoted(uint256 proposalId, address account) public view virtual override returns (bool) {
-        return _proposalVotes[proposalId].hasVoted[account];
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override returns (bool) {
+        return
+            interfaceId == type(IAccessControl).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
     /**
-     * @dev Accessor to the internal vote counts.
+     * @dev Returns `true` if `account` has been granted `role`.
      */
-    function proposalVotes(
-        uint256 proposalId
-    ) public view virtual returns (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes) {
-        ProposalVote storage proposalVote = _proposalVotes[proposalId];
-        return (proposalVote.againstVotes, proposalVote.forVotes, proposalVote.abstainVotes);
+    function hasRole(
+        bytes32 role,
+        address account
+    ) public view virtual returns (bool) {
+        return _roles[role].hasRole[account];
     }
 
     /**
-     * @dev See {Governor-_quorumReached}.
+     * @dev Reverts with an {AccessControlUnauthorizedAccount} error if `_msgSender()`
+     * is missing `role`. Overriding this function changes the behavior of the {onlyRole} modifier.
      */
-    function _quorumReached(uint256 proposalId) internal view virtual override returns (bool) {
-        ProposalVote storage proposalVote = _proposalVotes[proposalId];
-
-        return quorum(proposalSnapshot(proposalId)) <= proposalVote.forVotes + proposalVote.abstainVotes;
+    function _checkRole(bytes32 role) internal view virtual {
+        _checkRole(role, _msgSender());
     }
 
     /**
-     * @dev See {Governor-_voteSucceeded}. In this module, the forVotes must be strictly over the againstVotes.
+     * @dev Reverts with an {AccessControlUnauthorizedAccount} error if `account`
+     * is missing `role`.
      */
-    function _voteSucceeded(uint256 proposalId) internal view virtual override returns (bool) {
-        ProposalVote storage proposalVote = _proposalVotes[proposalId];
-
-        return proposalVote.forVotes > proposalVote.againstVotes;
-    }
-
-    /**
-     * @dev See {Governor-_countVote}. In this module, the support follows the `VoteType` enum (from Governor Bravo).
-     */
-    function _countVote(
-        uint256 proposalId,
-        address account,
-        uint8 support,
-        uint256 weight,
-        bytes memory // params
-    ) internal virtual override {
-        ProposalVote storage proposalVote = _proposalVotes[proposalId];
-
-        if (proposalVote.hasVoted[account]) {
-            revert GovernorAlreadyCastVote(account);
+    function _checkRole(bytes32 role, address account) internal view virtual {
+        if (!hasRole(role, account)) {
+            revert AccessControlUnauthorizedAccount(account, role);
         }
-        proposalVote.hasVoted[account] = true;
+    }
 
-        if (support == uint8(VoteType.Against)) {
-            proposalVote.againstVotes += weight;
-        } else if (support == uint8(VoteType.For)) {
-            proposalVote.forVotes += weight;
-        } else if (support == uint8(VoteType.Abstain)) {
-            proposalVote.abstainVotes += weight;
+    /**
+     * @dev Returns the admin role that controls `role`. See {grantRole} and
+     * {revokeRole}.
+     *
+     * To change a role's admin, use {_setRoleAdmin}.
+     */
+    function getRoleAdmin(bytes32 role) public view virtual returns (bytes32) {
+        return _roles[role].adminRole;
+    }
+
+    /**
+     * @dev Grants `role` to `account`.
+     *
+     * If `account` had not been already granted `role`, emits a {RoleGranted}
+     * event.
+     *
+     * Requirements:
+     *
+     * - the caller must have ``role``'s admin role.
+     *
+     * May emit a {RoleGranted} event.
+     */
+    function grantRole(
+        bytes32 role,
+        address account
+    ) public virtual onlyRole(getRoleAdmin(role)) {
+        _grantRole(role, account);
+    }
+
+    /**
+     * @dev Revokes `role` from `account`.
+     *
+     * If `account` had been granted `role`, emits a {RoleRevoked} event.
+     *
+     * Requirements:
+     *
+     * - the caller must have ``role``'s admin role.
+     *
+     * May emit a {RoleRevoked} event.
+     */
+    function revokeRole(
+        bytes32 role,
+        address account
+    ) public virtual onlyRole(getRoleAdmin(role)) {
+        _revokeRole(role, account);
+    }
+
+    /**
+     * @dev Revokes `role` from the calling account.
+     *
+     * Roles are often managed via {grantRole} and {revokeRole}: this function's
+     * purpose is to provide a mechanism for accounts to lose their privileges
+     * if they are compromised (such as when a trusted device is misplaced).
+     *
+     * If the calling account had been revoked `role`, emits a {RoleRevoked}
+     * event.
+     *
+     * Requirements:
+     *
+     * - the caller must be `callerConfirmation`.
+     *
+     * May emit a {RoleRevoked} event.
+     */
+    function renounceRole(
+        bytes32 role,
+        address callerConfirmation
+    ) public virtual {
+        if (callerConfirmation != _msgSender()) {
+            revert AccessControlBadConfirmation();
+        }
+
+        _revokeRole(role, callerConfirmation);
+    }
+
+    /**
+     * @dev Sets `adminRole` as ``role``'s admin role.
+     *
+     * Emits a {RoleAdminChanged} event.
+     */
+    function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
+        bytes32 previousAdminRole = getRoleAdmin(role);
+        _roles[role].adminRole = adminRole;
+        emit RoleAdminChanged(role, previousAdminRole, adminRole);
+    }
+
+    /**
+     * @dev Attempts to grant `role` to `account` and returns a boolean indicating if `role` was granted.
+     *
+     * Internal function without access restriction.
+     *
+     * May emit a {RoleGranted} event.
+     */
+    function _grantRole(
+        bytes32 role,
+        address account
+    ) internal virtual returns (bool) {
+        if (!hasRole(role, account)) {
+            _roles[role].hasRole[account] = true;
+            emit RoleGranted(role, account, _msgSender());
+            return true;
         } else {
-            revert GovernorInvalidVoteType();
+            return false;
+        }
+    }
+
+    /**
+     * @dev Attempts to revoke `role` to `account` and returns a boolean indicating if `role` was revoked.
+     *
+     * Internal function without access restriction.
+     *
+     * May emit a {RoleRevoked} event.
+     */
+    function _revokeRole(
+        bytes32 role,
+        address account
+    ) internal virtual returns (bool) {
+        if (hasRole(role, account)) {
+            _roles[role].hasRole[account] = false;
+            emit RoleRevoked(role, account, _msgSender());
+            return true;
+        } else {
+            return false;
         }
     }
 }
 
-// File: @openzeppelin/contracts/governance/extensions/GovernorSettings.sol
+// File: @openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol
 
-
-// OpenZeppelin Contracts (last updated v5.0.0) (governance/extensions/GovernorSettings.sol)
+// OpenZeppelin Contracts (last updated v5.0.0) (token/ERC721/utils/ERC721Holder.sol)
 
 pragma solidity ^0.8.20;
 
+/**
+ * @dev Implementation of the {IERC721Receiver} interface.
+ *
+ * Accepts all token transfers.
+ * Make sure the contract is able to use its token with {IERC721-safeTransferFrom}, {IERC721-approve} or
+ * {IERC721-setApprovalForAll}.
+ */
+abstract contract ERC721Holder is IERC721Receiver {
+    /**
+     * @dev See {IERC721Receiver-onERC721Received}.
+     *
+     * Always returns `IERC721Receiver.onERC721Received.selector`.
+     */
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) public virtual returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
+}
+
+// File: @openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (token/ERC1155/utils/ERC1155Holder.sol)
+
+pragma solidity ^0.8.20;
 
 /**
- * @dev Extension of {Governor} for settings updatable through governance.
+ * @dev Simple implementation of `IERC1155Receiver` that will allow a contract to hold ERC1155 tokens.
+ *
+ * IMPORTANT: When inheriting this contract, you must include a way to use the received tokens, otherwise they will be
+ * stuck.
  */
-abstract contract GovernorSettings is Governor {
-    // amount of token
-    uint256 private _proposalThreshold;
-    // timepoint: limited to uint48 in core (same as clock() type)
-    uint48 private _votingDelay;
-    // duration: limited to uint32 in core
-    uint32 private _votingPeriod;
-
-    event VotingDelaySet(uint256 oldVotingDelay, uint256 newVotingDelay);
-    event VotingPeriodSet(uint256 oldVotingPeriod, uint256 newVotingPeriod);
-    event ProposalThresholdSet(uint256 oldProposalThreshold, uint256 newProposalThreshold);
-
+abstract contract ERC1155Holder is ERC165, IERC1155Receiver {
     /**
-     * @dev Initialize the governance parameters.
+     * @dev See {IERC165-supportsInterface}.
      */
-    constructor(uint48 initialVotingDelay, uint32 initialVotingPeriod, uint256 initialProposalThreshold) {
-        _setVotingDelay(initialVotingDelay);
-        _setVotingPeriod(initialVotingPeriod);
-        _setProposalThreshold(initialProposalThreshold);
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC165, IERC165) returns (bool) {
+        return
+            interfaceId == type(IERC1155Receiver).interfaceId ||
+            super.supportsInterface(interfaceId);
+    }
+
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
+    ) public virtual override returns (bytes4) {
+        return this.onERC1155Received.selector;
+    }
+
+    function onERC1155BatchReceived(
+        address,
+        address,
+        uint256[] memory,
+        uint256[] memory,
+        bytes memory
+    ) public virtual override returns (bytes4) {
+        return this.onERC1155BatchReceived.selector;
+    }
+}
+
+// File: @openzeppelin/contracts/governance/TimelockController.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (governance/TimelockController.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Contract module which acts as a timelocked controller. When set as the
+ * owner of an `Ownable` smart contract, it enforces a timelock on all
+ * `onlyOwner` maintenance operations. This gives time for users of the
+ * controlled contract to exit before a potentially dangerous maintenance
+ * operation is applied.
+ *
+ * By default, this contract is self administered, meaning administration tasks
+ * have to go through the timelock process. The proposer (resp executor) role
+ * is in charge of proposing (resp executing) operations. A common use case is
+ * to position this {TimelockController} as the owner of a smart contract, with
+ * a multisig or a DAO as the sole proposer.
+ */
+contract TimelockController is AccessControl, ERC721Holder, ERC1155Holder {
+    bytes32 public constant PROPOSER_ROLE = keccak256("PROPOSER_ROLE");
+    bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
+    bytes32 public constant CANCELLER_ROLE = keccak256("CANCELLER_ROLE");
+    uint256 internal constant _DONE_TIMESTAMP = uint256(1);
+
+    mapping(bytes32 id => uint256) private _timestamps;
+    uint256 private _minDelay;
+
+    enum OperationState {
+        Unset,
+        Waiting,
+        Ready,
+        Done
     }
 
     /**
-     * @dev See {IGovernor-votingDelay}.
+     * @dev Mismatch between the parameters length for an operation call.
      */
-    function votingDelay() public view virtual override returns (uint256) {
-        return _votingDelay;
-    }
+    error TimelockInvalidOperationLength(
+        uint256 targets,
+        uint256 payloads,
+        uint256 values
+    );
 
     /**
-     * @dev See {IGovernor-votingPeriod}.
+     * @dev The schedule operation doesn't meet the minimum delay.
      */
-    function votingPeriod() public view virtual override returns (uint256) {
-        return _votingPeriod;
-    }
+    error TimelockInsufficientDelay(uint256 delay, uint256 minDelay);
 
     /**
-     * @dev See {Governor-proposalThreshold}.
-     */
-    function proposalThreshold() public view virtual override returns (uint256) {
-        return _proposalThreshold;
-    }
-
-    /**
-     * @dev Update the voting delay. This operation can only be performed through a governance proposal.
+     * @dev The current state of an operation is not as required.
+     * The `expectedStates` is a bitmap with the bits enabled for each OperationState enum position
+     * counting from right to left.
      *
-     * Emits a {VotingDelaySet} event.
+     * See {_encodeStateBitmap}.
      */
-    function setVotingDelay(uint48 newVotingDelay) public virtual onlyGovernance {
-        _setVotingDelay(newVotingDelay);
-    }
+    error TimelockUnexpectedOperationState(
+        bytes32 operationId,
+        bytes32 expectedStates
+    );
 
     /**
-     * @dev Update the voting period. This operation can only be performed through a governance proposal.
-     *
-     * Emits a {VotingPeriodSet} event.
+     * @dev The predecessor to an operation not yet done.
      */
-    function setVotingPeriod(uint32 newVotingPeriod) public virtual onlyGovernance {
-        _setVotingPeriod(newVotingPeriod);
-    }
+    error TimelockUnexecutedPredecessor(bytes32 predecessorId);
 
     /**
-     * @dev Update the proposal threshold. This operation can only be performed through a governance proposal.
-     *
-     * Emits a {ProposalThresholdSet} event.
+     * @dev The caller account is not authorized.
      */
-    function setProposalThreshold(uint256 newProposalThreshold) public virtual onlyGovernance {
-        _setProposalThreshold(newProposalThreshold);
-    }
+    error TimelockUnauthorizedCaller(address caller);
 
     /**
-     * @dev Internal setter for the voting delay.
-     *
-     * Emits a {VotingDelaySet} event.
+     * @dev Emitted when a call is scheduled as part of operation `id`.
      */
-    function _setVotingDelay(uint48 newVotingDelay) internal virtual {
-        emit VotingDelaySet(_votingDelay, newVotingDelay);
-        _votingDelay = newVotingDelay;
-    }
+    event CallScheduled(
+        bytes32 indexed id,
+        uint256 indexed index,
+        address target,
+        uint256 value,
+        bytes data,
+        bytes32 predecessor,
+        uint256 delay
+    );
 
     /**
-     * @dev Internal setter for the voting period.
-     *
-     * Emits a {VotingPeriodSet} event.
+     * @dev Emitted when a call is performed as part of operation `id`.
      */
-    function _setVotingPeriod(uint32 newVotingPeriod) internal virtual {
-        if (newVotingPeriod == 0) {
-            revert GovernorInvalidVotingPeriod(0);
+    event CallExecuted(
+        bytes32 indexed id,
+        uint256 indexed index,
+        address target,
+        uint256 value,
+        bytes data
+    );
+
+    /**
+     * @dev Emitted when new proposal is scheduled with non-zero salt.
+     */
+    event CallSalt(bytes32 indexed id, bytes32 salt);
+
+    /**
+     * @dev Emitted when operation `id` is cancelled.
+     */
+    event Cancelled(bytes32 indexed id);
+
+    /**
+     * @dev Emitted when the minimum delay for future operations is modified.
+     */
+    event MinDelayChange(uint256 oldDuration, uint256 newDuration);
+
+    /**
+     * @dev Initializes the contract with the following parameters:
+     *
+     * - `minDelay`: initial minimum delay in seconds for operations
+     * - `proposers`: accounts to be granted proposer and canceller roles
+     * - `executors`: accounts to be granted executor role
+     * - `admin`: optional account to be granted admin role; disable with zero address
+     *
+     * IMPORTANT: The optional admin can aid with initial configuration of roles after deployment
+     * without being subject to delay, but this role should be subsequently renounced in favor of
+     * administration through timelocked proposals. Previous versions of this contract would assign
+     * this admin to the deployer automatically and should be renounced as well.
+     */
+    constructor(
+        uint256 minDelay,
+        address[] memory proposers,
+        address[] memory executors,
+        address admin
+    ) {
+        // self administration
+        _grantRole(DEFAULT_ADMIN_ROLE, address(this));
+
+        // optional admin
+        if (admin != address(0)) {
+            _grantRole(DEFAULT_ADMIN_ROLE, admin);
         }
-        emit VotingPeriodSet(_votingPeriod, newVotingPeriod);
-        _votingPeriod = newVotingPeriod;
+
+        // register proposers and cancellers
+        for (uint256 i = 0; i < proposers.length; ++i) {
+            _grantRole(PROPOSER_ROLE, proposers[i]);
+            _grantRole(CANCELLER_ROLE, proposers[i]);
+        }
+
+        // register executors
+        for (uint256 i = 0; i < executors.length; ++i) {
+            _grantRole(EXECUTOR_ROLE, executors[i]);
+        }
+
+        _minDelay = minDelay;
+        emit MinDelayChange(0, minDelay);
     }
 
     /**
-     * @dev Internal setter for the proposal threshold.
-     *
-     * Emits a {ProposalThresholdSet} event.
+     * @dev Modifier to make a function callable only by a certain role. In
+     * addition to checking the sender's role, `address(0)` 's role is also
+     * considered. Granting a role to `address(0)` is equivalent to enabling
+     * this role for everyone.
      */
-    function _setProposalThreshold(uint256 newProposalThreshold) internal virtual {
-        emit ProposalThresholdSet(_proposalThreshold, newProposalThreshold);
-        _proposalThreshold = newProposalThreshold;
+    modifier onlyRoleOrOpenRole(bytes32 role) {
+        if (!hasRole(role, address(0))) {
+            _checkRole(role, _msgSender());
+        }
+        _;
+    }
+
+    /**
+     * @dev Contract might receive/hold ETH as part of the maintenance process.
+     */
+    receive() external payable {}
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(
+        bytes4 interfaceId
+    )
+        public
+        view
+        virtual
+        override(AccessControl, ERC1155Holder)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @dev Returns whether an id corresponds to a registered operation. This
+     * includes both Waiting, Ready, and Done operations.
+     */
+    function isOperation(bytes32 id) public view returns (bool) {
+        return getOperationState(id) != OperationState.Unset;
+    }
+
+    /**
+     * @dev Returns whether an operation is pending or not. Note that a "pending" operation may also be "ready".
+     */
+    function isOperationPending(bytes32 id) public view returns (bool) {
+        OperationState state = getOperationState(id);
+        return state == OperationState.Waiting || state == OperationState.Ready;
+    }
+
+    /**
+     * @dev Returns whether an operation is ready for execution. Note that a "ready" operation is also "pending".
+     */
+    function isOperationReady(bytes32 id) public view returns (bool) {
+        return getOperationState(id) == OperationState.Ready;
+    }
+
+    /**
+     * @dev Returns whether an operation is done or not.
+     */
+    function isOperationDone(bytes32 id) public view returns (bool) {
+        return getOperationState(id) == OperationState.Done;
+    }
+
+    /**
+     * @dev Returns the timestamp at which an operation becomes ready (0 for
+     * unset operations, 1 for done operations).
+     */
+    function getTimestamp(bytes32 id) public view virtual returns (uint256) {
+        return _timestamps[id];
+    }
+
+    /**
+     * @dev Returns operation state.
+     */
+    function getOperationState(
+        bytes32 id
+    ) public view virtual returns (OperationState) {
+        uint256 timestamp = getTimestamp(id);
+        if (timestamp == 0) {
+            return OperationState.Unset;
+        } else if (timestamp == _DONE_TIMESTAMP) {
+            return OperationState.Done;
+        } else if (timestamp > block.timestamp) {
+            return OperationState.Waiting;
+        } else {
+            return OperationState.Ready;
+        }
+    }
+
+    /**
+     * @dev Returns the minimum delay in seconds for an operation to become valid.
+     *
+     * This value can be changed by executing an operation that calls `updateDelay`.
+     */
+    function getMinDelay() public view virtual returns (uint256) {
+        return _minDelay;
+    }
+
+    /**
+     * @dev Returns the identifier of an operation containing a single
+     * transaction.
+     */
+    function hashOperation(
+        address target,
+        uint256 value,
+        bytes calldata data,
+        bytes32 predecessor,
+        bytes32 salt
+    ) public pure virtual returns (bytes32) {
+        return keccak256(abi.encode(target, value, data, predecessor, salt));
+    }
+
+    /**
+     * @dev Returns the identifier of an operation containing a batch of
+     * transactions.
+     */
+    function hashOperationBatch(
+        address[] calldata targets,
+        uint256[] calldata values,
+        bytes[] calldata payloads,
+        bytes32 predecessor,
+        bytes32 salt
+    ) public pure virtual returns (bytes32) {
+        return
+            keccak256(abi.encode(targets, values, payloads, predecessor, salt));
+    }
+
+    /**
+     * @dev Schedule an operation containing a single transaction.
+     *
+     * Emits {CallSalt} if salt is nonzero, and {CallScheduled}.
+     *
+     * Requirements:
+     *
+     * - the caller must have the 'proposer' role.
+     */
+    function schedule(
+        address target,
+        uint256 value,
+        bytes calldata data,
+        bytes32 predecessor,
+        bytes32 salt,
+        uint256 delay
+    ) public virtual onlyRole(PROPOSER_ROLE) {
+        bytes32 id = hashOperation(target, value, data, predecessor, salt);
+        _schedule(id, delay);
+        emit CallScheduled(id, 0, target, value, data, predecessor, delay);
+        if (salt != bytes32(0)) {
+            emit CallSalt(id, salt);
+        }
+    }
+
+    /**
+     * @dev Schedule an operation containing a batch of transactions.
+     *
+     * Emits {CallSalt} if salt is nonzero, and one {CallScheduled} event per transaction in the batch.
+     *
+     * Requirements:
+     *
+     * - the caller must have the 'proposer' role.
+     */
+    function scheduleBatch(
+        address[] calldata targets,
+        uint256[] calldata values,
+        bytes[] calldata payloads,
+        bytes32 predecessor,
+        bytes32 salt,
+        uint256 delay
+    ) public virtual onlyRole(PROPOSER_ROLE) {
+        if (
+            targets.length != values.length || targets.length != payloads.length
+        ) {
+            revert TimelockInvalidOperationLength(
+                targets.length,
+                payloads.length,
+                values.length
+            );
+        }
+
+        bytes32 id = hashOperationBatch(
+            targets,
+            values,
+            payloads,
+            predecessor,
+            salt
+        );
+        _schedule(id, delay);
+        for (uint256 i = 0; i < targets.length; ++i) {
+            emit CallScheduled(
+                id,
+                i,
+                targets[i],
+                values[i],
+                payloads[i],
+                predecessor,
+                delay
+            );
+        }
+        if (salt != bytes32(0)) {
+            emit CallSalt(id, salt);
+        }
+    }
+
+    /**
+     * @dev Schedule an operation that is to become valid after a given delay.
+     */
+    function _schedule(bytes32 id, uint256 delay) private {
+        if (isOperation(id)) {
+            revert TimelockUnexpectedOperationState(
+                id,
+                _encodeStateBitmap(OperationState.Unset)
+            );
+        }
+        uint256 minDelay = getMinDelay();
+        if (delay < minDelay) {
+            revert TimelockInsufficientDelay(delay, minDelay);
+        }
+        _timestamps[id] = block.timestamp + delay;
+    }
+
+    /**
+     * @dev Cancel an operation.
+     *
+     * Requirements:
+     *
+     * - the caller must have the 'canceller' role.
+     */
+    function cancel(bytes32 id) public virtual onlyRole(CANCELLER_ROLE) {
+        if (!isOperationPending(id)) {
+            revert TimelockUnexpectedOperationState(
+                id,
+                _encodeStateBitmap(OperationState.Waiting) |
+                    _encodeStateBitmap(OperationState.Ready)
+            );
+        }
+        delete _timestamps[id];
+
+        emit Cancelled(id);
+    }
+
+    /**
+     * @dev Execute an (ready) operation containing a single transaction.
+     *
+     * Emits a {CallExecuted} event.
+     *
+     * Requirements:
+     *
+     * - the caller must have the 'executor' role.
+     */
+    // This function can reenter, but it doesn't pose a risk because _afterCall checks that the proposal is pending,
+    // thus any modifications to the operation during reentrancy should be caught.
+    // slither-disable-next-line reentrancy-eth
+    function execute(
+        address target,
+        uint256 value,
+        bytes calldata payload,
+        bytes32 predecessor,
+        bytes32 salt
+    ) public payable virtual onlyRoleOrOpenRole(EXECUTOR_ROLE) {
+        bytes32 id = hashOperation(target, value, payload, predecessor, salt);
+
+        _beforeCall(id, predecessor);
+        _execute(target, value, payload);
+        emit CallExecuted(id, 0, target, value, payload);
+        _afterCall(id);
+    }
+
+    /**
+     * @dev Execute an (ready) operation containing a batch of transactions.
+     *
+     * Emits one {CallExecuted} event per transaction in the batch.
+     *
+     * Requirements:
+     *
+     * - the caller must have the 'executor' role.
+     */
+    // This function can reenter, but it doesn't pose a risk because _afterCall checks that the proposal is pending,
+    // thus any modifications to the operation during reentrancy should be caught.
+    // slither-disable-next-line reentrancy-eth
+    function executeBatch(
+        address[] calldata targets,
+        uint256[] calldata values,
+        bytes[] calldata payloads,
+        bytes32 predecessor,
+        bytes32 salt
+    ) public payable virtual onlyRoleOrOpenRole(EXECUTOR_ROLE) {
+        if (
+            targets.length != values.length || targets.length != payloads.length
+        ) {
+            revert TimelockInvalidOperationLength(
+                targets.length,
+                payloads.length,
+                values.length
+            );
+        }
+
+        bytes32 id = hashOperationBatch(
+            targets,
+            values,
+            payloads,
+            predecessor,
+            salt
+        );
+
+        _beforeCall(id, predecessor);
+        for (uint256 i = 0; i < targets.length; ++i) {
+            address target = targets[i];
+            uint256 value = values[i];
+            bytes calldata payload = payloads[i];
+            _execute(target, value, payload);
+            emit CallExecuted(id, i, target, value, payload);
+        }
+        _afterCall(id);
+    }
+
+    /**
+     * @dev Execute an operation's call.
+     */
+    function _execute(
+        address target,
+        uint256 value,
+        bytes calldata data
+    ) internal virtual {
+        (bool success, bytes memory returndata) = target.call{value: value}(
+            data
+        );
+        Address.verifyCallResult(success, returndata);
+    }
+
+    /**
+     * @dev Checks before execution of an operation's calls.
+     */
+    function _beforeCall(bytes32 id, bytes32 predecessor) private view {
+        if (!isOperationReady(id)) {
+            revert TimelockUnexpectedOperationState(
+                id,
+                _encodeStateBitmap(OperationState.Ready)
+            );
+        }
+        if (predecessor != bytes32(0) && !isOperationDone(predecessor)) {
+            revert TimelockUnexecutedPredecessor(predecessor);
+        }
+    }
+
+    /**
+     * @dev Checks after execution of an operation's calls.
+     */
+    function _afterCall(bytes32 id) private {
+        if (!isOperationReady(id)) {
+            revert TimelockUnexpectedOperationState(
+                id,
+                _encodeStateBitmap(OperationState.Ready)
+            );
+        }
+        _timestamps[id] = _DONE_TIMESTAMP;
+    }
+
+    /**
+     * @dev Changes the minimum timelock duration for future operations.
+     *
+     * Emits a {MinDelayChange} event.
+     *
+     * Requirements:
+     *
+     * - the caller must be the timelock itself. This can only be achieved by scheduling and later executing
+     * an operation where the timelock is the target and the data is the ABI-encoded call to this function.
+     */
+    function updateDelay(uint256 newDelay) external virtual {
+        address sender = _msgSender();
+        if (sender != address(this)) {
+            revert TimelockUnauthorizedCaller(sender);
+        }
+        emit MinDelayChange(_minDelay, newDelay);
+        _minDelay = newDelay;
+    }
+
+    /**
+     * @dev Encodes a `OperationState` into a `bytes32` representation where each bit enabled corresponds to
+     * the underlying position in the `OperationState` enum. For example:
+     *
+     * 0x000...1000
+     *   ^^^^^^----- ...
+     *         ^---- Done
+     *          ^--- Ready
+     *           ^-- Waiting
+     *            ^- Unset
+     */
+    function _encodeStateBitmap(
+        OperationState operationState
+    ) internal pure returns (bytes32) {
+        return bytes32(1 << uint8(operationState));
+    }
+}
+
+// File: @openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (governance/extensions/GovernorTimelockControl.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Extension of {Governor} that binds the execution process to an instance of {TimelockController}. This adds a
+ * delay, enforced by the {TimelockController} to all successful proposal (in addition to the voting duration). The
+ * {Governor} needs the proposer (and ideally the executor) roles for the {Governor} to work properly.
+ *
+ * Using this model means the proposal will be operated by the {TimelockController} and not by the {Governor}. Thus,
+ * the assets and permissions must be attached to the {TimelockController}. Any asset sent to the {Governor} will be
+ * inaccessible from a proposal, unless executed via {Governor-relay}.
+ *
+ * WARNING: Setting up the TimelockController to have additional proposers or cancellers besides the governor is very
+ * risky, as it grants them the ability to: 1) execute operations as the timelock, and thus possibly performing
+ * operations or accessing funds that are expected to only be accessible through a vote, and 2) block governance
+ * proposals that have been approved by the voters, effectively executing a Denial of Service attack.
+ *
+ * NOTE: `AccessManager` does not support scheduling more than one operation with the same target and calldata at
+ * the same time. See {AccessManager-schedule} for a workaround.
+ */
+abstract contract GovernorTimelockControl is Governor {
+    TimelockController private _timelock;
+    mapping(uint256 proposalId => bytes32) private _timelockIds;
+
+    /**
+     * @dev Emitted when the timelock controller used for proposal execution is modified.
+     */
+    event TimelockChange(address oldTimelock, address newTimelock);
+
+    /**
+     * @dev Set the timelock.
+     */
+    constructor(TimelockController timelockAddress) {
+        _updateTimelock(timelockAddress);
+    }
+
+    /**
+     * @dev Overridden version of the {Governor-state} function that considers the status reported by the timelock.
+     */
+    function state(
+        uint256 proposalId
+    ) public view virtual override returns (ProposalState) {
+        ProposalState currentState = super.state(proposalId);
+
+        if (currentState != ProposalState.Queued) {
+            return currentState;
+        }
+
+        bytes32 queueid = _timelockIds[proposalId];
+        if (_timelock.isOperationPending(queueid)) {
+            return ProposalState.Queued;
+        } else if (_timelock.isOperationDone(queueid)) {
+            // This can happen if the proposal is executed directly on the timelock.
+            return ProposalState.Executed;
+        } else {
+            // This can happen if the proposal is canceled directly on the timelock.
+            return ProposalState.Canceled;
+        }
+    }
+
+    /**
+     * @dev Public accessor to check the address of the timelock
+     */
+    function timelock() public view virtual returns (address) {
+        return address(_timelock);
+    }
+
+    /**
+     * @dev See {IGovernor-proposalNeedsQueuing}.
+     */
+    function proposalNeedsQueuing(
+        uint256
+    ) public view virtual override returns (bool) {
+        return true;
+    }
+
+    /**
+     * @dev Function to queue a proposal to the timelock.
+     */
+    function _queueOperations(
+        uint256 proposalId,
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory calldatas,
+        bytes32 descriptionHash
+    ) internal virtual override returns (uint48) {
+        uint256 delay = _timelock.getMinDelay();
+
+        bytes32 salt = _timelockSalt(descriptionHash);
+        _timelockIds[proposalId] = _timelock.hashOperationBatch(
+            targets,
+            values,
+            calldatas,
+            0,
+            salt
+        );
+        _timelock.scheduleBatch(targets, values, calldatas, 0, salt, delay);
+
+        return SafeCast.toUint48(block.timestamp + delay);
+    }
+
+    /**
+     * @dev Overridden version of the {Governor-_executeOperations} function that runs the already queued proposal
+     * through the timelock.
+     */
+    function _executeOperations(
+        uint256 proposalId,
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory calldatas,
+        bytes32 descriptionHash
+    ) internal virtual override {
+        // execute
+        _timelock.executeBatch{value: msg.value}(
+            targets,
+            values,
+            calldatas,
+            0,
+            _timelockSalt(descriptionHash)
+        );
+        // cleanup for refund
+        delete _timelockIds[proposalId];
+    }
+
+    /**
+     * @dev Overridden version of the {Governor-_cancel} function to cancel the timelocked proposal if it has already
+     * been queued.
+     */
+    // This function can reenter through the external call to the timelock, but we assume the timelock is trusted and
+    // well behaved (according to TimelockController) and this will not happen.
+    // slither-disable-next-line reentrancy-no-eth
+    function _cancel(
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory calldatas,
+        bytes32 descriptionHash
+    ) internal virtual override returns (uint256) {
+        uint256 proposalId = super._cancel(
+            targets,
+            values,
+            calldatas,
+            descriptionHash
+        );
+
+        bytes32 timelockId = _timelockIds[proposalId];
+        if (timelockId != 0) {
+            // cancel
+            _timelock.cancel(timelockId);
+            // cleanup
+            delete _timelockIds[proposalId];
+        }
+
+        return proposalId;
+    }
+
+    /**
+     * @dev Address through which the governor executes action. In this case, the timelock.
+     */
+    function _executor() internal view virtual override returns (address) {
+        return address(_timelock);
+    }
+
+    /**
+     * @dev Public endpoint to update the underlying timelock instance. Restricted to the timelock itself, so updates
+     * must be proposed, scheduled, and executed through governance proposals.
+     *
+     * CAUTION: It is not recommended to change the timelock while there are other queued governance proposals.
+     */
+    function updateTimelock(
+        TimelockController newTimelock
+    ) external virtual onlyGovernance {
+        _updateTimelock(newTimelock);
+    }
+
+    function _updateTimelock(TimelockController newTimelock) private {
+        emit TimelockChange(address(_timelock), address(newTimelock));
+        _timelock = newTimelock;
+    }
+
+    /**
+     * @dev Computes the {TimelockController} operation salt.
+     *
+     * It is computed with the governor address itself to avoid collisions across governor instances using the
+     * same timelock.
+     */
+    function _timelockSalt(
+        bytes32 descriptionHash
+    ) private view returns (bytes32) {
+        return bytes20(address(this)) ^ descriptionHash;
     }
 }
 
 // File: contracts/DAO/miniDAO/MiniDAO.sol
 
-
 // Compatible with OpenZeppelin Contracts ^5.0.0
 pragma solidity ^0.8.23;
-
-
-
-
-
-
 
 /// @title MiniDAO Contract
 /// @notice This contract implements a minimalistic DAO with governance functionalities.
@@ -6643,7 +7279,7 @@ contract MiniDAO is
         string _link;
     }
 
-    mapping(uint256 => ProposalInfo) public info;
+    mapping(uint256 => string) public titles;
 
     /// @notice Constructs the MiniDAO contract with specified parameters.
     /// @param _token The token used for voting.
@@ -6667,12 +7303,12 @@ contract MiniDAO is
         GovernorTimelockControl(_timelock)
     {}
 
-    function propose(
+    function proposeWithTitle(
         address[] memory targets,
         uint256[] memory values,
         bytes[] memory calldatas,
         string memory description,
-        string[5] memory _info
+        string memory title
     ) public returns (uint256) {
         uint256 proposalId = super.propose(
             targets,
@@ -6680,13 +7316,8 @@ contract MiniDAO is
             calldatas,
             description
         );
-        info[proposalId] = ProposalInfo({
-            _against: _info[0],
-            _for: _info[1],
-            _abstain: _info[2],
-            _name: _info[3],
-            _link: _info[4]
-        });
+        titles[proposalId] = title;
+
         return proposalId;
     }
 
