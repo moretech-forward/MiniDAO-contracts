@@ -1036,45 +1036,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "info",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "_against",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_for",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_abstain",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_name",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_link",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "name",
     "outputs": [
@@ -1412,12 +1373,12 @@
         "type": "string"
       },
       {
-        "internalType": "string[5]",
-        "name": "_info",
-        "type": "string[5]"
+        "internalType": "string",
+        "name": "title",
+        "type": "string"
       }
     ],
-    "name": "propose",
+    "name": "proposeWithTitle",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1634,6 +1595,25 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "titles",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
