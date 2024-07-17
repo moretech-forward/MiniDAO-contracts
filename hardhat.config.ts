@@ -37,6 +37,12 @@ const config: HardhatUserConfig = {
       url: mumbai,
       accounts: [`0x${privateKey}`],
     },
+    hardhat: {
+      mining: {
+        auto: false,
+        interval: 2000,
+      },
+    },
   },
 };
 
