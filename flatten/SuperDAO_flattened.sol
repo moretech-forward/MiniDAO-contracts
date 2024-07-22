@@ -8727,7 +8727,7 @@ contract TokenDAO is ERC20, Owned, ERC20Permit, ERC20Votes {
     function tokenDistribution(address to, uint256 amount) external {
         require(!isInit, "A function can be called only once");
         isInit = true;
-        _mint(to, amount);
+        _mint(to, amount * 10 ** decimals());
     }
 
     /// @notice Mints tokens and assigns them to a specified recipient.
