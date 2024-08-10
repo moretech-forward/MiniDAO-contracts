@@ -9,8 +9,18 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 /// @title Treasury Contract
 /// @notice This contract serves as a treasury to manage and distribute native tokens and ERC20 tokens.
 /// @dev This contract allows the owner to release native tokens and ERC20 tokens to specified recipients.
-/// It inherits functionality from Owned, ERC721TokenReceiver, and ERC1155TokenReceiver contracts.
+/// It inherits functionality from Owned, ERC721TokenReceiver contracts.
 contract Treasury is Owned, ERC721TokenReceiver {
+    /// @dev Emitted when ERC20 tokens are deposited into the contract.
+    /// @param token The address of the ERC20 token contract.
+    event ERC20Deposited(address token);
+
+    /// @dev Emitted when an ERC721 token is deposited into the contract.
+    /// @param token The address of the ERC721 token contract.
+    /// @param tokenId The ID of the deposited ERC721 token.
+
+    event ERC721Deposited(address token, uint256 tokenId);
+
     /// @notice Constructs the Treasury contract with a specified timelock contract address.
     /// @param _timelock The address of the timelock contract.
     constructor(address _timelock) payable Owned(_timelock) {}
@@ -72,7 +82,30 @@ contract Treasury is Owned, ERC721TokenReceiver {
 
         // Execute the safe transfer of the token to the specified address
         ERC721Token.safeTransferFrom(address(this), to, id, "0x00");
-        //ERC721Token.transferFrom(address(this), to, id);
+    }
+
+    /// @notice Deposit ERC20 tokens into the contract.
+    /// @dev Transfers `amount` of ERC20 tokens from the sender to the contract.
+    /// @param token The address of the ERC20 token contract.
+    /// @param amount The amount of tokens to deposit.
+    function depositERC20(address token, uint256 amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+
+        // Transfer of tokens from user to contract
+        IERC20(token).transferFrom(msg.sender, address(this), amount);
+
+        emit ERC20Deposited(token);
+    }
+
+    /// @notice Deposit an ERC721 token into the contract.
+    /// @dev Transfers the specified ERC721 token from the sender to the contract.
+    /// @param token The address of the ERC721 token contract.
+    /// @param tokenId The ID of the token to deposit.
+    function depositERC721(address token, uint256 tokenId) external {
+        // Transfer of tokens from user to contract
+        IERC721(token).transferFrom(msg.sender, address(this), tokenId);
+
+        emit ERC721Deposited(token, tokenId);
     }
 
     /// @dev Fallback function to receive native tokens.

@@ -4,12 +4,12 @@ import { ethers } from "hardhat";
 async function main() {
   const SuperDAO = await ethers.getContractFactory("SuperDAO");
   const superDAO = await SuperDAO.deploy(
-    1, // задержка исполнения в timstamp
+    30, // задержка исполнения в timstamp
     "TokenDAO", // название токена для ДАО
     "TKN", // символ токена для ДАО
     "MiniDAO name", // название ДАО
     5, // _votingDelay - задержка в секундах между созданием предложения и началом голосования
-    15, // _votingPeriod - длительность голосования в секундах
+    20, // _votingPeriod - длительность голосования в секундах
     4 // _quorumValue - какой процент должен быть собран для успешного завершения голосования
   );
 

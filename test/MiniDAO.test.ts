@@ -28,7 +28,8 @@ describe("MiniDAO", function () {
     // token distribution
     await token.tokenDistribution(owner, 6000);
 
-    await token.transfer(acc1, 1000);
+    // await
+    await expect(token.transfer(acc1, 1000)).to.emit(token, "Transfer");
     await token.transfer(acc2, 1000);
     await token.transfer(acc3, 1000);
     await token.transfer(acc4, 1000);

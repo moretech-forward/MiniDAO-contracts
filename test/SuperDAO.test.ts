@@ -42,6 +42,7 @@ describe("SuperDAO", function () {
     const miniDAO = MiniDAO__factory.connect(miniDAOAddr, owner);
     expect(await miniDAO.name()).to.equal("miniDAO");
 
+    // npx hardhat test test/MiniDAO.test.ts
     const treasuryAddr = await superDAO.treasury();
     const treasury = Treasury__factory.connect(treasuryAddr, owner);
     expect(await treasury.owner()).to.equal(timeLockAddr);
@@ -156,6 +157,15 @@ describe("SuperDAO", function () {
       await expect(
         treasury.connect(owner).releaseERC20Token(owner, 1000, token)
       ).to.be.revertedWith("UNAUTHORIZED");
+    });
+
+    it("depositERC20", async function () {
+      const { treasury, owner, token } = await loadFixture(deployDAO);
+
+      const ERC20 = await hre.ethers.getContractFactory("MockTokenERC20");
+      const erc20 = await ERC20.deploy();
+
+      await expect(treasury.depositERC20(erc20, 5)).to.emit(erc20, "Transfer");
     });
   });
 
