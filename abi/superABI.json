@@ -1,4 +1,5 @@
 [
+  "constructor(uint256 _minDelay, string _nameToken, string _symbolToken, string _nameDAO, uint48 _votingDelay, uint32 _votingPeriod, uint256 _quorumValue) payable",
   "function governor() view returns (address)",
   "function myAddr() view returns (address)",
   "function timeLock() view returns (address)",
