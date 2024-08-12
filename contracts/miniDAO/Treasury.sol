@@ -103,7 +103,7 @@ contract Treasury is Owned, ERC721TokenReceiver {
     /// @param tokenId The ID of the token to deposit.
     function depositERC721(address token, uint256 tokenId) external {
         // Transfer of tokens from user to contract
-        IERC721(token).transferFrom(msg.sender, address(this), tokenId);
+        IERC721(token).safeTransferFrom(msg.sender, address(this), tokenId);
 
         emit ERC721Deposited(token, tokenId);
     }

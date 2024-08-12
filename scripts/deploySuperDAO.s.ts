@@ -16,8 +16,12 @@ async function main() {
   const ERC721 = await ethers.getContractFactory("MockTokenERC721");
   const erc721 = await ERC721.deploy();
 
+  const ERC20 = await ethers.getContractFactory("MockTokenERC20");
+  const erc20 = await ERC20.deploy();
+
   console.log(`SuperDAO deployed to ${await superDAO.getAddress()}`);
   console.log(`ERC721 deployed to ${await erc721.getAddress()}`);
+  console.log(`ERC20 deployed to ${await erc20.getAddress()}`);
 }
 
 main().catch((error) => {
